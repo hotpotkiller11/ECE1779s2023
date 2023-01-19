@@ -1,32 +1,19 @@
-import base64
-import os
-import mysql.connector
-from flask import render_template, request, g, redirect, url_for
-from werkzeug.utils import secure_filename
-import requests
-from FrontEnd import webapp
-from FrontEnd.config import db_config
-import datetime
+from flask import render_template
+from FrontEnd import webapp, db
 
-def init_db():
-    return mysql.connector.connect(user=db_config['user'],
-                                   password=db_config['password'],
-                                   host=db_config['host'],
-                                   database=db_config['database'])
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = init_db()
-    return db
-
+def get_path_by_key(key: str) -> str:
+    query = 'SELECT path FROM key_picture WHERE key_picture.key = "' + key + '"'
+    cursor = db.cursor()
+    cursor.execute(query)
+    result = cursor.fetchall()
+    cursor.close()
+    if len(result) == 0:
+        return ""
+    return result[0][0]
 
 @webapp.teardown_appcontext
 def teardown_db(exception):
-    """Safe tear down"""
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+    db.close()
 
 @webapp.route('/')
 def home():
@@ -70,3 +57,6 @@ def Function4():
 def Function5():
     print("do shit5")
     return "do shit5"
+
+print(get_path_by_key('a'))
+
