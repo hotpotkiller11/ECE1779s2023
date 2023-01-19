@@ -14,7 +14,7 @@ app = DispatcherMiddleware(front, {
 if __name__ == "__main__":
     """THREADED = TRUE FOR TWO INSTANCE WORKING TOGETHER"""
     back.debug = True
-    front.debug = True
+    """front.debug = True"""
     """run_simple('0.0.0.0', 5000, app,
                use_reloader=False,
                use_debugger=True,

@@ -54,22 +54,47 @@ def get_configinfo():
 def subPut(key,value):
     """do something with key"""
     print(key,value)
-    return key,value
+    response = webapp.response_class(
+        response=json.dumps(key+value),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 
 def subGET(key):
     """do something"""
     print("method2")
-    return "get"
+    response = webapp.response_class(
+        response=json.dumps(key),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 def subCLEAR():
-    return "clear"
+    response = webapp.response_class(
+        response=json.dumps('ok'),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 def InvalidateKey(key):
-    return key
+    response = webapp.response_class(
+        response=json.dumps("ok"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 def refreshConfiguration():
-    return "refresh"
+    response = webapp.response_class(
+        response=json.dumps('ok'),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 
 
@@ -89,11 +114,13 @@ def PUT():
 @webapp.route('/get', methods=['POST', 'GET'])
 def GET():
     key = request.json["key"]
+    #return subGET(key)
     return subGET(key)
 
 @webapp.route('/clear',methods=['POST', 'GET'])
 def CLEAR():
-    subCLEAR()
+    return subCLEAR()
+
 
 
 
