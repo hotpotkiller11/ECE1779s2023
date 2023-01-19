@@ -5,7 +5,6 @@ import sys
 import random
 import mysql.connector
 from BackEnd.config import db_config
-# from BackEnd.module import somemethod
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json
@@ -52,14 +51,27 @@ def get_configinfo():
 
 """Funcitions"""
 
-def subfunction1(key):
+def subPut(key,value):
     """do something with key"""
-    print(key)
+    print(key,value)
+    return key,value
 
 
-def subfunction2():
+def subGET(key):
     """do something"""
     print("method2")
+    return "get"
+
+def subCLEAR():
+    return "clear"
+
+def InvalidateKey(key):
+    return key
+
+def refreshConfiguration():
+    return "refresh"
+
+
 
 
 """Front End BackEnd End link"""
@@ -68,12 +80,20 @@ def welcome():
     #   base page unused test only
     return "welcome 2023"
 
-@webapp.route('/function1', methods=['POST', 'GET'])
-def Function1():
+@webapp.route('/put', methods=['POST', 'GET'])
+def PUT():
     key = request.json["key"]
-    return subfunction1(key)
+    value = request.json["value"]
+    return subPut(key,value)
 
-@webapp.route('/function2', methods=['POST', 'GET'])
-def Fuction2():
-    return subfunction2()
+@webapp.route('/get', methods=['POST', 'GET'])
+def GET():
+    key = request.json["key"]
+    return subGET(key)
+
+@webapp.route('/clear',methods=['POST', 'GET'])
+def CLEAR():
+    subCLEAR()
+
+
 
