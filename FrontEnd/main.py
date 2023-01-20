@@ -30,6 +30,39 @@ def add_key_and_path(key: str, path: str) -> bool:
         return False
     return True
 
+def delete_term_by_key(key: str) -> bool:
+    ''' Delete a term with a specified key in the database.
+        Return true if the deletion succeed.
+    '''
+    query = 'DELETE FROM `key_picture` WHERE `key` = "%s"' % (key) # instantiate query statement
+    cursor = db.cursor()
+    try:
+        cursor.execute(query)
+        db.commit() # Try to commit (confirm) the insertion
+        cursor.close()
+    except:
+        db.rollback() # Try to rollback in case of error
+        cursor.close()
+        return False
+    return True
+
+def delete_all_key_path_term() -> bool:
+    ''' Delete all terms in the key_picture table.
+        Return true if the deletion succeed. 
+        (If the table was initially empty, true will also returned)
+    '''
+    query = 'DELETE FROM `key_picture`' # instantiate query statement
+    cursor = db.cursor()
+    try:
+        cursor.execute(query)
+        db.commit() # Try to commit (confirm) the insertion
+        cursor.close()
+    except:
+        db.rollback() # Try to rollback in case of error
+        cursor.close()
+        return False
+    return True
+
 @webapp.teardown_appcontext
 def teardown_db(exception):
     db.close()
@@ -76,7 +109,3 @@ def Function4():
 def Function5():
     print("do shit5")
     return "do shit5"
-
-print(get_path_by_key('a'))
-print(add_key_and_path('d', 'ddd'))
-
