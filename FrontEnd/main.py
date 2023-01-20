@@ -60,3 +60,5 @@ def Function5():
 
 print(get_path_by_key('a'))
 
+print('hello')
+print('nihao')
