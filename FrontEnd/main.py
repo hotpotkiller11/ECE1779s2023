@@ -73,16 +73,19 @@ def saveDataToFile(filename:str, input:str):
     except Exception as e:
         return "save unsuccess"
 
-#print(saveDataToFile('hello.txt','hello'))
-"""The function used to read a file in to static index by its filename"""
+#print(saveDataToFile('hello.txt','11111'))
+"""The function used to read a file in to static index by its filename, if no such file, return None"""
 def getDataFromFile(filename:str):
     filepath = "./FrontEnd/static/"+filename
-    f = open(filepath, 'rb')
-    output = (f.read())
-    f.close()
-    return output
+    try:
+        f = open(filepath, 'rb')
+        output = (f.read())
+        f.close()
+        return output
+    except Exception as e:
+        return None
 
-#print(getDataFromFile('hello.txt'))
+#print(getDataFromFile('hel.txt'))
 """This function return the list of files in a specific dictionary name"""
 def listFileDictionary(dicname:str):
     filepath = "./FrontEnd/"+dicname
