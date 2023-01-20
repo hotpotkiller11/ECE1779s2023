@@ -78,3 +78,12 @@ def saveDataToFile(filename:str, input:str):
         return "save unsuccess"
 
 #print(saveDataToFile('hello.txt','hello'))
+
+def getDataFromFile(filename:str):
+    filepath = "./FrontEnd/static/"+filename
+    f = open(filepath, 'r')
+    output = (f.read())
+    f.close()
+    return output
+
+#print(getDataFromFile('hello.txt'))
