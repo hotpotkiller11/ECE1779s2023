@@ -2,14 +2,33 @@ from flask import render_template
 from FrontEnd import webapp, db
 
 def get_path_by_key(key: str) -> str:
-    query = 'SELECT path FROM key_picture WHERE key_picture.key = "' + key + '"'
+    ''' Return the path of the indexed key from the database.
+        If no valid term match, return None.
+    '''
+    query = 'SELECT `path` FROM `key_picture` WHERE `key` = "%s"' % key # instantiate query statement
     cursor = db.cursor()
     cursor.execute(query)
     result = cursor.fetchall()
     cursor.close()
     if len(result) == 0:
-        return ""
+        return None
     return result[0][0]
+
+def add_key_and_path(key: str, path: str) -> bool:
+    ''' Record the key and path into the database.
+        Return if the key and path stored successfully.
+    '''
+    query = 'INSERT INTO `key_picture` (`key`, `path`) VALUES ("%s", "%s");' % (key, path) # instantiate query statement
+    cursor = db.cursor()
+    try:
+        cursor.execute(query)
+        db.commit() # Try to commit (confirm) the insertion
+        cursor.close()
+    except:
+        db.rollback() # Try to rollback in case of error
+        cursor.close()
+        return False
+    return True
 
 @webapp.teardown_appcontext
 def teardown_db(exception):
@@ -59,4 +78,5 @@ def Function5():
     return "do shit5"
 
 print(get_path_by_key('a'))
+print(add_key_and_path('d', 'ddd'))
 
