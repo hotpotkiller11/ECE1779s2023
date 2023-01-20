@@ -60,17 +60,13 @@ def Function5():
 
 print(get_path_by_key('a'))
 
-
-print('hello')
-print('nihao')
-
 """The function used to store file in to static"""
 def saveDataToFile(filename:str, input:str):
     filepath = "./FrontEnd/static/"+filename
     print(filepath)
     try:
-        with open(filepath, "w") as f:
-            print("open success")
+        with open(filepath, "wb") as f:
+            #print("open success")
             f.write(input)
             f.close()
         return "save success"
@@ -81,7 +77,7 @@ def saveDataToFile(filename:str, input:str):
 """The function used to read a file in to static index by its filename"""
 def getDataFromFile(filename:str):
     filepath = "./FrontEnd/static/"+filename
-    f = open(filepath, 'r')
+    f = open(filepath, 'rb')
     output = (f.read())
     f.close()
     return output
@@ -92,4 +88,6 @@ def listFileDictionary(dicname:str):
     filepath = "./FrontEnd/"+dicname
     return os.listdir(filepath)
     
-print(listFileDictionary('static'))
+#print(listFileDictionary('static'))
+#print(getDataFromFile('testfig.jpg'))
+#print(saveDataToFile('testfig2.jpg',getDataFromFile('testfig.jpg')))
