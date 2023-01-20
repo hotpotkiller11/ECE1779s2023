@@ -1,6 +1,6 @@
 from flask import render_template
 from FrontEnd import webapp, db
-
+import os
 def get_path_by_key(key: str) -> str:
     query = 'SELECT path FROM key_picture WHERE key_picture.key = "' + key + '"'
     cursor = db.cursor()
@@ -78,7 +78,7 @@ def saveDataToFile(filename:str, input:str):
         return "save unsuccess"
 
 #print(saveDataToFile('hello.txt','hello'))
-
+"""The function used to read a file in to static index by its filename"""
 def getDataFromFile(filename:str):
     filepath = "./FrontEnd/static/"+filename
     f = open(filepath, 'r')
@@ -87,3 +87,9 @@ def getDataFromFile(filename:str):
     return output
 
 #print(getDataFromFile('hello.txt'))
+"""This function return the list of files in a specific dictionary name"""
+def listFileDictionary(dicname:str):
+    filepath = "./FrontEnd/"+dicname
+    return os.listdir(filepath)
+    
+print(listFileDictionary('static'))
