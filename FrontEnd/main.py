@@ -61,7 +61,7 @@ def Function5():
 print(get_path_by_key('a'))
 
 """The function used to store file in to static"""
-def saveDataToFile(filename:str, input:str):
+def saveDataToFile(filename:str, input:bytes):
     filepath = "./FrontEnd/static/figure/"+filename
     print(filepath)
     try:
@@ -74,8 +74,9 @@ def saveDataToFile(filename:str, input:str):
         return "save unsuccess"
 
 #print(saveDataToFile('hello.txt','11111'))
-"""The function used to read a file in to static index by its filename, if no such file, return None"""
-def getDataFromFile(filename:str):
+
+def getDataFromFile(filename:str)->bytes:
+    """The function used to read a file in to static index by its filename, if no such file, return None"""
     filepath = "./FrontEnd/static/figure/"+filename
     try:
         f = open(filepath, 'rb')
@@ -86,8 +87,9 @@ def getDataFromFile(filename:str):
         return None
 
 #print(getDataFromFile('hel.txt'))
-"""This function return the list of files in a specific dictionary name"""
-def listFileDictionary(dicname:str):
+
+def listFileDictionary(dicname:str)->list[str]:
+    """This function return the list of files in a specific dictionary name"""
     filepath = "./FrontEnd/static/"+dicname
     return os.listdir(filepath)
     
@@ -95,8 +97,9 @@ def listFileDictionary(dicname:str):
 #print(getDataFromFile('testfig.jpg'))
 #print(saveDataToFile('testfig2.jpg',getDataFromFile('testfig.jpg')))
 
-'''This function is used to delete all data in a specific document under static'''
-def deleteFile(filename:str):
+
+def deleteFile(filename:str)->bool:
+    '''This function is used to delete all data in a specific document under static'''
     filepath = "./FrontEnd/static/"+filename
     try:
         del_list = os.listdir(filepath)
@@ -108,4 +111,4 @@ def deleteFile(filename:str):
         return True
     except Exception as e:
         return False
-#print(deleteFile('fige'))
+#print(deleteFile('figure'))
