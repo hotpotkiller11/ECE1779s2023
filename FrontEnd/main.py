@@ -60,5 +60,21 @@ def Function5():
 
 print(get_path_by_key('a'))
 
+
 print('hello')
 print('nihao')
+
+"""The function used to store file in to static"""
+def saveDataToFile(filename:str, input:str):
+    filepath = "./FrontEnd/static/"+filename
+    print(filepath)
+    try:
+        with open(filepath, "w") as f:
+            print("open success")
+            f.write(input)
+            f.close()
+        return "save success"
+    except Exception as e:
+        return "save unsuccess"
+
+#print(saveDataToFile('hello.txt','hello'))
