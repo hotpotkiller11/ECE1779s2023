@@ -34,26 +34,49 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
-"""
-example of sql query in python
-def get_configinfo():
+
+def get_config_info():
     cnx = get_db()
     query = '''SELECT capacity, policy
-                    FROM configurations WHERE config_id = 1;''' # some query
+                    FROM backend_config;'''
     cursor = cnx.cursor()
     cursor.execute(query)
-    rows = cursor.fetchall() # some info
+    rows = cursor.fetchall()
     cnx.close()
     memcacheConfig = {'capacity': rows[0][0], 'policy': rows[0][1]} # some info
 
     return memcacheConfig
-"""
+
+
+def RandomReplacement():#random
+    return "random"
+
+def LeastRecentlyUsed():#LRU
+    return "leastrecentused"
 
 """Funcitions"""
+
+def invalidateKey(key):
+    response = webapp.response_class(
+        response=json.dumps("ok"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+def refreshConfiguration():
+    nowconfig = get_config_info()
+    response = webapp.response_class(
+        response=json.dumps(nowconfig),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
 
 def subPut(key,value):
     """do something with key"""
     print(key,value)
+    invalidateKey(key)
     response = webapp.response_class(
         response=json.dumps(key+value),
         status=200,
@@ -64,7 +87,7 @@ def subPut(key,value):
 
 def subGET(key):
     """do something"""
-    print("method2")
+    print("get")
     response = webapp.response_class(
         response=json.dumps(key),
         status=200,
@@ -80,26 +103,11 @@ def subCLEAR():
     )
     return response
 
-def InvalidateKey(key):
-    response = webapp.response_class(
-        response=json.dumps("ok"),
-        status=200,
-        mimetype='application/json',
-    )
-    return response
-
-def refreshConfiguration():
-    response = webapp.response_class(
-        response=json.dumps('ok'),
-        status=200,
-        mimetype='application/json',
-    )
-    return response
 
 
 
 
-"""Front End BackEnd End link"""
+
 @webapp.route('/', methods=['POST', 'GET'])
 def welcome():
     #   base page unused test only
@@ -121,6 +129,9 @@ def GET():
 def CLEAR():
     return subCLEAR()
 
+#test page
 
-
+@webapp.route('/testread',methods=['POST', 'GET'])
+def TEST():
+    return refreshConfiguration()
 

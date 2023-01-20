@@ -5,7 +5,8 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from BackEnd import webapp as back
 from FrontEnd import webapp as front
 
-"""MERGE TWO FLASK INSTANCES: MEMCACHE AND FRONTEDND"""
+"""MERGE TWO FLASK INSTANCES: MEMCAC
+HE AND FRONTEDND"""
 # 也就是说所有backend pages 是\mem开头的
 app = DispatcherMiddleware(front, {
     '/back': back
