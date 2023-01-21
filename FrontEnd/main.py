@@ -1,5 +1,6 @@
 from flask import render_template
 from FrontEnd import webapp, db
+import os
 
 def get_all_keys() -> list[str]:
     ''' Return all keys stored in the database
@@ -123,3 +124,58 @@ def Function4():
 def Function5():
     print("do shit5")
     return "do shit5"
+
+print(get_path_by_key('a'))
+
+"""The function used to store file in to static"""
+def saveDataToFile(filename:str, input:bytes):
+    filepath = "./FrontEnd/static/figure/"+filename
+    print(filepath)
+    try:
+        with open(filepath, "wb") as f:
+            #print("open success")
+            f.write(input)
+            f.close()
+        return "save success"
+    except Exception as e:
+        return "save unsuccess"
+
+#print(saveDataToFile('hello.txt','11111'))
+
+def getDataFromFile(filename:str)->bytes:
+    """The function used to read a file in to static index by its filename, if no such file, return None"""
+    filepath = "./FrontEnd/static/figure/"+filename
+    try:
+        f = open(filepath, 'rb')
+        output = (f.read())
+        f.close()
+        return output
+    except Exception as e:
+        return None
+
+#print(getDataFromFile('hel.txt'))
+
+def listFileDictionary(dicname:str)->list[str]:
+    """This function return the list of files in a specific dictionary name"""
+    filepath = "./FrontEnd/static/"+dicname
+    return os.listdir(filepath)
+    
+#print(listFileDictionary('static'))
+#print(getDataFromFile('testfig.jpg'))
+#print(saveDataToFile('testfig2.jpg',getDataFromFile('testfig.jpg')))
+
+
+def deleteFile(filename:str)->bool:
+    '''This function is used to delete all data in a specific document under static'''
+    filepath = "./FrontEnd/static/"+filename
+    try:
+        del_list = os.listdir(filepath)
+        print(del_list)
+        for f in del_list:
+            file_path = os.path.join(filepath, f)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        return True
+    except Exception as e:
+        return False
+#print(deleteFile('figure'))
