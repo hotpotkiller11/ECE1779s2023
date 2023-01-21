@@ -1,6 +1,20 @@
 from flask import render_template
 from FrontEnd import webapp, db
 
+def get_all_keys() -> list[str]:
+    ''' Return all keys stored in the database
+        If the table is currently empty, an empty list will be returned.
+    '''
+    query = 'SELECT `path` FROM `key_picture`' # instantiate query statement
+    cursor = db.cursor()
+    cursor.execute(query)
+    result = cursor.fetchall()
+    cursor.close()
+    result_list = []
+    for s in result:
+        result_list.append(s[0])
+    return result_list
+
 def get_path_by_key(key: str) -> str:
     ''' Return the path of the indexed key from the database.
         If no valid term match, return None.
