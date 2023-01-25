@@ -10,9 +10,11 @@ import atexit
 import json
 
 """Global variables"""
-global memcacheConfig
+global Config
+global filesize
 
-
+"""mem cache structure"""
+mem = {}
 """DB config """
 def init_db():
     return mysql.connector.connect(user=db_config['user'],
@@ -26,14 +28,12 @@ def get_db():
         db = g._database = init_db()
     return db
 
-
 @webapp.teardown_appcontext
 def teardown_db(exception):
     """Safe tear down"""
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-
 
 def get_config_info():
     cnx = get_db()
@@ -43,10 +43,12 @@ def get_config_info():
     cursor.execute(query)
     rows = cursor.fetchall()
     cnx.close()
-    memcacheConfig = {'capacity': rows[0][0], 'policy': rows[0][1]} # some info
+    global Config
+    Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
-    return memcacheConfig
 
+def add_mem():
+    return True
 
 def RandomReplacement():#random
     return "random"
@@ -54,9 +56,24 @@ def RandomReplacement():#random
 def LeastRecentlyUsed():#LRU
     return "leastrecentused"
 
+
+def replace_mem():
+    capacity = Config['capacity']
+    policy = Config['policy']
+    while filesize >= capacity:
+        if policy == "random":
+            RandomReplacement()
+        else:
+            LeastRecentlyUsed()
+
+    return True
+
+
 """Funcitions"""
 
 def invalidateKey(key):
+    debuginfo = mem.pop(key, "no such key")
+    print(debuginfo)
     response = webapp.response_class(
         response=json.dumps("ok"),
         status=200,
@@ -65,9 +82,9 @@ def invalidateKey(key):
     return response
 
 def refreshConfiguration():
-    nowconfig = get_config_info()
+    get_config_info()
     response = webapp.response_class(
-        response=json.dumps(nowconfig),
+        response=json.dumps(Config),
         status=200,
         mimetype='application/json',
     )
@@ -102,9 +119,6 @@ def subCLEAR():
         mimetype='application/json',
     )
     return response
-
-
-
 
 
 
