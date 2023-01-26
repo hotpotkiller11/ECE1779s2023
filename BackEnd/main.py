@@ -88,6 +88,7 @@ def mem_get(key: str) -> bytes | None:
     return mem_dict[key]
 
 def RandomReplacement(size: int) -> None: #random
+    global filesize
     capacity = Config['capacity']
     while filesize + size > capacity:
         remove_index = random.randint(0, len(key_queue) - 1)
@@ -198,13 +199,14 @@ def TEST():
     return refreshConfiguration()
 
 
-Config = {'capacity': 20, 'policy': 'LRU'}
+Config = {'capacity': 20, 'policy': 'random'}
 mem_add("a", bytes("aaaaa", 'utf-8'))
 mem_add("b", bytes("bbbbb", 'utf-8'))
 mem_add("c", bytes("bbbbb", 'utf-8'))
 mem_add("d", bytes("bbbbb", 'utf-8'))
 mem_add("e", bytes("bbbbb", 'utf-8'))
 mem_add("f", bytes("abcde", 'utf-8'))
+mem_add("g", bytes("abcde", 'utf-8'))
 print(mem_dict)
 print(key_queue)
 mem_get("d")
