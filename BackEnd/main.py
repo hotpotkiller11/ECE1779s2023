@@ -11,7 +11,6 @@ import json
 
 """Global variables"""
 global Config
-
 filesize = 0 # Size of the current figures in cache memory (unit: byte)
 
 """mem cache structure"""
@@ -56,10 +55,11 @@ def mem_add(key: str, file: bytes) -> bool:
         Return if the file add to memory successfully.
         Return false if the new file exceeds the mem capacity or exceptions in storing
     '''
+    global filesize
     if key in mem_dict: return False
     capacity = Config['capacity']
     size = len(file)
-    if file > capacity: return False
+    if size > capacity: return False
     if size + filesize > capacity:
         mem_cleanup(size)
     mem_dict[key] = file
@@ -70,17 +70,19 @@ def mem_add(key: str, file: bytes) -> bool:
 def mem_clear() -> None:
     ''' Clear the mem cache.
     '''
+    global filesize
+    global mem_dict
+    global key_queue
     mem_dict = {}
     key_queue = []
     filesize = 0
-
 
 def mem_get(key: str) -> bytes | None:
     ''' Get the file stored in memory.
 
         Return None if key not in the dictionary.
     '''
-    if key not in mem_dict.keys: return None
+    if key not in mem_dict: return None
     key_queue.remove(key)
     key_queue.insert(0, key) # Place the key to the most recent used
     return mem_dict[key]
@@ -94,6 +96,7 @@ def RandomReplacement(size: int) -> None: #random
         filesize -= len(removed_file)
 
 def LeastRecentlyUsed(size: int) -> None: #LRU
+    global filesize
     capacity = Config['capacity']
     while filesize + size > capacity:
         removed_key = key_queue.pop() # The last one in the LRU list will be removed
@@ -193,4 +196,19 @@ def CLEAR():
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
     return refreshConfiguration()
+
+
+Config = {'capacity': 20, 'policy': 'LRU'}
+mem_add("a", bytes("aaaaa", 'utf-8'))
+mem_add("b", bytes("bbbbb", 'utf-8'))
+mem_add("c", bytes("bbbbb", 'utf-8'))
+mem_add("d", bytes("bbbbb", 'utf-8'))
+mem_add("e", bytes("bbbbb", 'utf-8'))
+mem_add("f", bytes("abcde", 'utf-8'))
+print(mem_dict)
+print(key_queue)
+mem_get("d")
+print(mem_dict)
+print(key_queue)
+
 
