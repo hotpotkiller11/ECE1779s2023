@@ -87,6 +87,18 @@ def mem_get(key: str) -> bytes | None:
     key_queue.insert(0, key) # Place the key to the most recent used
     return mem_dict[key]
 
+def mem_invalidate(key: str) -> bool:
+    ''' Try to invalidate a key from mem cache 
+        Return true if the key was found and removed
+        Return false if key not found in mem cache
+    '''
+    global filesize
+    if key not in mem_dict: return False
+    key_queue.remove(key)
+    removed = mem_dict.pop(key)
+    filesize -= len(removed) # decrease size
+    return True
+
 def RandomReplacement(size: int) -> None: #random
     global filesize
     capacity = Config['capacity']
@@ -121,8 +133,9 @@ def mem_cleanup(size: int) -> bool:
 """Funcitions"""
 
 def invalidateKey(key):
-    debuginfo = mem_dict.pop(key, "no such key")
-    print(debuginfo)
+    result = mem_invalidate(key)
+    if result == False:
+        print("No such key")
     response = webapp.response_class(
         response=json.dumps("ok"),
         status=200,
