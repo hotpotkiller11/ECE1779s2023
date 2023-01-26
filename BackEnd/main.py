@@ -11,10 +11,12 @@ import json
 
 """Global variables"""
 global Config
-global filesize
+filesize = 0 # Size of the current figures in cache memory (unit: byte)
 
 """mem cache structure"""
-mem = {}
+mem_dict = {}
+key_queue = [] # LRU list, from the most recent use to the least recent use
+
 """DB config """
 def init_db():
     return mysql.connector.connect(user=db_config['user'],
@@ -46,34 +48,94 @@ def get_config_info():
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
+def mem_add(key: str, file: bytes) -> bool:
+    ''' Try to add a file into the mem cache system. The function will try to delete 
+        old files to store the new file (replacement included).
 
-def add_mem():
+        Return if the file add to memory successfully.
+        Return false if the new file exceeds the mem capacity or exceptions in storing
+    '''
+    global filesize
+    if key in mem_dict: return False
+    capacity = Config['capacity']
+    size = len(file)
+    if size > capacity: return False
+    if size + filesize > capacity:
+        mem_cleanup(size)
+    mem_dict[key] = file
+    key_queue.insert(0, key)
+    filesize += size
     return True
 
-def RandomReplacement():#random
-    return "random"
+def mem_clear() -> None:
+    ''' Clear the mem cache.
+    '''
+    global filesize
+    global mem_dict
+    global key_queue
+    mem_dict = {}
+    key_queue = []
+    filesize = 0
 
-def LeastRecentlyUsed():#LRU
-    return "leastrecentused"
+def mem_get(key: str) -> bytes | None:
+    ''' Get the file stored in memory.
 
+        Return None if key not in the dictionary.
+    '''
+    if key not in mem_dict: return None
+    key_queue.remove(key)
+    key_queue.insert(0, key) # Place the key to the most recent used
+    return mem_dict[key]
 
-def replace_mem():
+def mem_invalidate(key: str) -> bool:
+    ''' Try to invalidate a key from mem cache 
+        Return true if the key was found and removed
+        Return false if key not found in mem cache
+    '''
+    global filesize
+    if key not in mem_dict: return False
+    key_queue.remove(key)
+    removed = mem_dict.pop(key)
+    filesize -= len(removed) # decrease size
+    return True
+
+def RandomReplacement(size: int) -> None: #random
+    global filesize
+    capacity = Config['capacity']
+    while filesize + size > capacity:
+        remove_index = random.randint(0, len(key_queue) - 1)
+        removed_key = key_queue.pop(remove_index)
+        removed_file = mem_dict.pop(removed_key)
+        filesize -= len(removed_file)
+
+def LeastRecentlyUsed(size: int) -> None: #LRU
+    global filesize
+    capacity = Config['capacity']
+    while filesize + size > capacity:
+        removed_key = key_queue.pop() # The last one in the LRU list will be removed
+        removed_file = mem_dict.pop(removed_key)
+        filesize -= len(removed_file)
+
+def mem_cleanup(size: int) -> bool:
+    ''' Try to clean up a space for a incoming file.
+        Return if the cleanup is successful
+    '''
     capacity = Config['capacity']
     policy = Config['policy']
-    while filesize >= capacity:
-        if policy == "random":
-            RandomReplacement()
-        else:
-            LeastRecentlyUsed()
-
+    if filesize + size <= capacity: return False
+    if policy == "random":
+        RandomReplacement(size)
+    else:
+        LeastRecentlyUsed(size)
     return True
 
 
 """Funcitions"""
 
 def invalidateKey(key):
-    debuginfo = mem.pop(key, "no such key")
-    print(debuginfo)
+    result = mem_invalidate(key)
+    if result == False:
+        print("No such key")
     response = webapp.response_class(
         response=json.dumps("ok"),
         status=200,
