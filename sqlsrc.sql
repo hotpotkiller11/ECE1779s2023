@@ -10,7 +10,7 @@ CREATE TABLE `backend_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `backend_statistic` (
-  `timestamp` int unsigned NOT NULL,
+  `timestamp` DATETIME NOT NULL,
   `hit` int unsigned DEFAULT NULL,
   `miss` int unsigned DEFAULT NULL,
   `size` int unsigned DEFAULT NULL,

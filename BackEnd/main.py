@@ -49,7 +49,8 @@ def get_config_info():
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
 def mem_add(key: str, file: bytes) -> bool:
-    ''' Try to add a file into the mem cache system. The function will try to delete 
+    '''
+        Try to add a file into the mem cache system. The function will try to delete
         old files to store the new file (replacement included).
 
         Return if the file add to memory successfully.
@@ -68,7 +69,8 @@ def mem_add(key: str, file: bytes) -> bool:
     return True
 
 def mem_clear() -> None:
-    ''' Clear the mem cache.
+    '''
+    Clear the mem cache.
     '''
     global filesize
     global mem_dict
@@ -144,7 +146,7 @@ def invalidateKey(key):
     return response
 
 def refreshConfiguration():
-    get_config_info()
+    get_config_info()   #configuration refresh, read in refresh
     response = webapp.response_class(
         response=json.dumps(Config),
         status=200,
@@ -153,9 +155,7 @@ def refreshConfiguration():
     return response
 
 def subPut(key,value):
-    """do something with key"""
-    print(key,value)
-    invalidateKey(key)
+    """put the key in to the cache"""
     response = webapp.response_class(
         response=json.dumps(key+value),
         status=200,
@@ -167,11 +167,24 @@ def subPut(key,value):
 def subGET(key):
     """do something"""
     print("get")
-    response = webapp.response_class(
-        response=json.dumps(key),
-        status=200,
-        mimetype='application/json',
-    )
+    if key in key_queue:
+        img = mem_dict[key]
+        data = {
+            "success": "true",
+            "key": key,
+            "content": img
+        }
+        response = webapp.response_class(
+            response=json.dumps(data),# why not img
+            status=200,
+            mimetype='application/json',
+        )
+    else:
+        response = webapp.response_class(
+            response=json.dumps("MISS"),
+            status=404,
+            mimetype='application/json',
+        )
     return response
 
 def subCLEAR():
@@ -204,6 +217,10 @@ def GET():
 @webapp.route('/clear',methods=['POST', 'GET'])
 def CLEAR():
     return subCLEAR()
+
+@webapp.route('/invalidatekey',methods=['POST', 'GET'])
+def INVALIDATEKEY():
+    return invalidateKey()
 
 #test page
 
