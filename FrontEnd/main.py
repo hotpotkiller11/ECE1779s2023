@@ -1,5 +1,6 @@
 from flask import render_template, request
 from FrontEnd import webapp, key_path
+from FrontEnd.config import IMAGE_FORMAT 
 import os
 
 @webapp.route('/')
@@ -35,7 +36,8 @@ def all_key():
 @webapp.route('/keys/delete', methods=['GET'])
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
-    if result == True:
+    result2 = deleteFile("figure")
+    if result and result2 == True:
         # also call memcache to remove all cache terms
         return render_template("success.html", msg = "All keys deleted.")
     else:
@@ -57,10 +59,11 @@ def process_figure(request, key):
     _, extension = os.path.splitext(file.filename)
     print(extension)
     # if the figure is one of the allowed extensions
-    if extension.lower() in {'.png', '.jpg', '.jpeg', '.gif'}:
+    if extension.lower() in  IMAGE_FORMAT:
         filename = key + extension
         # save the figure in the local file system
         file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+        key_path.add_key_and_path(key, filename)
         print(filename)
         return 'SUCCESS'
     return 'INVALID'
