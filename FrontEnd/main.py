@@ -1,5 +1,5 @@
 from flask import render_template
-from FrontEnd import webapp, db, key_path
+from FrontEnd import webapp, key_path
 import os
 
 @webapp.route('/')
@@ -24,11 +24,22 @@ def failure():
 def favicon():
     return webapp.send_static_file('favicon.ico')
 
+# function 1: show all keys
+
 @webapp.route('/keys', methods=['GET'])
 def all_key():
     keys = key_path.get_all_keys()
     n = len(keys)
     return render_template("keys.html", keys = keys, n = n)
+
+@webapp.route('/keys/delete', methods=['GET'])
+def all_key_delete():
+    result = key_path.delete_all_key_path_term()
+    if result == True:
+        # also call memcache to remove all cache terms
+        return render_template("success.html", msg = "All keys deleted.")
+    else:
+        return render_template("error.html", msg = "Deletion failed.")
 
 @webapp.route('/Function2', methods=['GET'])
 def Function2():
