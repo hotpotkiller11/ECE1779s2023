@@ -15,8 +15,8 @@ def get_all_keys() -> list[str]:
     return result_list
 
 def get_keys_page(page: int, item: int) -> list[str]:
-    ''' Return all keys stored in the database
-        If the table is currently empty, an empty list will be returned.
+    ''' Return keys stored in the data base in page.
+        Note that page start from 0
     '''
     query = 'SELECT `key` FROM `key_picture` ORDER BY `key` LIMIT %d OFFSET %d' % (item, page * item) # instantiate query statement
     cursor = db.cursor()

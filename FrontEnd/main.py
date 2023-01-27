@@ -1,5 +1,5 @@
 from flask import render_template
-from FrontEnd import webapp, db
+from FrontEnd import webapp, db, key_path
 import os
 
 @webapp.teardown_appcontext
@@ -48,8 +48,6 @@ def Function4():
 def Function5():
     print("do shit5")
     return "do shit5"
-
-print(get_path_by_key('a'))
 
 """The function used to store file in to static"""
 def saveDataToFile(filename:str, input:bytes):
