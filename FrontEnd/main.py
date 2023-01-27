@@ -2,10 +2,6 @@ from flask import render_template
 from FrontEnd import webapp, db, key_path
 import os
 
-@webapp.teardown_appcontext
-def teardown_db(exception):
-    db.close()
-
 @webapp.route('/')
 def home():
     print("to home")
@@ -20,14 +16,19 @@ def success():
 
 @webapp.route('/failure')
 def failure():
-    """msg = request.args.get('msg')
-    return render_template("failure.html", msg=msg)"""
+    # msg = request.args.get('msg')
+    # return render_template("failure.html", msg=msg)
     return render_template("error.html")
 
-@webapp.route('/Function1', methods=['GET'])
-def Function1():
-    print("do sth1")
-    return "do sth"
+@webapp.route('/favicon.ico')
+def favicon():
+    return webapp.send_static_file('favicon.ico')
+
+@webapp.route('/keys', methods=['GET'])
+def all_key():
+    keys = key_path.get_all_keys()
+    n = len(keys)
+    return render_template("keys.html", keys = keys, n = n)
 
 @webapp.route('/Function2', methods=['GET'])
 def Function2():

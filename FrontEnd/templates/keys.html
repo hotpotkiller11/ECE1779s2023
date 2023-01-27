@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Available keys</title>
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+    </head>
+    <body>
+        <p>{{n}} keys in total <br></p>
+        <ul>
+            {% for k in keys %}
+            
+            <!-- your code starts here --> 
+            <li>{{k}}</li>
+            <!-- your code ends here --> 
+
+            {% endfor %}
+        </ul>
+
+    </body>
+</html>
