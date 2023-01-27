@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, request
 from FrontEnd import webapp, db
 import os
 
@@ -100,6 +100,30 @@ def failure():
     return render_template("failure.html", msg=msg)"""
     return render_template("error.html")
 
+@webapp.route('/upload_figure', methods = ['GET','POST'])
+# returns the upload page
+def upload_figure():
+    if request.method == 'POST':
+        key = request.form.get('key')
+        # process the upload image request and add the image to the database
+        status = process_figure(request, key)
+        return render_template('upload_figure.html', status=status)
+    return render_template('upload_figure.html')
+
+def process_figure(request, key):
+    # get the figure file
+    file = request.files['file']
+    _, extension = os.path.splitext(file.filename)
+    print(extension)
+    # if the figure is one of the allowed extensions
+    if extension.lower() in {'.png', '.jpg', '.jpeg', '.gif'}:
+        filename = key + extension
+        # save the figure in the local file system
+        file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+        print(filename)
+        return 'SUCCESS'
+    return 'INVALID'
+
 @webapp.route('/Function1', methods=['GET'])
 def Function1():
     print("do sth1")
@@ -179,3 +203,4 @@ def deleteFile(filename:str)->bool:
     except Exception as e:
         return False
 #print(deleteFile('figure'))
+

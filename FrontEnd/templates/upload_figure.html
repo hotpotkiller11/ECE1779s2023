@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+    <title>upload_figure</title>
+</head> 
+<html>
+    <body>
+        <h2>Upload Figure</h2>
+        <form
+            method="post"
+            enctype=multipart/form-data
+        >
+            <label>Insert Key:</label>
+            <input type="text" id="key" name="key">
+            <br>
+            <label>Upload Figure:</label>
+            <input type="file" name="file" id="file" accept="image/*"/>
+            <br>
+            <input type="submit" id="submit">
+            <div>
+                {% if status == "SUCCESS" %} 
+                <h4 style="color: green">Image Successfully Added</h4>
+                {% elif status == "INVALID" %}
+                <h4 style="color: rgb(172, 16, 16)">Image Type Not Supported</h4>
+                {% endif %}
+            </div>
+    </form>
+    <body>    
+</html>
