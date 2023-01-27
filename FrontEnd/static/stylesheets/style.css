@@ -37,10 +37,22 @@ button {
 
 h1{
     font-family: 'Poppins', cursive;
+    text-align: center;
+}
+
+.symbol{
+    height: 100px;
+    vertical-align: middle;
+}
+
+.center{
+    margin: auto;
+    width: 50%;
+    padding: 70px;
 }
 
 button:hover {
-    font-size: 3.5vmin;
+    font-weight: bold;
 }
 
 .wrapper {
