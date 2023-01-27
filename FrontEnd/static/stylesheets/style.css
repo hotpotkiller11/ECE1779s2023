@@ -6,7 +6,7 @@ body {
     background:url("../mountain.png") no-repeat;
     background-size: 100%,100%;
     background-position: bottom;
-
+    font-family: 'Poppins', cursive;
 }
 
 /* home page */
@@ -37,10 +37,22 @@ button {
 
 h1{
     font-family: 'Poppins', cursive;
+    text-align: center;
+}
+
+.symbol{
+    height: 100px;
+    vertical-align: middle;
+}
+
+.center{
+    margin: auto;
+    width: 50%;
+    padding: 70px;
 }
 
 button:hover {
-    font-size: 3.5vmin;
+    font-weight: bold;
 }
 
 .wrapper {
