@@ -58,7 +58,7 @@ def process_figure(request, key):
     # get the figure file
     file = request.files['file']
     _, extension = os.path.splitext(file.filename)
-    print(extension)
+    #print(extension)
     # if the figure is one of the allowed extensions
     if extension.lower() in  IMAGE_FORMAT:
         filename = key + extension
@@ -70,7 +70,8 @@ def process_figure(request, key):
                 return 'SUCCESS'
             else:
                 if key_path.delete_term_by_key(key):
-                    deleteFile(filename)
+                    if deleteFile(filename):
+                        print("delete is OK")
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     return 'SUCCESS'
@@ -165,15 +166,23 @@ def listFileDictionary(dicname:str)->list[str]:
 def deleteFile(filename:str)->bool:
     '''This function is used to delete all data in a specific document under static'''
     filepath = "./FrontEnd/static/figure/"+filename
+    print(filepath)
     try:
-        del_list = os.listdir(filepath)
-        print(del_list)
-        for f in del_list:
-            file_path = os.path.join(filepath, f)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-        return True
+        if os.path.isdir(filepath):
+            print(os.path.isdir(filepath))
+            del_list = os.listdir(filepath)
+            print(del_list)
+            for f in del_list:
+                file_path = os.path.join(filepath, f)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            return True
+        else:
+            os.remove(filepath)
+            print("remove is done")
+            return True
     except Exception as e:
         return False
-#print(deleteFile('figure'))
+#print(os.remove("./FrontEnd/static/figure/"+"123.jpg"))
+print(os.path.isdir("./FrontEnd/static/figure/"+"123.jpg"))
 
