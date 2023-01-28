@@ -18,9 +18,11 @@
             <input type="submit" id="submit">
             <div>
                 {% if status == "SUCCESS" %} 
-                <h4 style="color: green">Image Successfully Added</h4>
+                <h4 style="color: green">Figure Successfully Added</h4>
                 {% elif status == "INVALID" %}
-                <h4 style="color: rgb(172, 16, 16)">Image Type Not Supported</h4>
+                <h4 style="color: rgb(172, 16, 16)">Figure Type Not Supported</h4>
+                {% elif status == "UNSUCCESS" %}
+                <h4 style="color: rgb(172, 16, 16)">Figure Unsuccessfully Added</h4>
                 {% endif %}
             </div>
     </form>

@@ -1,6 +1,7 @@
 from flask import render_template, request
-from FrontEnd import webapp, key_path
+from FrontEnd import webapp, key_path, db_connect
 from FrontEnd.config import IMAGE_FORMAT 
+from FrontEnd.db_connect import get_db
 import os
 
 @webapp.route('/')
@@ -36,7 +37,7 @@ def all_key():
 @webapp.route('/keys/delete', methods=['GET'])
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
-    result2 = deleteFile("figure")
+    result2 = deleteFile("")
     if result and result2 == True:
         # also call memcache to remove all cache terms
         return render_template("success.html", msg = "All keys deleted.")
@@ -62,11 +63,46 @@ def process_figure(request, key):
     if extension.lower() in  IMAGE_FORMAT:
         filename = key + extension
         # save the figure in the local file system
-        file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-        key_path.add_key_and_path(key, filename)
-        print(filename)
-        return 'SUCCESS'
+        try:
+            if key_path.get_path_by_key(key) is None:
+                file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                key_path.add_key_and_path(key, filename)
+                return 'SUCCESS'
+            else:
+                if key_path.delete_term_by_key(key):
+                    deleteFile(filename)
+                    file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                    key_path.add_key_and_path(key, filename)
+                    return 'SUCCESS'
+        except:
+            return 'UNSUCCESS'
     return 'INVALID'
+
+# def add_to_db(key, filename):
+#     if key=='' or filename=='':
+#         return UNSUCCESS
+#     db = db_connect.get_db()
+#     cursor = db.cursor()
+#     query_exist = 'SELECT * FROM key_picture WHERE key_picture.key=(%s)'
+#     try:
+#         cursor.execute(query_exist,(key))
+#         for pair in cursor:
+#             if pair[0]!=None:
+#                 cursor.close()
+#                 cursor = db.cursor()
+#                 query_del = 'DELETE FROM key_picture WHERE key_picture.key=%s'
+#                 cursor.execute(query_del,(key))
+#                 break
+#         cursor.close()
+#         query_insert = 'INSERT INTO key_picture (key_picture.key, key_picture.path) VALUES(%s, %s)'
+#         cursor.execute(query_insert,(key, filename))
+#         db.commit()
+#         cursor.close()
+#         db.close()
+#         return 'SUCCESS'
+#     except:
+#         return 'UNSUCCESS'
+
 
 @webapp.route('/Function2', methods=['GET'])
 def Function2():
@@ -128,7 +164,7 @@ def listFileDictionary(dicname:str)->list[str]:
 
 def deleteFile(filename:str)->bool:
     '''This function is used to delete all data in a specific document under static'''
-    filepath = "./FrontEnd/static/"+filename
+    filepath = "./FrontEnd/static/figure/"+filename
     try:
         del_list = os.listdir(filepath)
         print(del_list)
