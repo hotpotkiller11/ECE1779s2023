@@ -37,6 +37,7 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
+
 def get_config_info():
     cnx = get_db()
     query = '''SELECT capacity, policy
@@ -47,6 +48,41 @@ def get_config_info():
     cnx.close()
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
+
+
+def RandomReplacement(size: int) -> None: #random
+    global filesize
+    capacity = Config['capacity']
+    while filesize + size > capacity:
+        remove_index = random.randint(0, len(key_queue) - 1)
+        removed_key = key_queue.pop(remove_index)
+        removed_file = mem_dict.pop(removed_key)
+        filesize -= len(removed_file)
+
+
+def LeastRecentlyUsed(size: int) -> None: #LRU
+    global filesize
+    capacity = Config['capacity']
+    while filesize + size > capacity:
+        removed_key = key_queue.pop() # The last one in the LRU list will be removed
+        removed_file = mem_dict.pop(removed_key)
+        filesize -= len(removed_file)
+
+
+def mem_cleanup(size: int) -> bool:
+    '''
+        Try to clean up a space for a incoming file.
+        Return if the cleanup is successful
+    '''
+    capacity = Config['capacity']
+    policy = Config['policy']
+    if filesize + size <= capacity: return False
+    if policy == "random":
+        RandomReplacement(size)
+    else:
+        LeastRecentlyUsed(size)
+    return True
+
 
 def mem_add(key: str, file: bytes) -> bool:
     '''
@@ -68,6 +104,7 @@ def mem_add(key: str, file: bytes) -> bool:
     filesize += size
     return True
 
+
 def mem_clear() -> None:
     '''
     Clear the mem cache.
@@ -79,9 +116,10 @@ def mem_clear() -> None:
     key_queue = []
     filesize = 0
 
-def mem_get(key: str) -> bytes | None:
-    ''' Get the file stored in memory.
 
+def mem_get(key: str): #-> bytes | None:
+    '''
+        Get the file stored in memory.
         Return None if key not in the dictionary.
     '''
     if key not in mem_dict: return None
@@ -90,7 +128,8 @@ def mem_get(key: str) -> bytes | None:
     return mem_dict[key]
 
 def mem_invalidate(key: str) -> bool:
-    ''' Try to invalidate a key from mem cache 
+    '''
+        Try to invalidate a key from mem cache
         Return true if the key was found and removed
         Return false if key not found in mem cache
     '''
@@ -101,43 +140,12 @@ def mem_invalidate(key: str) -> bool:
     filesize -= len(removed) # decrease size
     return True
 
-def RandomReplacement(size: int) -> None: #random
-    global filesize
-    capacity = Config['capacity']
-    while filesize + size > capacity:
-        remove_index = random.randint(0, len(key_queue) - 1)
-        removed_key = key_queue.pop(remove_index)
-        removed_file = mem_dict.pop(removed_key)
-        filesize -= len(removed_file)
-
-def LeastRecentlyUsed(size: int) -> None: #LRU
-    global filesize
-    capacity = Config['capacity']
-    while filesize + size > capacity:
-        removed_key = key_queue.pop() # The last one in the LRU list will be removed
-        removed_file = mem_dict.pop(removed_key)
-        filesize -= len(removed_file)
-
-def mem_cleanup(size: int) -> bool:
-    ''' Try to clean up a space for a incoming file.
-        Return if the cleanup is successful
-    '''
-    capacity = Config['capacity']
-    policy = Config['policy']
-    if filesize + size <= capacity: return False
-    if policy == "random":
-        RandomReplacement(size)
-    else:
-        LeastRecentlyUsed(size)
-    return True
-
-
 """Funcitions"""
 
 def invalidateKey(key):
     result = mem_invalidate(key)
     if result == False:
-        print("No such key")
+        print("No such key") # still ok
     response = webapp.response_class(
         response=json.dumps("ok"),
         status=200,
@@ -154,10 +162,11 @@ def refreshConfiguration():
     )
     return response
 
-def subPut(key,value):
+def subPUT(key,value):
     """put the key in to the cache"""
+    mem_add(key, value)
     response = webapp.response_class(
-        response=json.dumps(key+value),
+        response=json.dumps('ok'),
         status=200,
         mimetype='application/json',
     )
@@ -188,6 +197,7 @@ def subGET(key):
     return response
 
 def subCLEAR():
+    mem_clear()
     response = webapp.response_class(
         response=json.dumps('ok'),
         status=200,
@@ -195,18 +205,16 @@ def subCLEAR():
     )
     return response
 
-
-
 @webapp.route('/', methods=['POST', 'GET'])
 def welcome():
     #   base page unused test only
-    return "welcome 2023"
+    return "Test page--welcome to back end"
 
 @webapp.route('/put', methods=['POST', 'GET'])
 def PUT():
     key = request.json["key"]
     value = request.json["value"]
-    return subPut(key,value)
+    return subPUT(key,value)
 
 @webapp.route('/get', methods=['POST', 'GET'])
 def GET():
