@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Available keys</title>
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+    </head>
+    <body>
+        <div class="center">
+            <div class="text_box">
+                <h1>All Available Keys</h1>
+                <p>{{n}} keys in total <br></p>
+                <ul>
+                    {% for k in keys %}
+                    
+                    <!-- your code starts here --> 
+                    <li>{{k}}</li>
+                    <!-- your code ends here --> 
+
+                    {% endfor %}
+                </ul>
+                <a href = "{{ url_for('all_key_delete') }}">Delete all keys and values</a>
+            </div> 
+        </div>
+    </body>
+</html>
