@@ -1,4 +1,3 @@
-
 from werkzeug.serving import run_simple  # werkzeug development server
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 """IMPORT FLASK INSTANCES FROM FOLDER Memcache AND FrontEnd"""
