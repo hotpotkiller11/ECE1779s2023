@@ -60,18 +60,19 @@ def process_figure(request, key):
     _, extension = os.path.splitext(file.filename)
     #print(extension)
     # if the figure is one of the allowed extensions
-    if extension.lower() in  IMAGE_FORMAT:
+    if extension.lower() in IMAGE_FORMAT:
         filename = key + extension
+        original = key_path.get_path_by_key(key)
         # save the figure in the local file system
         try:
-            if key_path.get_path_by_key(key) is None:
+            if original is None:
                 file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                 key_path.add_key_and_path(key, filename)
                 return 'SUCCESS'
             else:
                 if key_path.delete_term_by_key(key):
-                    if deleteFile(filename):
-                        print("delete is OK")
+                    if deleteFile(original):
+                        print("File replaced: %s" % original)
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     return 'SUCCESS'
