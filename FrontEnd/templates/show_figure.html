@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>Get figure by key</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/main.css') }}" />
+</head>
+<body>
+    {% include "navibar.html" %}
+    <h1>Figure</h1>
+    <form method = "post">
+        <label>Enter Key:</label>
+        <input type = "text" name = "key"/>
+        <br>
+        <input type="submit" value="Get Value of this Key"/>
+    </form>
+    {% if figure is defined %}
+        {% if exist %}
+            <h4>Figure:</h4>
+            <img src=""
+</body>

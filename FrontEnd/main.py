@@ -1,6 +1,7 @@
 from flask import render_template, request
 from FrontEnd import webapp, key_path
 from FrontEnd.config import IMAGE_FORMAT 
+import base64
 import os
 
 @webapp.route('/')
@@ -67,6 +68,21 @@ def process_figure(request, key):
         print(filename)
         return 'SUCCESS'
     return 'INVALID'
+
+@webapp.route('/show_figure',method=['GET','POST'])
+def show_figure():
+    if request.method == 'POST':
+        key = request.get('key')
+    return render_template(show_figure.html)
+
+def convertToBase64(filename):
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:
+        #encode the original binary code to b64 code
+        base64_figure=base64.b64encode(figure.read())
+    #decode the b64 byte code in utf-8 format
+    base64_figure = base64_figure.decode('utf-8')
+    return base64_figure
+
 
 @webapp.route('/Function2', methods=['GET'])
 def Function2():
