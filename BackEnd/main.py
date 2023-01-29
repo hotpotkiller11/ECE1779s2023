@@ -41,7 +41,8 @@ def teardown_db(exception):
 def get_config_info():
     cnx = get_db()
     query = '''SELECT capacity, policy
-                    FROM backend_config;'''
+                    FROM backend_config where id = (
+        select max(id) FROM backend_config);'''
     cursor = cnx.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
