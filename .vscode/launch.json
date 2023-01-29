@@ -5,10 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run both",
+            "type": "python",
+            "request": "launch",
+            "program": "./run.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Frontend",
             "type": "python",
             "request": "launch",
             "program": "./runfront.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Backend",
+            "type": "python",
+            "request": "launch",
+            "program": "./runback.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
