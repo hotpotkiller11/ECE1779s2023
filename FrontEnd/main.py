@@ -126,6 +126,7 @@ def memory_inspect():
     if (res.status_code == 200):
         keys = res.json()['keys']
         n = len(keys)
+        size = res.json()['size']
     else:
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     try:
@@ -141,7 +142,8 @@ def memory_inspect():
     except Exception as e:
         print(e)
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
-    return render_template("memory.html", keys = keys, n = n, capacity = capacity, policy = policy)
+    return render_template("memory.html", keys = keys, n = n, size = size,
+        capacity = capacity, policy = policy)
 
     
 

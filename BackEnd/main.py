@@ -240,7 +240,8 @@ def keys():
     keys = sorted(key_queue) # ascending order
     data = {
             "success": "true",
-            "keys": keys
+            "keys": keys,
+            "size": filesize
         }
     response = webapp.response_class(
             response=json.dumps(data),

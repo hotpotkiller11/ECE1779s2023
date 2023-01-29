@@ -13,7 +13,7 @@
                 <div class="column_box">
                     <div class="column">
                         <h2>All keys in memory</h2>
-                        <p>{{n}} keys in total <br></p>
+                        <p>{{n}} keys in total, {{size}} bytes used</p>
                         <ul>
                             {% for k in keys %}
                             
@@ -29,7 +29,7 @@
                         <h2>Memcache Configurations</h2>
                         <p>Current configurations:</p>
                         <ul>
-                            <li>Capacity: {{capacity}} Bytes</li>
+                            <li>Capacity: {{capacity}} bytes</li>
                             <li>Replacement policy: {{policy}}</li>
                         </ul>
                         <br>
