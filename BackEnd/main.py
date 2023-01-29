@@ -159,6 +159,7 @@ def invalidateKey(key):
 
 def refreshConfiguration():
     get_config_info()   #configuration refresh, read in refresh
+    mem_cleanup(0) # clean up mem until maximum capacity reached
     response = webapp.response_class(
         response=json.dumps(Config),
         status=200,
