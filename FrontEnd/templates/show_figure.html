@@ -15,5 +15,9 @@
     {% if figure is defined %}
         {% if exist %}
             <h4>Figure:</h4>
-            <img src=""
+            <img src="data:image/png;base64,{{ figure }}"/>
+            {% else %}
+            <h4>No figure belong to this key!</h4>
+        {% endif %}
+    {% endif %}
 </body>

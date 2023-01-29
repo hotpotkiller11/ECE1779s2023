@@ -1,5 +1,6 @@
 from flask import render_template, request
 from FrontEnd import webapp, key_path
+from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 import base64
 import os
@@ -69,11 +70,15 @@ def process_figure(request, key):
         return 'SUCCESS'
     return 'INVALID'
 
-@webapp.route('/show_figure',method=['GET','POST'])
+@webapp.route('/show_figure',methods=['GET','POST'])
 def show_figure():
     if request.method == 'POST':
-        key = request.get('key')
-    return render_template(show_figure.html)
+        key = request.form.get('key')
+        filename = get_path_by_key(key)
+        base64_figure = convertToBase64(filename)
+        return render_template('show_figure.html',exist = True, figure = base64_figure)
+    else:
+        return render_template('show_figure.html')
 
 def convertToBase64(filename):
     with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:
