@@ -11,6 +11,14 @@
             "program": "./runfront.py",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Backend",
+            "type": "python",
+            "request": "launch",
+            "program": "./runback.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
