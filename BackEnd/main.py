@@ -41,7 +41,8 @@ def teardown_db(exception):
 def get_config_info():
     cnx = get_db()
     query = '''SELECT capacity, policy
-                    FROM backend_config;'''
+                    FROM backend_config where id = (
+        select max(id) FROM backend_config);'''
     cursor = cnx.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
@@ -78,8 +79,10 @@ def mem_cleanup(size: int) -> bool:
     policy = Config['policy']
     if filesize + size <= capacity: return False
     if policy == "random":
+        print("random")
         RandomReplacement(size)
     else:
+        print("lru")
         LeastRecentlyUsed(size)
     return True
 
@@ -95,6 +98,7 @@ def mem_add(key: str, file: bytes) -> bool:
     global filesize
     if key in mem_dict: return False
     capacity = Config['capacity']
+    print(capacity)
     size = len(file)
     if size > capacity: return False
     if size + filesize > capacity:
@@ -164,6 +168,7 @@ def refreshConfiguration():
 
 def subPUT(key,value):
     """put the key in to the cache"""
+    print("call put")
     mem_add(key, value)
     response = webapp.response_class(
         response=json.dumps('ok'),
@@ -244,9 +249,14 @@ def keys():
         )
     return response
 
-#test page
+"""
+@webapp.route('/refresh',method=['POST' , 'GET'])
+def REFRESH():
+    return refreshConfiguration()
+"""
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
+    print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
 
