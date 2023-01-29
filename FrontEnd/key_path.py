@@ -13,7 +13,7 @@ def get_all_keys() -> list[str]:
     result_list = []
     for s in result:
         result_list.append(s[0])
-    db.close()
+    # db.close()
     return result_list
 
 def get_keys_page(page: int, item: int) -> list[str]:
@@ -29,7 +29,7 @@ def get_keys_page(page: int, item: int) -> list[str]:
     result_list = []
     for s in result:
         result_list.append(s[0])
-    db.close()
+    # db.close()
     return result_list
 
 def get_path_by_key(key: str) -> str:
@@ -44,7 +44,7 @@ def get_path_by_key(key: str) -> str:
     cursor.close()
     if len(result) == 0:
         return None
-    db.close()
+    # db.close()
     return result[0][0]
 
 def add_key_and_path(key: str, path: str) -> bool:
@@ -58,11 +58,11 @@ def add_key_and_path(key: str, path: str) -> bool:
         cursor.execute(query)
         db.commit() # Try to commit (confirm) the insertion
         cursor.close()
-        db.close()
+        # db.close()
     except:
         db.rollback() # Try to rollback in case of error
         cursor.close()
-        db.close()
+        # db.close()
         return False
     return True
 
@@ -77,11 +77,11 @@ def delete_term_by_key(key: str) -> bool:
         cursor.execute(query)
         db.commit() # Try to commit (confirm) the insertion
         cursor.close()
-        db.close()
+        # db.close()
     except:
         db.rollback() # Try to rollback in case of error
         cursor.close()
-        db.close()
+        # db.close()
         return False
     return True
 
@@ -100,6 +100,6 @@ def delete_all_key_path_term() -> bool:
     except:
         db.rollback() # Try to rollback in case of error
         cursor.close()
-        db.close()
+        # db.close()
         return False
     return True

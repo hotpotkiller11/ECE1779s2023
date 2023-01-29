@@ -41,11 +41,12 @@ def teardown_db(exception):
 def get_config_info():
     cnx = get_db()
     query = '''SELECT capacity, policy
-                    FROM backend_config;'''
+                    FROM backend_config where id = (
+        select max(id) FROM backend_config);'''
     cursor = cnx.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
-    cnx.close()
+    # cnx.close() This might cause failure
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
@@ -78,8 +79,10 @@ def mem_cleanup(size: int) -> bool:
     policy = Config['policy']
     if filesize + size <= capacity: return False
     if policy == "random":
+        print("random")
         RandomReplacement(size)
     else:
+        print("lru")
         LeastRecentlyUsed(size)
     return True
 
@@ -95,6 +98,7 @@ def mem_add(key: str, file: bytes) -> bool:
     global filesize
     if key in mem_dict: return False
     capacity = Config['capacity']
+    print(capacity)
     size = len(file)
     if size > capacity: return False
     if size + filesize > capacity:
@@ -155,6 +159,7 @@ def invalidateKey(key):
 
 def refreshConfiguration():
     get_config_info()   #configuration refresh, read in refresh
+    mem_cleanup(0) # clean up mem until maximum capacity reached
     response = webapp.response_class(
         response=json.dumps(Config),
         status=200,
@@ -164,6 +169,7 @@ def refreshConfiguration():
 
 def subPUT(key,value):
     """put the key in to the cache"""
+    print("call put")
     mem_add(key, value)
     response = webapp.response_class(
         response=json.dumps('ok'),
@@ -230,9 +236,26 @@ def CLEAR():
 def INVALIDATEKEY():
     return invalidateKey()
 
-#test page
+@webapp.route('/keys',methods=['GET'])
+def keys():
+    keys = sorted(key_queue) # ascending order
+    data = {
+            "success": "true",
+            "keys": keys,
+            "size": filesize
+        }
+    response = webapp.response_class(
+            response=json.dumps(data),
+            status=200,
+            mimetype='application/json',
+        )
+    return response
+
+@webapp.route('/refresh',methods= ['POST' , 'GET'])
+def REFRESH():
+    return refreshConfiguration()
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
+    print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
-

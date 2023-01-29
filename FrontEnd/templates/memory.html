@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Available keys</title>
+
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+    </head>
+    <body>
+        <div class="center">
+            <div class="text_box">
+                <h1>Memcache Inspection</h1>
+                <div class="column_box">
+                    <div class="column">
+                        <h2>All keys in memory</h2>
+                        <p>{{n}} keys in total, {{size}} bytes used</p>
+                        <ul>
+                            {% for k in keys %}
+                            
+                            <!-- your code starts here --> 
+                            <li>{{k}}</li>
+                            <!-- your code ends here --> 
+
+                            {% endfor %}
+                        </ul>
+                        <a href = "{{ url_for('mem_key_delete') }}">Delete all figure cache</a>
+                    </div>
+                    <div class="column">
+                        <h2>Memcache Configurations</h2>
+                        <p>Current configurations:</p>
+                        <ul>
+                            <li>Capacity: {{capacity}} bytes</li>
+                            <li>Replacement policy: {{policy}}</li>
+                        </ul>
+                        <br>
+                        <p>Configuration setting:</p>
+                        <form method="post" action="{{ url_for('mem_config_set') }}">
+                            <label for="capacity">Capacity: </label>
+                            <input type="number" id="capacity" name="capacity" 
+                                min="0" max="1024" required> 
+                            <select id="unit" name="unit">
+                                <option value="KB">KB</option>
+                                <option value="MB">MB</option>
+                            </select><br>
+                            <label for="policy">Replacement policy: </label>
+                            <select id="policy" name="policy">
+                                <option value="LRU">LRU</option>
+                                <option value="random">Random</option>
+                            </select><br>
+                            <input type="submit" id="submit">
+                        </form>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </body>
+</html>
