@@ -76,7 +76,8 @@ def process_figure(request, key):
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     return 'SUCCESS'
-        except:
+        except Exception as e:
+            print(e)
             return 'UNSUCCESS'
     return 'INVALID'
 
