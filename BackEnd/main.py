@@ -78,8 +78,10 @@ def mem_cleanup(size: int) -> bool:
     policy = Config['policy']
     if filesize + size <= capacity: return False
     if policy == "random":
+        print("random")
         RandomReplacement(size)
     else:
+        print("lru")
         LeastRecentlyUsed(size)
     return True
 
@@ -95,6 +97,7 @@ def mem_add(key: str, file: bytes) -> bool:
     global filesize
     if key in mem_dict: return False
     capacity = Config['capacity']
+    print(capacity)
     size = len(file)
     if size > capacity: return False
     if size + filesize > capacity:
@@ -164,6 +167,8 @@ def refreshConfiguration():
 
 def subPUT(key,value):
     """put the key in to the cache"""
+    print("call put")
+
     mem_add(key, value)
     response = webapp.response_class(
         response=json.dumps('ok'),
@@ -225,6 +230,10 @@ def GET():
 @webapp.route('/clear',methods=['POST', 'GET'])
 def CLEAR():
     return subCLEAR()
+
+@webapp.route('/invalidatekey',methods=['POST', 'GET'])
+def INVALIDATEKEY():
+    return invalidateKey()
 
 @webapp.route('/invalidatekey',methods=['POST', 'GET'])
 def INVALIDATEKEY():
