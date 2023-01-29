@@ -1,6 +1,7 @@
 from flask import render_template, request
-from FrontEnd import webapp, key_path
+from FrontEnd import webapp, key_path, db_connect
 from FrontEnd.config import IMAGE_FORMAT 
+from FrontEnd.db_connect import get_db
 import os
 
 @webapp.route('/')
@@ -36,7 +37,7 @@ def all_key():
 @webapp.route('/keys/delete', methods=['GET'])
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
-    result2 = deleteFile("figure")
+    result2 = deleteFile("")
     if result and result2 == True:
         # also call memcache to remove all cache terms
         return render_template("success.html", msg = "All keys deleted.")
@@ -57,16 +58,54 @@ def process_figure(request, key):
     # get the figure file
     file = request.files['file']
     _, extension = os.path.splitext(file.filename)
-    print(extension)
+    #print(extension)
     # if the figure is one of the allowed extensions
-    if extension.lower() in  IMAGE_FORMAT:
+    if extension.lower() in IMAGE_FORMAT:
         filename = key + extension
+        original = key_path.get_path_by_key(key)
         # save the figure in the local file system
-        file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-        key_path.add_key_and_path(key, filename)
-        print(filename)
-        return 'SUCCESS'
+        try:
+            if original is None:
+                file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                key_path.add_key_and_path(key, filename)
+                return 'SUCCESS'
+            else:
+                if key_path.delete_term_by_key(key):
+                    if deleteFile(original):
+                        print("File replaced: %s" % original)
+                    file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                    key_path.add_key_and_path(key, filename)
+                    return 'SUCCESS'
+        except Exception as e:
+            print(e)
+            return 'UNSUCCESS'
     return 'INVALID'
+
+# def add_to_db(key, filename):
+#     if key=='' or filename=='':
+#         return UNSUCCESS
+#     db = db_connect.get_db()
+#     cursor = db.cursor()
+#     query_exist = 'SELECT * FROM key_picture WHERE key_picture.key=(%s)'
+#     try:
+#         cursor.execute(query_exist,(key))
+#         for pair in cursor:
+#             if pair[0]!=None:
+#                 cursor.close()
+#                 cursor = db.cursor()
+#                 query_del = 'DELETE FROM key_picture WHERE key_picture.key=%s'
+#                 cursor.execute(query_del,(key))
+#                 break
+#         cursor.close()
+#         query_insert = 'INSERT INTO key_picture (key_picture.key, key_picture.path) VALUES(%s, %s)'
+#         cursor.execute(query_insert,(key, filename))
+#         db.commit()
+#         cursor.close()
+#         db.close()
+#         return 'SUCCESS'
+#     except:
+#         return 'UNSUCCESS'
+
 
 @webapp.route('/Function2', methods=['GET'])
 def Function2():
@@ -128,16 +167,24 @@ def listFileDictionary(dicname:str)->list[str]:
 
 def deleteFile(filename:str)->bool:
     '''This function is used to delete all data in a specific document under static'''
-    filepath = "./FrontEnd/static/"+filename
+    filepath = "./FrontEnd/static/figure/"+filename
+    print(filepath)
     try:
-        del_list = os.listdir(filepath)
-        print(del_list)
-        for f in del_list:
-            file_path = os.path.join(filepath, f)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-        return True
+        if os.path.isdir(filepath):
+            print(os.path.isdir(filepath))
+            del_list = os.listdir(filepath)
+            print(del_list)
+            for f in del_list:
+                file_path = os.path.join(filepath, f)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            return True
+        else:
+            os.remove(filepath)
+            print("remove is done")
+            return True
     except Exception as e:
         return False
-#print(deleteFile('figure'))
+#print(os.remove("./FrontEnd/static/figure/"+"123.jpg"))
+print(os.path.isdir("./FrontEnd/static/figure/"+"123.jpg"))
 
