@@ -85,3 +85,13 @@ button:hover {
     color: #DC9428;
 }
 /* end of home page */
+.navibar {
+    list-style-type: none;
+    margin: 0;
+    padding: 16px;
+    overflow: hidden;
+    width: 100vw;
+    background-color: grey;
+    display: flex;
+    justify-content: space-around;
+  }

@@ -5,8 +5,10 @@
         <title>Available keys</title>
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+        <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/navibar.css') }}" /> -->
     </head>
     <body>
+        {% include "navibar.html" %}
         <div class="center">
             <div class="text_box">
                 <h1>All Available Keys</h1>

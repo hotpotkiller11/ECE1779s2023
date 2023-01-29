@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <head>
+    <meta charset="UTF-8">
     <title>upload_figure</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/navibar.css') }}" /> -->
 </head> 
 <html>
     <body>
-        <h2>Upload Figure</h2>
-        <form
-            method="post"
-            enctype=multipart/form-data
-        >
-            <label>Insert Key:</label>
-            <input type="text" id="key" name="key">
-            <br>
-            <label>Upload Figure:</label>
-            <input type="file" name="file" id="file" accept="image/*"/>
-            <br>
-            <input type="submit" id="submit">
-            <div>
-                {% if status == "SUCCESS" %} 
-                <h4 style="color: green">Image Successfully Added</h4>
-                {% elif status == "INVALID" %}
-                <h4 style="color: rgb(172, 16, 16)">Image Type Not Supported</h4>
-                {% endif %}
-            </div>
-    </form>
+        {% include "navibar.html" %}
+        <div class="center">
+            <h2>Upload Figure</h2>
+            <form
+                method="post"
+                enctype=multipart/form-data
+            >
+                <label>Insert Key:</label>
+                <input type="text" id="key" name="key">
+                <br>
+                <label>Upload Figure:</label>
+                <input type="file" name="file" id="file" accept="image/*"/>
+                <br>
+                <input type="submit" id="submit">
+                <div>
+                    {% if status == "SUCCESS" %} 
+                    <h4 style="color: green">Image Successfully Added</h4>
+                    {% elif status == "INVALID" %}
+                    <h4 style="color: rgb(172, 16, 16)">Image Type Not Supported</h4>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
     <body>    
 </html>
