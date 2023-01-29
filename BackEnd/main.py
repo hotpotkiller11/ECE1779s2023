@@ -13,10 +13,10 @@ import json
 global Config
 
 """statistical info"""
-filesize = 0 # Size of the current figures in cache memory (unit: byte)
-miss = 0
-hit = 0
-numOfreq = 0
+global filesize # Size of the current figures in cache memory (unit: byte)
+global miss
+global hit
+global numOfreq
 
 
 """mem cache structure"""
@@ -57,16 +57,20 @@ def get_config_info():
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
 def write_stat():
-    cnx = get_db()
-    cursor = cnx.cursor()
-    total = miss+hit
-    now = datetime.datetime.now()
-    now = now.strftime('%Y-%m-%d %H:%M:%S')
-    query = '''INSERT INTO statistics (timestamp, hit, miss, 
-                                    size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-    cursor.execute(query, (now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
-    rows = cursor.fetchall()
-    cnx.close()
+    with webapp.app_context():
+        cnx = get_db()
+        cursor = cnx.cursor()
+        #total = miss+hit
+        total =1
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
+        query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
+                                        size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
+        cursor.execute(query, (now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
+        print((now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
+        #   rows = cursor.fetchall()
+        cnx.close()
+    # print("try")
 
 
 with webapp.app_context():
@@ -152,6 +156,7 @@ def mem_get(key: str): #-> bytes | None:
         Get the file stored in memory.
         Return None if key not in the dictionary.
     '''
+
     if key not in mem_dict: return None
     key_queue.remove(key)
     key_queue.insert(0, key) # Place the key to the most recent used
@@ -269,6 +274,7 @@ def REFRESH():
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
+    numOfreq += 1
     print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
 
