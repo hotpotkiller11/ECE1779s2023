@@ -11,7 +11,13 @@ import json
 
 """Global variables"""
 global Config
+
+"""statistical info"""
 filesize = 0 # Size of the current figures in cache memory (unit: byte)
+miss = 0
+hit = 0
+numOfreq = 0
+
 
 """mem cache structure"""
 mem_dict = {}
@@ -49,6 +55,26 @@ def get_config_info():
     cnx.close()
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
+
+def write_stat():
+    cnx = get_db()
+    cursor = cnx.cursor()
+    total = miss+hit
+    now = datetime.datetime.now()
+    now = now.strftime('%Y-%m-%d %H:%M:%S')
+    query = '''INSERT INTO statistics (timestamp, hit, miss, 
+                                    size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
+    cursor.execute(query, (now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
+    rows = cursor.fetchall()
+    cnx.close()
+
+
+with webapp.app_context():
+    get_config_info()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
 
 
 def RandomReplacement(size: int) -> None: #random
