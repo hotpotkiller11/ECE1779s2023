@@ -168,7 +168,6 @@ def refreshConfiguration():
 def subPUT(key,value):
     """put the key in to the cache"""
     print("call put")
-
     mem_add(key, value)
     response = webapp.response_class(
         response=json.dumps('ok'),
@@ -235,13 +234,14 @@ def CLEAR():
 def INVALIDATEKEY():
     return invalidateKey()
 
-@webapp.route('/invalidatekey',methods=['POST', 'GET'])
-def INVALIDATEKEY():
-    return invalidateKey()
-
-#test page
+"""
+@webapp.route('/refresh',method=['POST' , 'GET'])
+def REFRESH():
+    return refreshConfiguration()
+"""
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
+    print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
 
