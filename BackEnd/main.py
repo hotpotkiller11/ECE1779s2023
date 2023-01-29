@@ -230,6 +230,20 @@ def CLEAR():
 def INVALIDATEKEY():
     return invalidateKey()
 
+@webapp.route('/keys',methods=['GET'])
+def keys():
+    keys = sorted(key_queue) # ascending order
+    data = {
+            "success": "true",
+            "keys": keys
+        }
+    response = webapp.response_class(
+            response=json.dumps(data),# why not img
+            status=200,
+            mimetype='application/json',
+        )
+    return response
+
 #test page
 
 @webapp.route('/testread',methods=['POST', 'GET'])

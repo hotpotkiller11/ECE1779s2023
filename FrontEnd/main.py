@@ -2,13 +2,14 @@ from flask import render_template, request
 from FrontEnd import webapp, key_path
 from FrontEnd.config import IMAGE_FORMAT 
 import os
+import requests
 
 @webapp.route('/')
 def home():
     print("to home")
     return render_template("home.html")
 
-"""msg pages"""
+# msg pages
 @webapp.route('/success')
 def success():
     # msg = request.args.get('msg')
@@ -20,6 +21,8 @@ def failure():
     # msg = request.args.get('msg')
     # return render_template("failure.html", msg=msg)
     return render_template("error.html")
+
+# favicon
 
 @webapp.route('/favicon.ico')
 def favicon():
@@ -68,20 +71,20 @@ def process_figure(request, key):
         return 'SUCCESS'
     return 'INVALID'
 
-@webapp.route('/Function2', methods=['GET'])
-def Function2():
-    print("do shit2")
-    return "do shit2"
-
 @webapp.route('/Function3', methods=['GET'])
 def Function3():
     print("do shit3")
     return "do shit3"
 
-@webapp.route('/Function4', methods=['GET'])
-def Function4():
-    print("do shit4")
-    return "do shit4"
+@webapp.route('/memory', methods=['GET'])
+def memory_inspect():
+    res = requests.get('http://127.0.0.1:5001/back/keys') # get keys list
+    if (res.status_code == 200):
+        keys = res.json()['keys']
+        n = len(keys)
+        return render_template("memory.html", keys = keys, n = n)
+    else:
+        render_template("error.html", msg = "Cannot connect to the memcache server")
 
 @webapp.route('/Function5', methods=['GET'])
 def Function5():
