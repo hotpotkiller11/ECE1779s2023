@@ -126,9 +126,58 @@ def memory_inspect():
     if (res.status_code == 200):
         keys = res.json()['keys']
         n = len(keys)
-        return render_template("memory.html", keys = keys, n = n)
     else:
-        render_template("error.html", msg = "Cannot connect to the memcache server")
+        return render_template("error.html", msg = "Cannot connect to the memcache server.")
+    try:
+        db = get_db()
+        query = '''SELECT capacity, policy
+                        FROM backend_config where id = (
+            select max(id) FROM backend_config);'''
+        cursor = db.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        capacity = rows[0][0]
+        policy = rows[0][1]
+    except Exception as e:
+        print(e)
+        return render_template("error.html", msg = "Cannot connect to the memcache server.")
+    return render_template("memory.html", keys = keys, n = n, capacity = capacity, policy = policy)
+
+    
+
+@webapp.route('/memory/clear')
+def mem_key_delete():
+    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    if (res.status_code == 200):
+        return render_template("success.html", msg = "Cache deleted.")
+    else:
+        return render_template("error.html", msg = "Cache clear failed: error %d" % res.status_code)
+
+@webapp.route('/memory/set', methods=['POST'])
+def mem_config_set():
+    capacity = float(request.form.get('capacity'))
+    unit = request.form.get('unit')
+    if unit == "KB": capacity *= 1024
+    elif unit == "MB": capacity *= 1024 * 1024
+    policy = request.form.get('policy')
+    db = db_connect.get_db()
+    query = 'INSERT INTO `backend_config` (`capacity`, `policy`) VALUES (%d, "%s")' % (capacity, policy)
+    cursor = db.cursor()
+    try:
+        cursor.execute(query)
+        db.commit() # Try to commit (confirm) the insertion
+        cursor.close()
+        # db.close()
+    except:
+        db.rollback() # Try to rollback in case of error
+        cursor.close()
+        # db.close()
+        return render_template('error.html', msg = "Database insertion failed")
+    res = requests.get('http://127.0.0.1:5001/back/refresh') # get keys list
+    if (res.status_code == 200):
+        return render_template("success.html", msg = "Configuration updated")
+    else:
+        return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
 
 @webapp.route('/Function5', methods=['GET'])
 def Function5():

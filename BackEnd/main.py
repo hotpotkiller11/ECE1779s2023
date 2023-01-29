@@ -46,7 +46,7 @@ def get_config_info():
     cursor = cnx.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
-    cnx.close()
+    # cnx.close() This might cause failure
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
@@ -243,20 +243,17 @@ def keys():
             "keys": keys
         }
     response = webapp.response_class(
-            response=json.dumps(data),# why not img
+            response=json.dumps(data),
             status=200,
             mimetype='application/json',
         )
     return response
 
-"""
-@webapp.route('/refresh',method=['POST' , 'GET'])
+@webapp.route('/refresh',methods= ['POST' , 'GET'])
 def REFRESH():
     return refreshConfiguration()
-"""
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
     print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
-
