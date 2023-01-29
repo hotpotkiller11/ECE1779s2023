@@ -60,7 +60,7 @@ def process_figure(request, key):
     # get the figure file
     file = request.files['file']
     _, extension = os.path.splitext(file.filename)
-    print(extension)
+    # print(extension)
     # if the figure is one of the allowed extensions
     if extension.lower() in  IMAGE_FORMAT:
         filename = key + extension
@@ -102,7 +102,7 @@ def saveDataToFile(filename:str, input:bytes):
             f.close()
         return "save success"
     except Exception as e:
-        return "save unsuccess"
+        return "save unsuccess (%s)"
 
 #print(saveDataToFile('hello.txt','11111'))
 
@@ -115,6 +115,7 @@ def getDataFromFile(filename:str)->bytes:
         f.close()
         return output
     except Exception as e:
+        print(e)
         return None
 
 #print(getDataFromFile('hel.txt'))
@@ -141,6 +142,7 @@ def deleteFile(filename:str)->bool:
                 os.remove(file_path)
         return True
     except Exception as e:
+        print(e)
         return False
 #print(deleteFile('figure'))
 
