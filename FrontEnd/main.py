@@ -80,6 +80,9 @@ def process_figure(request, key):
                         print("File replaced: %s" % original)
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
+                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey?key=%s' % key) # get keys list
+                    if (res.status_code != 200):
+                        print("memcache object deletion failed.")
                     return 'SUCCESS'
         except Exception as e:
             print(e)

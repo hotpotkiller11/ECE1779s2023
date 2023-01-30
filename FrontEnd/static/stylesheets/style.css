@@ -105,3 +105,8 @@ button:hover {
     display: flex;
     justify-content: space-around;
   }
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}

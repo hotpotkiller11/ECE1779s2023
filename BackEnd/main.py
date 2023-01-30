@@ -266,7 +266,8 @@ def CLEAR():
 
 @webapp.route('/invalidatekey',methods=['POST', 'GET'])
 def INVALIDATEKEY():
-    return invalidateKey()
+    key = request.json['key']
+    return invalidateKey(key)
 
 @webapp.route('/keys',methods=['GET'])
 def keys():

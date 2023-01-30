@@ -1,23 +1,29 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Get figure by key</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 </head>
 <body>
     {% include "navibar.html" %}
-    <h1>Figure</h1>
-    <form method = "post">
-        <label>Enter Key:</label>
-        <input type = "text" name = "key"/>
-        <br>
-        <input type="submit" value="Get Value of this Key"/>
-    </form>
-    {% if figure is defined %}
-        {% if exist %}
-            <h4>Figure:</h4>
-            <img src="data:image/png;base64,{{ figure }}"/>
-            {% else %}
-            <h4>No figure belong to this key!</h4>
-        {% endif %}
-    {% endif %}
+    <div class="center">
+        <div class="text_box">
+            <h1>Get Figure By Key</h1>
+                    <form method = "post">
+                    <label>Enter Key:</label>
+                    <input type = "text" name = "key"/>
+                    <br>
+                    <input type="submit" value="Get Value of this Key"/>
+                </form>
+                {% if figure is defined %}
+                    {% if exist %}
+                        <h4>Figure:</h4>
+                        <img src="data:image/png;base64,{{ figure }}"/>
+                        {% else %}
+                        <h4>No figure belong to this key!</h4>
+                    {% endif %}
+                {% endif %}
+        </div>
+</div>
 </body>
+</html>
