@@ -11,9 +11,9 @@
             <h1>Get Figure By Key</h1>
                     <form method = "post">
                     <label>Enter Key:</label>
-                    <input type = "text" name = "key"/>
+                    <input type = "text" name = "key" required/>
                     <br>
-                    <input type="submit" value="Get Value of this Key"/>
+                    <input type="submit" value="Get the figure of this Key"/>
                 </form>
                 {% if figure is defined %}
                     {% if exist %}
