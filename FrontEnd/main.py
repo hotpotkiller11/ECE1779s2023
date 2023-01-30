@@ -126,17 +126,6 @@ def convertToBase64(filename):
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
 
-
-@webapp.route('/Function2', methods=['GET'])
-def Function2():
-    print("do shit2")
-    return "do shit2"
-
-@webapp.route('/Function3', methods=['GET'])
-def Function3():
-    print("do shit3")
-    return "do shit3"
-
 @webapp.route('/memory', methods=['GET'])
 def memory_inspect():
     res = requests.get('http://127.0.0.1:5001/back/keys') # get keys list
@@ -161,8 +150,6 @@ def memory_inspect():
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     return render_template("memory.html", keys = keys, n = n, size = size,
         capacity = capacity, policy = policy)
-
-    
 
 @webapp.route('/memory/clear')
 def mem_key_delete():

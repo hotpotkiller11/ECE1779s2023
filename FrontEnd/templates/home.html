@@ -15,14 +15,14 @@
         <br />
         <div>
                 <div class = 'button-group'>
-                    <a href="{{ url_for('all_key') }}">
-                        <button type="button" style="background-color: #8aadcd">All Available Keys</button>
+                    <a href="{{ url_for('show_figure') }}">
+                        <button type="button" style="background-color: #8aadcd">Show Figure By Key</button>
                     </a>
                     <a href="{{ url_for('upload_figure') }}">
                         <button type="button" style="background-color: #d7eaf7">Upload Figure</button>
                     </a>
-                    <a href="{{ url_for('show_figure') }}">
-                        <button type="button" style="background-color: #8aadcd">Show Figure By Key</button>
+                    <a href="{{ url_for('all_key') }}">
+                        <button type="button" style="background-color: #8aadcd">All Available Keys</button>
                     </a>
                     <a href="{{ url_for('memory_inspect') }}">
                         <button type="button" style="background-color: #d7eaf7">Memcache Inspect</button>
