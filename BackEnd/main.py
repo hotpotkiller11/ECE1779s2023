@@ -56,7 +56,7 @@ def get_config_info():
     global Config
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
-def write_stat():
+def write_stat():#here
     with webapp.app_context():
         cnx = get_db()
         cursor = cnx.cursor()
