@@ -202,7 +202,7 @@ def subPUT(key,value):
     """put the key in to the cache"""
     print("call put")
     res = mem_add(key, value)
-    print(res)
+    # print(res)
     response = webapp.response_class(
         response=json.dumps('ok'),
         status=200,

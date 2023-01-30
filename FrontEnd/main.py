@@ -84,7 +84,8 @@ def process_figure(request, key):
                         print("File replaced: %s" % original)
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
-                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey?key=%s' % key) # get keys list
+                    request_json = {'key':key}
+                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey', json = request_json) # get keys list
                     if (res.status_code != 200):
                         print("memcache object deletion failed.")
                     return 'SUCCESS'
@@ -98,7 +99,7 @@ def show_figure():
     if request.method == 'POST':
         key = request.form.get('key')
         request_json = {'key':key}
-        res = requests.post('http://127.0.0.1:5001/back/get',json = request_json)
+        res = requests.post('http://127.0.0.1:5001/back/get', json = request_json)
         # print(res)
         if res.json() == 'MISS':
             filename = get_path_by_key(key)
