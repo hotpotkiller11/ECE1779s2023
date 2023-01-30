@@ -4,6 +4,13 @@ webapp = Flask(__name__)
 
 from BackEnd import main
 
+# init?
+main.filesize = 0
+main.miss = 0
+main.hit = 0
+main.numOfreq = 0
+
+
 # Fetch memcache config upon initialization, default value: 4KB, random replacement
 
 cnx = main.init_db()
