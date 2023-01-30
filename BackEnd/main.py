@@ -170,7 +170,8 @@ def refreshConfiguration():
 def subPUT(key,value):
     """put the key in to the cache"""
     print("call put")
-    mem_add(key, value)
+    res = mem_add(key, value)
+    print(res)
     response = webapp.response_class(
         response=json.dumps('ok'),
         status=200,

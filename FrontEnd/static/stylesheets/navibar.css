@@ -10,7 +10,7 @@ li
 float:left;
 white-space:nowrap;
 }
-a:link,a:visited
+.navi:link,.navi:visited
 {
 display:block;
 width:210px;
@@ -22,7 +22,7 @@ padding:15px;
 text-decoration:none;
 text-transform:uppercase;
 }
-a:hover,a:active
+.navi:hover,.navi:active
 {
 background-color:#e6e6e6;
 }

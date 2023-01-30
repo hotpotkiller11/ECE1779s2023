@@ -91,16 +91,22 @@ def show_figure():
     if request.method == 'POST':
         key = request.form.get('key')
         request_json = {'key':key}
-        res = requests.post('127.0.0.1/back'+'/get',json = request_json)
-        if json.load(res) == 'MISS':
+        res = requests.post('http://127.0.0.1:5001/back/get',json = request_json)
+        # print(res)
+        if res.json() == 'MISS':
             filename = get_path_by_key(key)
             if filename is None:
                 return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
             else:
                 base64_figure = convertToBase64(filename)
+                request_json = {'key':key, 'value':base64_figure}
+                print(request_json)
+                res = requests.post('http://127.0.0.1:5001/back/put',json = request_json)
+                print(res.json())               
                 return render_template('show_figure.html',exist = True, figure = base64_figure)
         else:
-            return render_template('show_figure.html',exist = True, figure = json.load(res))
+            res_p = json.loads(res)
+            return render_template('show_figure.html',exist = True, figure = res_p['content'])
     else:
         return render_template('show_figure.html')
 
