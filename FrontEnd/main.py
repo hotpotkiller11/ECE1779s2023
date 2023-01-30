@@ -108,8 +108,8 @@ def show_figure():
                 print(res.json())               
                 return render_template('show_figure.html',exist = True, figure = base64_figure)
         else:
-            res_p = json.loads(res)
-            return render_template('show_figure.html',exist = True, figure = res_p['content'])
+            pic = res.json()["content"]
+            return render_template('show_figure.html',exist = True, figure = pic)
     else:
         return render_template('show_figure.html')
 
