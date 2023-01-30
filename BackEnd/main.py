@@ -73,12 +73,12 @@ def write_stat():
     # print("try")
 
 
-with webapp.app_context():
-    get_config_info()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
-    scheduler.start()
-    atexit.register(lambda: scheduler.shutdown())
+# with webapp.app_context():
+#     get_config_info()
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
+#     scheduler.start()
+#     atexit.register(lambda: scheduler.shutdown())
 
 
 def RandomReplacement(size: int) -> None: #random
