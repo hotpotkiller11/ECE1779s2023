@@ -1,7 +1,9 @@
-from flask import render_template, request
+from flask import render_template, request, json
 from FrontEnd import webapp, key_path, db_connect
+from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
+import base64
 import os
 import requests
 
@@ -41,11 +43,15 @@ def all_key():
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
+    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
         # also call memcache to remove all cache terms
         return render_template("success.html", msg = "All keys deleted.")
+    elif result == False:
+        return render_template("error.html", msg = "Deletion failed, database issues!")
     else:
-        return render_template("error.html", msg = "Deletion failed.")
+        return render_template("error.html", msg = "Deletion failed, local file system issues!")
 
 @webapp.route('/upload_figure', methods = ['GET','POST'])
 # returns the upload page
@@ -78,47 +84,46 @@ def process_figure(request, key):
                         print("File replaced: %s" % original)
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
+                    request_json = {'key':key}
+                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey', json = request_json) # get keys list
+                    if (res.status_code != 200):
+                        print("memcache object deletion failed.")
                     return 'SUCCESS'
         except Exception as e:
             print(e)
             return 'UNSUCCESS'
     return 'INVALID'
 
-# def add_to_db(key, filename):
-#     if key=='' or filename=='':
-#         return UNSUCCESS
-#     db = db_connect.get_db()
-#     cursor = db.cursor()
-#     query_exist = 'SELECT * FROM key_picture WHERE key_picture.key=(%s)'
-#     try:
-#         cursor.execute(query_exist,(key))
-#         for pair in cursor:
-#             if pair[0]!=None:
-#                 cursor.close()
-#                 cursor = db.cursor()
-#                 query_del = 'DELETE FROM key_picture WHERE key_picture.key=%s'
-#                 cursor.execute(query_del,(key))
-#                 break
-#         cursor.close()
-#         query_insert = 'INSERT INTO key_picture (key_picture.key, key_picture.path) VALUES(%s, %s)'
-#         cursor.execute(query_insert,(key, filename))
-#         db.commit()
-#         cursor.close()
-#         db.close()
-#         return 'SUCCESS'
-#     except:
-#         return 'UNSUCCESS'
+@webapp.route('/show_figure',methods=['GET','POST'])
+def show_figure():
+    if request.method == 'POST':
+        key = request.form.get('key')
+        request_json = {'key':key}
+        res = requests.post('http://127.0.0.1:5001/back/get', json = request_json)
+        # print(res)
+        if res.json() == 'MISS':
+            filename = get_path_by_key(key)
+            if filename is None:
+                return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
+            else:
+                base64_figure = convertToBase64(filename)
+                request_json = {'key':key, 'value':base64_figure}
+                res = requests.post('http://127.0.0.1:5001/back/put',json = request_json)
+                print(res.json())               
+                return render_template('show_figure.html',exist = True, figure = base64_figure)
+        else:
+            pic = res.json()["content"]
+            return render_template('show_figure.html',exist = True, figure = pic)
+    else:
+        return render_template('show_figure.html')
 
-
-@webapp.route('/Function2', methods=['GET'])
-def Function2():
-    print("do shit2")
-    return "do shit2"
-
-@webapp.route('/Function3', methods=['GET'])
-def Function3():
-    print("do shit3")
-    return "do shit3"
+def convertToBase64(filename):
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:
+        #encode the original binary code to b64 code
+        base64_figure=base64.b64encode(figure.read())
+    #decode the b64 byte code in utf-8 format
+    base64_figure = base64_figure.decode('utf-8')
+    return base64_figure
 
 @webapp.route('/memory', methods=['GET'])
 def memory_inspect():
@@ -144,8 +149,6 @@ def memory_inspect():
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     return render_template("memory.html", keys = keys, n = n, size = size,
         capacity = capacity, policy = policy)
-
-    
 
 @webapp.route('/memory/clear')
 def mem_key_delete():

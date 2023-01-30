@@ -73,12 +73,12 @@ def write_stat():
     # print("try")
 
 
-with webapp.app_context():
-    get_config_info()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
-    scheduler.start()
-    atexit.register(lambda: scheduler.shutdown())
+# with webapp.app_context():
+#     get_config_info()
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
+#     scheduler.start()
+#     atexit.register(lambda: scheduler.shutdown())
 
 
 def RandomReplacement(size: int) -> None: #random
@@ -201,7 +201,8 @@ def refreshConfiguration():
 def subPUT(key,value):
     """put the key in to the cache"""
     print("call put")
-    mem_add(key, value)
+    res = mem_add(key, value)
+    # print(res)
     response = webapp.response_class(
         response=json.dumps('ok'),
         status=200,
@@ -265,7 +266,8 @@ def CLEAR():
 
 @webapp.route('/invalidatekey',methods=['POST', 'GET'])
 def INVALIDATEKEY():
-    return invalidateKey()
+    key = request.json['key']
+    return invalidateKey(key)
 
 @webapp.route('/keys',methods=['GET'])
 def keys():

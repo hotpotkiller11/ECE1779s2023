@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <head>
-    <title>Upload Figure</title>
-    <meta charset="UTF-8">
+    <title>upload_figure</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 </head> 
 <html>
     <body>
+        {% include "navibar.html" %}
         <div class="center">
             <div class="text_box">
-                <h2>Upload Figure</h2>
+                <h1>Upload Figure</h1>
                 <form
                     method="post"
                     enctype=multipart/form-data
                 >
                     <label>Insert Key:</label>
-                    <input type="text" id="key" name="key">
+                    <input type="text" id="key" name="key" required>
                     <br>
                     <label>Upload Figure:</label>
-                    <input type="file" name="file" id="file" accept="image/*"/>
+                    <input type="file" name="file" id="file" required accept="image/*"/>
                     <br>
                     <input type="submit" id="submit">
                     <div>
