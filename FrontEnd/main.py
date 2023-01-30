@@ -43,11 +43,15 @@ def all_key():
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
+    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
         # also call memcache to remove all cache terms
         return render_template("success.html", msg = "All keys deleted.")
+    elif result == False:
+        return render_template("error.html", msg = "Deletion failed, database issues!")
     else:
-        return render_template("error.html", msg = "Deletion failed.")
+        return render_template("error.html", msg = "Deletion failed, local file system issues!")
 
 @webapp.route('/upload_figure', methods = ['GET','POST'])
 # returns the upload page
