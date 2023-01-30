@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, json
 from FrontEnd import webapp, key_path, db_connect
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
@@ -90,9 +90,17 @@ def process_figure(request, key):
 def show_figure():
     if request.method == 'POST':
         key = request.form.get('key')
-        filename = get_path_by_key(key)
-        base64_figure = convertToBase64(filename)
-        return render_template('show_figure.html',exist = True, figure = base64_figure)
+        request_json = {'key':key}
+        res = requests.post('127.0.0.1/back'+'/get',json = request_json)
+        if json.load(res) == 'MISS':
+            filename = get_path_by_key(key)
+            if filename is None:
+                return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
+            else:
+                base64_figure = convertToBase64(filename)
+                return render_template('show_figure.html',exist = True, figure = base64_figure)
+        else:
+            return render_template('show_figure.html',exist = True, figure = json.load(res))
     else:
         return render_template('show_figure.html')
 
