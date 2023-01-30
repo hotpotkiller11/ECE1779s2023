@@ -60,14 +60,20 @@ def write_stat():
     with webapp.app_context():
         cnx = get_db()
         cursor = cnx.cursor()
-        #total = miss+hit
-        total =1
+        total = miss+hit
+        if total == 0:
+            print("no get yet")
+            missrate = 0
+            hitrate = 0
+        else:
+            missrate = miss/total
+            hitrate = hit/total
         now = datetime.datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
-        print((now, miss/total, hit/total, len(key_queue), filesize, numOfreq))
+        cursor.execute(query, (now, missrate, hitrate, len(key_queue), filesize, numOfreq))
+        print((now, missrate, hitrate, len(key_queue), filesize, numOfreq))
         #   rows = cursor.fetchall()
         cnx.close()
     # print("try")
