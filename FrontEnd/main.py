@@ -108,7 +108,6 @@ def show_figure():
             else:
                 base64_figure = convertToBase64(filename)
                 request_json = {'key':key, 'value':base64_figure}
-                print(request_json)
                 res = requests.post('http://127.0.0.1:5001/back/put',json = request_json)
                 print(res.json())               
                 return render_template('show_figure.html',exist = True, figure = base64_figure)
