@@ -68,7 +68,7 @@ def write_stat():
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
         cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
-        print((now, miss, hit, len(key_queue), filesize, numOfreq))
+        print((now, miss, hit, filesize, len(key_queue), numOfreq))
         #   rows = cursor.fetchall()
         cnx.commit()
         # Reset after each sql commit
