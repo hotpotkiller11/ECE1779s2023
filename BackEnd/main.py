@@ -69,6 +69,7 @@ def write_stat():
         cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
         print((now, miss, hit, len(key_queue), filesize, numOfreq))
         #   rows = cursor.fetchall()
+        cnx.commit()
         cnx.close()
     # print("try")
 
