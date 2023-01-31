@@ -58,10 +58,11 @@ def get_config_info():
 
 def write_stat():
     with webapp.app_context():
+        global hit
+        global miss
         cnx = get_db()
         cursor = cnx.cursor()
-        #total = miss+hit
-        total =1
+        total = miss + hit
         now = datetime.datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
@@ -70,7 +71,9 @@ def write_stat():
         print((now, miss, hit, len(key_queue), filesize, numOfreq))
         #   rows = cursor.fetchall()
         cnx.commit()
-        cnx.close()
+        # Reset after each sql commit
+        hit = 0
+        miss = 0
     # print("try")
 
 
@@ -214,6 +217,8 @@ def subPUT(key,value):
 
 def subGET(key):
     """do something"""
+    global hit
+    global miss
     print("get")
     if key in key_queue:
         img = mem_dict[key]
@@ -227,12 +232,14 @@ def subGET(key):
             status=200,
             mimetype='application/json',
         )
+        hit += 1
     else:
         response = webapp.response_class(
             response=json.dumps("MISS"),
             status=404,
             mimetype='application/json',
         )
+        miss += 1
     return response
 
 def subCLEAR():
