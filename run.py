@@ -16,7 +16,7 @@ if __name__ == "__main__":
     front.debug = True
     run_simple('0.0.0.0', 5001, app,
                use_reloader=False,
-               use_debugger=True,
+               use_debugger=False,
                use_evalex=False,
                threaded=True)
     # back.run(host="127.0.0.1", port=5000)
