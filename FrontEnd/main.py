@@ -147,8 +147,18 @@ def memory_inspect():
     except Exception as e:
         print(e)
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
-    return render_template("memory.html", keys = keys, n = n, size = size,
-        capacity = capacity, policy = policy)
+    return render_template("memory.html", keys = keys, n = n, size = unit_convertor(size),
+        capacity = unit_convertor(capacity), policy = policy)
+
+def unit_convertor(byte: int) -> str:
+    unit = ['B', 'KB', 'MB', 'GB', 'TB']
+    u = 0
+    while byte >= 1024:
+        byte /= 1024
+        u += 1
+        if u >= len(unit) - 1: break
+    return "%.2f %s" % (byte, unit[u])
+
 
 @webapp.route('/memory/clear')
 def mem_key_delete():
