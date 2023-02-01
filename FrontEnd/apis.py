@@ -11,7 +11,7 @@ import requests
 def delete_all():
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
-    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    res = requests.get('http://127.0.0.1:5000/back/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
         # also call memcache to remove all cache terms
@@ -26,8 +26,11 @@ def delete_all():
         return response
     elif result == False:
         data = {
-            "success": "flase",
-            "reason": "database issues",
+            "success": "false",
+            "error": {
+                "code": 404,
+                "message": "database issues",
+            }
         }
         response = webapp.response_class(
             response=json.dumps(data),
@@ -37,8 +40,11 @@ def delete_all():
         return response
     else:
         data = {
-            "success": "flase",
-            "reason": "local file system issues",
+            "success": "false",
+            "error": {
+                "code": 404,
+                "message": "local file system issues",
+            }
         }
         response = webapp.response_class(
             response=json.dumps(data),
@@ -92,7 +98,7 @@ def upload():
             data = {
                 "success": "false",
                 "error": {
-                    "code": "404",
+                    "code": 404,
                     "message": "Exception happend"
                     },
             }
@@ -106,7 +112,7 @@ def upload():
             data = {
                 "success": "flase",
                 "error": {
-                    "code": "404",
+                    "code": 404,
                     "message": "Invalid file type"
                     },
             }
@@ -140,7 +146,7 @@ def process_figure(request, key):
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     request_json = {'key':key}
-                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey', json = request_json) # get keys list
+                    res = requests.get('http://127.0.0.1:5000/back/invalidatekey', json = request_json) # get keys list
                     if (res.status_code != 200):
                         print("memcache object deletion failed.")
                     return 'SUCCESS'
@@ -168,21 +174,33 @@ def show_figure_by_key(key_value):
     if request.method == 'POST':
         key = key_value
         request_json = {'key':key}
-        res = requests.post('http://127.0.0.1:5001/back/get', json = request_json)
+        res = requests.post('http://127.0.0.1:5000/back/get', json = request_json)
         # print(res)
         if res.json() == 'MISS':
             filename = get_path_by_key(key)
             if filename is None:
-                return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
+                data = {
+                        "success": "false",
+                        "error": {
+                        "code": "404",
+                        "message":"No such file"
+                        }
+                }
+                response = webapp.response_class(
+                    response=json.dumps(data),
+                    status=404,
+                    mimetype='application/json',
+                )
+                return response
             else:
                 base64_figure = convertToBase64(filename)
                 request_json = {'key':key, 'value':base64_figure}
-                res = requests.post('http://127.0.0.1:5001/back/put',json = request_json)
+                res = requests.post('http://127.0.0.1:5000/back/put',json = request_json)
                 print(res.json())               
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
-                    "keys": key,
+                    "key": key,
                     "content": base64_figure
                 }
                 response = webapp.response_class(
@@ -195,7 +213,7 @@ def show_figure_by_key(key_value):
             pic = res.json()["content"]
             data = {
                     "success": "true",
-                    "keys": key,
+                    "key": key,
                     "content": pic
                 }
             response = webapp.response_class(
@@ -205,7 +223,12 @@ def show_figure_by_key(key_value):
                 )
             return response
     else:
-        return render_template('show_figure.html')
+        response = webapp.response_class(
+            response=json.dumps("use POST stupid ass"),
+            status=405,
+            mimetype='application/json',
+        )
+        return response
 
 def convertToBase64(filename):
     with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:

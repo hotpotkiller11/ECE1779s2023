@@ -43,7 +43,7 @@ def all_key():
 def all_key_delete():
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
-    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    res = requests.get('http://127.0.0.1:5000/back/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
         # also call memcache to remove all cache terms
@@ -85,7 +85,7 @@ def process_figure(request, key):
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     request_json = {'key':key}
-                    res = requests.get('http://127.0.0.1:5001/back/invalidatekey', json = request_json) # get keys list
+                    res = requests.get('http://127.0.0.1:5000/back/invalidatekey', json = request_json) # get keys list
                     if (res.status_code != 200):
                         print("memcache object deletion failed.")
                     return 'SUCCESS'
@@ -99,7 +99,7 @@ def show_figure():
     if request.method == 'POST':
         key = request.form.get('key')
         request_json = {'key':key}
-        res = requests.post('http://127.0.0.1:5001/back/get', json = request_json)
+        res = requests.post('http://127.0.0.1:5000/back/get', json = request_json)
         # print(res)
         if res.json() == 'MISS':
             filename = get_path_by_key(key)
@@ -108,7 +108,7 @@ def show_figure():
             else:
                 base64_figure = convertToBase64(filename)
                 request_json = {'key':key, 'value':base64_figure}
-                res = requests.post('http://127.0.0.1:5001/back/put',json = request_json)
+                res = requests.post('http://127.0.0.1:5000/back/put',json = request_json)
                 print(res.json())               
                 return render_template('show_figure.html',exist = True, figure = base64_figure)
         else:
@@ -127,7 +127,7 @@ def convertToBase64(filename):
 
 @webapp.route('/memory', methods=['GET'])
 def memory_inspect():
-    res = requests.get('http://127.0.0.1:5001/back/keys') # get keys list
+    res = requests.get('http://127.0.0.1:5000/back/keys') # get keys list
     if (res.status_code == 200):
         keys = res.json()['keys']
         n = len(keys)
@@ -162,7 +162,7 @@ def unit_convertor(byte: int) -> str:
 
 @webapp.route('/memory/clear')
 def mem_key_delete():
-    res = requests.get('http://127.0.0.1:5001/back/clear') # get keys list
+    res = requests.get('http://127.0.0.1:5000/back/clear') # get keys list
     if (res.status_code == 200):
         return render_template("success.html", msg = "Cache deleted.")
     else:
@@ -188,7 +188,7 @@ def mem_config_set():
         cursor.close()
         # db.close()
         return render_template('error.html', msg = "Database insertion failed")
-    res = requests.get('http://127.0.0.1:5001/back/refresh') # get keys list
+    res = requests.get('http://127.0.0.1:5000/back/refresh') # get keys list
     if (res.status_code == 200):
         return render_template("success.html", msg = "Configuration updated")
     else:

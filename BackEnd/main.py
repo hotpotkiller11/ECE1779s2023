@@ -67,7 +67,7 @@ def write_stat():
         cursor = cnx.cursor()
         total = miss + hit
         now = datetime.datetime.now()                   #   current time
-        previous = now - datetime.timedelta(minutes=20) #   20mins ago convolution
+        previous = now - datetime.timedelta(minutes=1) #   20mins ago convolution
 
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         previous = previous.strftime('%Y-%m-%d %H:%M:%S')
@@ -75,9 +75,6 @@ def write_stat():
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
         cursor.execute(query, (now, hit, miss, filesize, len(key_queue), numOfreq))
         print((now, hit, miss, filesize, len(key_queue), numOfreq))
-        #   rows = cursor.fetchall()
-        cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
-        print((now, miss, hit, filesize, len(key_queue), numOfreq))
         #cnx.commit()
         query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
         cursor.execute(query2, (previous,))
