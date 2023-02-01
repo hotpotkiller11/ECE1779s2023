@@ -23,12 +23,21 @@ rows = cursor.fetchall()
 if len(rows) > 0:
     main.Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 else:
-    query = '''INSERT INTO `backend_config` (`capacity`, `policy`) VALUES (4096, "random")'''
+    query = '''INSERT INTO `backend_config` (`capacity`, `policy`) VALUES (1024000, "random")'''
     cursor = cnx.cursor()
     cursor.execute(query)
     cnx.commit() # Try to commit (confirm) the insertion
     cursor.close()
-    main.Config = {'capacity': 4096, 'policy': "random"}
+    main.Config = {'capacity': 1024000, 'policy': "random"} # Default value: 1000KB
+
+# Clear stat from last run
+query = '''DELETE FROM `backend_statistic`'''
+cursor = cnx.cursor()
+cursor.execute(query)
+cnx.commit()
+cursor.close()
+cnx.close()
+
 cnx.close()
 
 # main.Config = {'capacity': 400, 'policy': "random"}
