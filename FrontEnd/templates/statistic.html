@@ -18,10 +18,27 @@
         {% include "navibar.html" %}
         <div class="center">
             <div class="text_box">
-                <canvas id="chart_size" style="width:100%;max-width:700px"></canvas>
-                <canvas id="chart_count" style="width:100%;max-width:700px"></canvas>
-                <canvas id="chart_hit_miss" style="width:100%;max-width:700px"></canvas>
-                <canvas id="chart_req" style="width:100%;max-width:700px"></canvas>
+                <h1>Statistics</h1>
+                <div class="column_box">
+                    <div class="column">
+                        <h2>Cache in used (bytes)</h2>
+                        <canvas id="chart_size"></canvas>
+                    </div>
+                    <div class="column">
+                        <h2>Files in cache</h2>
+                        <canvas id="chart_count"></canvas>
+                    </div>
+                </div>
+                <div class="column_box">
+                    <div class="column">
+                        <h2>Hit/miss rate</h2>
+                        <canvas id="chart_hit_miss"></canvas>
+                    </div>
+                    <div class="column">
+                        <h2>Request Count</h2>
+                        <canvas id="chart_req"></canvas>
+                    </div>
+                </div>
             </div> 
         </div>
         <script>
@@ -118,11 +135,7 @@
                                 intersect: true
                             },
                             scales: {
-                                yAxes: [{
-                                    ticks: {
-                                    beginAtZero:true
-                                    }
-                                }]
+                                yAxes: [{ticks: {min: 0, max: 1, beginAtZero:true}}],
                             }
                         }
             });
