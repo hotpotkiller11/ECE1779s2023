@@ -194,9 +194,9 @@ def mem_config_set():
     else:
         return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
 
-@webapp.route('/stat', methods=['GET'])
-def stat():
-    return render_template("statistic.html")
+# @webapp.route('/stat', methods=['GET'])
+# def stat():
+#     return render_template("statistic.html")
 
 """The function used to store file in to static"""
 def saveDataToFile(filename:str, input:bytes):

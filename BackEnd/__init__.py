@@ -6,8 +6,8 @@ from BackEnd import main
 
 # init?
 main.filesize = 0
-main.miss = 0
-main.hit = 0
+main.total_miss = 0
+main.total_hit = 0
 main.numOfreq = 0
 
 
