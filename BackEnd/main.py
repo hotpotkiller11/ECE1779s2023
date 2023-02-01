@@ -60,6 +60,7 @@ def write_stat():
     with webapp.app_context():
         global hit
         global miss
+        req_count = hit + miss
         cnx = get_db()
         cursor = cnx.cursor()
         total = miss + hit
@@ -67,8 +68,8 @@ def write_stat():
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
-        print((now, miss, hit, filesize, len(key_queue), numOfreq))
+        cursor.execute(query, (now, miss, hit, len(key_queue), filesize, req_count))
+        print((now, miss, hit, filesize, len(key_queue), req_count))
         #   rows = cursor.fetchall()
         cnx.commit()
         # Reset after each sql commit
