@@ -10,14 +10,18 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json
 
+
+
 """Global variables"""
 global Config
 
 """statistical info"""
 global filesize # Size of the current figures in cache memory (unit: byte)
-global miss
-global hit
-global numOfreq
+miss = 0
+hit = 0
+total_miss = 0
+total_hit = 0
+stat_list = [] # (hit, miss) queue, update every 5 seconds
 
 
 """mem cache structure"""
@@ -62,22 +66,30 @@ def write_stat():
     with webapp.app_context():
         global hit
         global miss
-
+        global total_hit
+        global total_miss
         cnx = get_db()
         cursor = cnx.cursor()
-        total = miss + hit
-        now = datetime.datetime.now()                   #   current time
-        previous = now - datetime.timedelta(minutes=1) #   20mins ago convolution
-
+        total_hit += hit
+        total_miss += miss
+        stat_list.append([hit, miss])
+        if len(stat_list) > 10 * 60 / 5 + 1: # element that more than 10 min ago
+            element = stat_list.pop(0)
+            total_hit -= element[0]
+            total_miss -= element[1]
+        req_count = total_hit + total_miss
+        now = datetime.datetime.now() # now time
+        previous = now - datetime.timedelta(minutes=20) # 20 mins old time
+        
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         previous = previous.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, hit, miss, filesize, len(key_queue), numOfreq))
-        print((now, hit, miss, filesize, len(key_queue), numOfreq))
-        #cnx.commit()
+        cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), req_count))
+        print((now, total_hit, total_miss, filesize, len(key_queue), req_count，numOfreq))
         query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
         cursor.execute(query2, (previous,))
+
         cnx.commit()
         # Reset after each sql commit
         hit = 0
