@@ -1,15 +1,14 @@
-DROP DATABASE IF EXISTS ece1779;
-CREATE DATABASE ECE1779;
+CREATE DATABASE IF NOT EXISTS ece1779;
 USE ece1779;
 
-CREATE TABLE `backend_config` (
+CREATE TABLE IF NOT EXISTS `backend_config` (
    `id` int NOT NULL AUTO_INCREMENT,
   `capacity` int NOT NULL,
   `policy` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `backend_statistic` (
+CREATE TABLE IF NOT EXISTS `backend_statistic` (
   `timestamp` DATETIME NOT NULL,
   `hit` int unsigned DEFAULT NULL,
   `miss` int unsigned DEFAULT NULL,
@@ -20,7 +19,7 @@ CREATE TABLE `backend_statistic` (
   UNIQUE KEY `timestamp_UNIQUE` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `key_picture` (
+CREATE TABLE IF NOT EXISTS `key_picture` (
   `id` int NOT NULL AUTO_INCREMENT,
   `key` varchar(45) DEFAULT NULL,
   `path` varchar(45) DEFAULT NULL,

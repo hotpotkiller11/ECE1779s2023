@@ -86,7 +86,7 @@ def write_stat():
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
         cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), req_count))
-        print((now, total_hit, total_miss, filesize, len(key_queue), req_count，numOfreq))
+        print((now, total_hit, total_miss, filesize, len(key_queue), req_count, numOfreq))
         query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
         cursor.execute(query2, (previous,))
 
