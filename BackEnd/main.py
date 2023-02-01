@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, g
 import datetime
 from BackEnd import webapp
@@ -54,6 +55,7 @@ def get_config_info():
     rows = cursor.fetchall()
     # cnx.close() This might cause failure
     global Config
+    print(rows[0][0],rows[0][1])
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
 def write_stat():
@@ -68,8 +70,8 @@ def write_stat():
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, miss, hit, len(key_queue), filesize, req_count))
-        print((now, miss, hit, filesize, len(key_queue), req_count))
+        cursor.execute(query, (now, hit, miss, filesize, len(key_queue), req_count))
+        print((now, hit, miss, filesize, len(key_queue), req_count))
         #   rows = cursor.fetchall()
         cnx.commit()
         # Reset after each sql commit
@@ -79,7 +81,7 @@ def write_stat():
 
 
 with webapp.app_context():
-    get_config_info()
+    #get_config_info()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
     scheduler.start()
@@ -183,6 +185,9 @@ def mem_invalidate(key: str) -> bool:
 """Funcitions"""
 
 def invalidateKey(key):
+    global numOfreq
+    numOfreq += 1
+    print("invalidate key")
     result = mem_invalidate(key)
     if result == False:
         print("No such key") # still ok
@@ -194,6 +199,9 @@ def invalidateKey(key):
     return response
 
 def refreshConfiguration():
+    global numOfreq
+    numOfreq += 1
+    print("refresh configuration")
     get_config_info()   #configuration refresh, read in refresh
     mem_cleanup(0) # clean up mem until maximum capacity reached
     response = webapp.response_class(
@@ -205,7 +213,9 @@ def refreshConfiguration():
 
 def subPUT(key,value):
     """put the key in to the cache"""
-    print("call put")
+    global numOfreq
+    numOfreq += 1
+    print("put")
     res = mem_add(key, value)
     # print(res)
     response = webapp.response_class(
@@ -220,6 +230,8 @@ def subGET(key):
     """do something"""
     global hit
     global miss
+    global numOfreq
+    numOfreq += 1
     print("get")
     if key in key_queue:
         img = mem_dict[key]
@@ -244,6 +256,9 @@ def subGET(key):
     return response
 
 def subCLEAR():
+    global numOfreq
+    numOfreq += 1
+    print("clear")
     mem_clear()
     response = webapp.response_class(
         response=json.dumps('ok'),
@@ -299,6 +314,5 @@ def REFRESH():
 
 @webapp.route('/testread',methods=['POST', 'GET'])
 def TEST():
-    numOfreq += 1
     print(Config['policy'],Config['capacity'])
     return refreshConfiguration()

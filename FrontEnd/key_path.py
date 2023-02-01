@@ -1,6 +1,6 @@
 from FrontEnd import db_connect
 
-def get_all_keys() -> list[str]:
+def get_all_keys():# -> list[str]:
     ''' Return all keys stored in the database
         If the table is currently empty, an empty list will be returned.
     '''
@@ -16,7 +16,7 @@ def get_all_keys() -> list[str]:
     # db.close()
     return result_list
 
-def get_keys_page(page: int, item: int) -> list[str]:
+def get_keys_page(page: int, item: int):# -> list[str]:
     ''' Return keys stored in the data base in page.
         Note that page start from 0
     '''
