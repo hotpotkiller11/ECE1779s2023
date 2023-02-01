@@ -78,19 +78,23 @@ def write_stat():
             total_hit -= element[0]
             total_miss -= element[1]
         req_count = total_hit + total_miss
-        now = datetime.datetime.now()
+        now = datetime.datetime.now() # now time
+        previous = now - datetime.timedelta(minutes=20) # 20 mins old time
+        
         now = now.strftime('%Y-%m-%d %H:%M:%S')
+        previous = previous.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
         cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), req_count))
-        print((now, total_hit, total_miss, filesize, len(key_queue), req_count))
-        #   rows = cursor.fetchall()
+        print((now, total_hit, total_miss, filesize, len(key_queue), req_count，numOfreq))
+        query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
+        cursor.execute(query2, (previous,))
+
         cnx.commit()
         # Reset after each sql commit
         hit = 0
         miss = 0
     # print("try")
-
 
 with webapp.app_context():
     #get_config_info()
