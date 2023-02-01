@@ -62,22 +62,27 @@ def write_stat():
     with webapp.app_context():
         global hit
         global miss
+
         cnx = get_db()
         cursor = cnx.cursor()
         total = miss + hit
-        now = datetime.datetime.now()
+        now = datetime.datetime.now()                   #   current time
+        previous = now - datetime.timedelta(minutes=1) #   20mins ago convolution
+
         now = now.strftime('%Y-%m-%d %H:%M:%S')
+        previous = previous.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
         cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
         print((now, miss, hit, filesize, len(key_queue), numOfreq))
-        #   rows = cursor.fetchall()
+        #cnx.commit()
+        query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
+        cursor.execute(query2, (previous,))
         cnx.commit()
         # Reset after each sql commit
         hit = 0
         miss = 0
     # print("try")
-
 
 with webapp.app_context():
     #get_config_info()
