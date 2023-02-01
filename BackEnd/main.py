@@ -67,7 +67,7 @@ def write_stat():
         cursor = cnx.cursor()
         total = miss + hit
         now = datetime.datetime.now()                   #   current time
-        previous = now - datetime.timedelta(minutes=1) #   20mins ago convolution
+        previous = now - datetime.timedelta(minutes=20) #   20mins ago convolution
 
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         previous = previous.strftime('%Y-%m-%d %H:%M:%S')
