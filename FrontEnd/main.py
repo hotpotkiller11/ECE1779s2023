@@ -228,7 +228,7 @@ def getDataFromFile(filename:str)->bytes:
 
 #print(getDataFromFile('hel.txt'))
 
-def listFileDictionary(dicname:str)->list[str]:
+def listFileDictionary(dicname:str):#->list[str]:
     """This function return the list of files in a specific dictionary name"""
     filepath = "./FrontEnd/static/"+dicname
     return os.listdir(filepath)
