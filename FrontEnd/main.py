@@ -262,3 +262,7 @@ def deleteFile(filename:str)->bool:
 #print(os.remove("./FrontEnd/static/figure/"+"123.jpg"))
 print(os.path.isdir("./FrontEnd/static/figure/"+"123.jpg"))
 
+@webapp.errorhandler(404)
+# returns the 404 page
+def page_not_found(e):
+    return render_template('404.html')

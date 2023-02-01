@@ -73,6 +73,9 @@ def write_stat():
         previous = previous.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
+        cursor.execute(query, (now, hit, miss, filesize, len(key_queue), numOfreq))
+        print((now, hit, miss, filesize, len(key_queue), numOfreq))
+        #   rows = cursor.fetchall()
         cursor.execute(query, (now, miss, hit, len(key_queue), filesize, numOfreq))
         print((now, miss, hit, filesize, len(key_queue), numOfreq))
         #cnx.commit()
