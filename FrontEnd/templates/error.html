@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 </head>
     <body>
+        {% include "navibar.html" %}
         <div class="center">
             <h1>
                 <img src="/static/cross.png" alt="Error" class="symbol">{{ msg }}
