@@ -8,7 +8,7 @@ from BackEnd import main
 main.filesize = 0
 main.total_miss = 0
 main.total_hit = 0
-main.numOfreq = 0
+main.reqs = 0
 
 
 # Fetch memcache config upon initialization, default value: 4KB, random replacement

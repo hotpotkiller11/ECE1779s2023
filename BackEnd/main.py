@@ -19,6 +19,8 @@ global Config
 global filesize # Size of the current figures in cache memory (unit: byte)
 miss = 0
 hit = 0
+reqs = 0
+total_reqs = 0
 total_miss = 0
 total_hit = 0
 stat_list = [] # (hit, miss) queue, update every 5 seconds
@@ -66,18 +68,21 @@ def write_stat():
     with webapp.app_context():
         global hit
         global miss
+        global reqs
         global total_hit
         global total_miss
+        global total_reqs
         cnx = get_db()
         cursor = cnx.cursor()
         total_hit += hit
         total_miss += miss
-        stat_list.append([hit, miss])
+        total_reqs += reqs
+        stat_list.append([hit, miss, reqs])
         if len(stat_list) > 10 * 60 / 5 + 1: # element that more than 10 min ago
             element = stat_list.pop(0)
             total_hit -= element[0]
             total_miss -= element[1]
-        req_count = total_hit + total_miss
+            total_reqs -= element[2]
         now = datetime.datetime.now() # now time
         previous = now - datetime.timedelta(minutes=20) # 20 mins old time
         
@@ -85,8 +90,8 @@ def write_stat():
         previous = previous.strftime('%Y-%m-%d %H:%M:%S')
         query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
                                         size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), req_count))
-        print((now, total_hit, total_miss, filesize, len(key_queue), req_count, numOfreq))
+        cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), total_reqs))
+        print((now, total_hit, total_miss, filesize, len(key_queue), total_reqs))
         query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
         cursor.execute(query2, (previous,))
 
@@ -94,6 +99,7 @@ def write_stat():
         # Reset after each sql commit
         hit = 0
         miss = 0
+        reqs = 0
     # print("try")
 
 with webapp.app_context():
@@ -201,8 +207,8 @@ def mem_invalidate(key: str) -> bool:
 """Funcitions"""
 
 def invalidateKey(key):
-    global numOfreq
-    numOfreq += 1
+    global reqs
+    reqs += 1
     print("invalidate key")
     result = mem_invalidate(key)
     if result == False:
@@ -215,8 +221,8 @@ def invalidateKey(key):
     return response
 
 def refreshConfiguration():
-    global numOfreq
-    numOfreq += 1
+    global reqs
+    reqs += 1
     print("refresh configuration")
     get_config_info()   #configuration refresh, read in refresh
     mem_cleanup(0) # clean up mem until maximum capacity reached
@@ -229,8 +235,8 @@ def refreshConfiguration():
 
 def subPUT(key,value):
     """put the key in to the cache"""
-    global numOfreq
-    numOfreq += 1
+    global reqs
+    reqs += 1
     print("put")
     res = mem_add(key, value)
     # print(res)
@@ -246,8 +252,8 @@ def subGET(key):
     """do something"""
     global hit
     global miss
-    global numOfreq
-    numOfreq += 1
+    global reqs
+    reqs += 1
     print("get")
     if key in key_queue:
         img = mem_dict[key]
@@ -272,8 +278,8 @@ def subGET(key):
     return response
 
 def subCLEAR():
-    global numOfreq
-    numOfreq += 1
+    global reqs
+    reqs += 1
     print("clear")
     mem_clear()
     response = webapp.response_class(

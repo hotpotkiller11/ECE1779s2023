@@ -22,8 +22,8 @@ def get_stats() -> list[dict]:
 
     for r in rows:
         point = {}
-        point["hit_rate"] = r[0] / max(r[2], 1)
-        point["miss_rate"] = r[1] / max(r[2], 1)
+        point["hit_rate"] = r[0] / max(r[0] + r[1], 1)
+        point["miss_rate"] = r[1] / max(r[0] + r[1], 1)
         point["size"] = r[3]
         point["count"] = r[4]
         point["req"] = r[2]
