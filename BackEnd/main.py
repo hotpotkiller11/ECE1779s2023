@@ -255,8 +255,8 @@ def subGET(key):
     global reqs
     reqs += 1
     print("get")
-    if key in key_queue:
-        img = mem_dict[key]
+    img = mem_get(key)
+    if img is not None:
         data = {
             "success": "true",
             "key": key,
