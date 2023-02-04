@@ -188,7 +188,7 @@ def mem_config_set():
         cursor.close()
         # db.close()
         return render_template('error.html', msg = "Database insertion failed")
-    res = requests.get('http://127.0.0.1:5000/back/refresh') # get keys list
+    res = requests.get('http://127.0.0.1:1/back/refresh') # get keys list
     if (res.status_code == 200):
         return render_template("success.html", msg = "Configuration updated")
     else:

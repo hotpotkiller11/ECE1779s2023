@@ -86,7 +86,7 @@ def upload():
         if status == 'SUCCESS':
             data = {
                 "success": "true",
-                "key": key
+                "key": [key]
             }
             response = webapp.response_class(
                 response=json.dumps(data),
@@ -173,6 +173,7 @@ def list_keys():
 def show_figure_by_key(key_value):
     if request.method == 'POST':
         key = key_value
+        print(key)
         request_json = {'key':key}
         res = requests.post('http://127.0.0.1:5000/back/get', json = request_json)
         # print(res)
@@ -200,7 +201,7 @@ def show_figure_by_key(key_value):
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
-                    "key": key,
+                    "key": [key],
                     "content": base64_figure
                 }
                 response = webapp.response_class(
