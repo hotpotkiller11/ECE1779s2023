@@ -1,5 +1,5 @@
 from flask import render_template, request, json
-from FrontEnd import webapp, key_path, db_connect
+from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
@@ -11,7 +11,7 @@ import requests
 def delete_all():
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
-    res = requests.get('http://127.0.0.1:5000/back/clear') # get keys list
+    res = requests.get(backend + '/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
         # also call memcache to remove all cache terms
@@ -146,7 +146,7 @@ def process_figure(request, key):
                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     key_path.add_key_and_path(key, filename)
                     request_json = {'key':key}
-                    res = requests.get('http://127.0.0.1:5000/back/invalidatekey', json = request_json) # get keys list
+                    res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
                     if (res.status_code != 200):
                         print("memcache object deletion failed.")
                     return 'SUCCESS'
@@ -175,7 +175,7 @@ def show_figure_by_key(key_value):
         key = key_value
         print(key)
         request_json = {'key':key}
-        res = requests.post('http://127.0.0.1:5000/back/get', json = request_json)
+        res = requests.post(backend + '/get', json = request_json)
         # print(res)
         if res.json() == 'MISS':
             filename = get_path_by_key(key)
@@ -196,7 +196,7 @@ def show_figure_by_key(key_value):
             else:
                 base64_figure = convertToBase64(filename)
                 request_json = {'key':key, 'value':base64_figure}
-                res = requests.post('http://127.0.0.1:5000/back/put',json = request_json)
+                res = requests.post(backend + '/put',json = request_json)
                 print(res.json())               
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
