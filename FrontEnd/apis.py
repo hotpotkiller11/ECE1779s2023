@@ -225,7 +225,7 @@ def show_figure_by_key(key_value):
             return response
     else:
         response = webapp.response_class(
-            response=json.dumps("use POST stupid ass"),
+            response=json.dumps("use POST"),
             status=405,
             mimetype='application/json',
         )
