@@ -5,7 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template
 import atexit
 
-def get_stats() -> list[dict]:
+def get_stats() :#-> list[dict]:
     result = []
 
     now = datetime.now()
