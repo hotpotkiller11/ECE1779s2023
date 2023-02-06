@@ -30,4 +30,6 @@ Contact
 ---
 
 please contact
-Ziqi zq.zhou@mail.utoronto.ca
+ZiqiZhou zq.zhou@mail.utoronto.ca
+JingyuanZhang jymike.zhang@mail.utoronto.ca
+
