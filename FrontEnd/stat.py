@@ -6,6 +6,10 @@ from flask import render_template
 import atexit
 
 def get_stats() :#-> list[dict]:
+    """
+    get currenr stats
+    :return: list[dict]
+    """
     result = []
 
     now = datetime.now()
@@ -31,8 +35,12 @@ def get_stats() :#-> list[dict]:
     return result
 
 @webapp.route('/statistic', methods = ['GET','POST'])
-# returns the upload page
+
 def stat():
+    """
+    build the statistic list
+    :return: html page render
+    """
     hit_xy = []
     miss_xy = []
     size_xy = []

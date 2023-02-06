@@ -35,12 +35,20 @@ def favicon():
 
 @webapp.route('/keys', methods=['GET'])
 def all_key():
+    """
+    list all keys
+    :return:  keys.html
+    """
     keys = key_path.get_all_keys()
     n = len(keys)
     return render_template("keys.html", keys = keys, n = n)
 
 @webapp.route('/keys/delete', methods=['GET'])
 def all_key_delete():
+    """
+    clean up all key
+    :return: error or success info html
+    """
     result = key_path.delete_all_key_path_term()
     result2 = deleteFile("")
     res = requests.get(backend + '/clear') # get keys list
@@ -56,6 +64,11 @@ def all_key_delete():
 @webapp.route('/upload_figure', methods = ['GET','POST'])
 # returns the upload page
 def upload_figure():
+    """
+    uploda figure to system
+    :return: upload figure html page
+    """
+
     if request.method == 'POST':
         key = request.form.get('key')
         # process the upload image request and add the image to the database
@@ -64,6 +77,12 @@ def upload_figure():
     return render_template('upload_figure.html')
 
 def process_figure(request, key):
+    """
+    :param request: the request info
+    :param key: the given key
+    :return: success message
+    """
+
     # get the figure file
     file = request.files['file']
     _, extension = os.path.splitext(file.filename)
@@ -96,11 +115,15 @@ def process_figure(request, key):
 
 @webapp.route('/show_figure',methods=['GET','POST'])
 def show_figure():
+    """
+    show thenfigure by given key
+    :return: show_figure.html
+    """
+
     if request.method == 'POST':
         key = request.form.get('key')
         request_json = {'key':key}
         res = requests.post(backend + '/get', json = request_json)
-        # print(res)
         if res.json() == 'MISS':
             filename = get_path_by_key(key)
             if filename is None:
@@ -118,15 +141,23 @@ def show_figure():
         return render_template('show_figure.html')
 
 def convertToBase64(filename):
+    """
+    :param filename: the file's name and path
+    :return: base64 figure content
+    """
     with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:
-        #encode the original binary code to b64 code
+        #e  ncode the original binary code to b64 code
         base64_figure=base64.b64encode(figure.read())
-    #decode the b64 byte code in utf-8 format
+    #   decode the b64 byte code in utf-8 format
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
 
 @webapp.route('/memory', methods=['GET'])
 def memory_inspect():
+    """
+    confuration of the memcache
+    :return: success/error html
+    """
     res = requests.get(backend + '/keys') # get keys list
     if (res.status_code == 200):
         keys = res.json()['keys']
@@ -151,6 +182,11 @@ def memory_inspect():
         capacity = unit_convertor(capacity), policy = policy)
 
 def unit_convertor(byte: int) -> str:
+    """
+    converting size, matching the size unit
+    :param byte: size given
+    :return: size in specific unit
+    """
     unit = ['B', 'KB', 'MB', 'GB', 'TB']
     u = 0
     while byte >= 1024:
@@ -162,6 +198,10 @@ def unit_convertor(byte: int) -> str:
 
 @webapp.route('/memory/clear')
 def mem_key_delete():
+    """
+    clean up keys
+    :return: success/error html
+    """
     res = requests.get(backend + '/clear') # get keys list
     if (res.status_code == 200):
         return render_template("success.html", msg = "Cache deleted.")
@@ -170,6 +210,10 @@ def mem_key_delete():
 
 @webapp.route('/memory/set', methods=['POST'])
 def mem_config_set():
+    """
+    set up the memcache configuration
+    :return: success/error html
+    """
     capacity = float(request.form.get('capacity'))
     unit = request.form.get('unit')
     if unit == "KB": capacity *= 1024
@@ -194,24 +238,24 @@ def mem_config_set():
     else:
         return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
 
-# @webapp.route('/stat', methods=['GET'])
-# def stat():
-#     return render_template("statistic.html")
 
 """The function used to store file in to static"""
 def saveDataToFile(filename:str, input:bytes):
+    """
+    :param filename: the file name string
+    :param input: how many bytes input
+    :return: debug info
+    """
     filepath = "./FrontEnd/static/figure/"+filename
     print(filepath)
     try:
         with open(filepath, "wb") as f:
-            #print("open success")
             f.write(input)
             f.close()
         return "save success"
     except Exception as e:
         return "save unsuccess (%s)"
 
-#print(saveDataToFile('hello.txt','11111'))
 
 def getDataFromFile(filename:str)->bytes:
     """The function used to read a file in to static index by its filename, if no such file, return None"""
@@ -225,16 +269,12 @@ def getDataFromFile(filename:str)->bytes:
         print(e)
         return None
 
-#print(getDataFromFile('hel.txt'))
 
 def listFileDictionary(dicname:str):#->list[str]:
     """This function return the list of files in a specific dictionary name"""
     filepath = "./FrontEnd/static/"+dicname
     return os.listdir(filepath)
-    
-#print(listFileDictionary('static'))
-#print(getDataFromFile('testfig.jpg'))
-#print(saveDataToFile('testfig2.jpg',getDataFromFile('testfig.jpg')))
+
 
 
 def deleteFile(filename:str)->bool:
@@ -258,10 +298,13 @@ def deleteFile(filename:str)->bool:
     except Exception as e:
         print(e)
         return False
-#print(os.remove("./FrontEnd/static/figure/"+"123.jpg"))
-print(os.path.isdir("./FrontEnd/static/figure/"+"123.jpg"))
 
 @webapp.errorhandler(404)
 # returns the 404 page
 def page_not_found(e):
+    """
+    handel 404 info page
+    :param e: exception
+    :return: 404.html
+    """
     return render_template('404.html')

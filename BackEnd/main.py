@@ -1,8 +1,7 @@
 
-from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify, g
+from flask import  request, g
 import datetime
 from BackEnd import webapp
-import sys
 import random
 import mysql.connector
 from BackEnd.config import db_config
@@ -32,12 +31,21 @@ key_queue = [] # LRU list, from the most recent use to the least recent use
 
 """DB config """
 def init_db():
+    """
+    initialization database
+    :return: database initialization
+    """
+
     return mysql.connector.connect(user=db_config['user'],
                                    password=db_config['password'],
                                    host=db_config['host'],
                                    database=db_config['database'])
 
 def get_db():
+    """
+    init step 2
+    :return: database
+    """
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = init_db()
@@ -52,6 +60,10 @@ def teardown_db(exception):
 
 
 def get_config_info():
+    """
+    get the information of the configuration
+    :return: config dictionary
+    """
     cnx = get_db()
     query = '''SELECT capacity, policy
                     FROM backend_config where id = (
@@ -65,6 +77,10 @@ def get_config_info():
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
 def write_stat():
+    """
+    writing stat in to the configuration table in database
+    :return: NaN
+    """
     with webapp.app_context():
         global hit
         global miss
@@ -100,9 +116,11 @@ def write_stat():
         hit = 0
         miss = 0
         reqs = 0
-    # print("try")
 
 with webapp.app_context():
+    """
+    looping for 5 seconds, doing job write stat
+    """
     #get_config_info()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
@@ -111,6 +129,11 @@ with webapp.app_context():
 
 
 def RandomReplacement(size: int) -> None: #random
+    """
+    randonreplacement policy cache
+    :param size: the size of the cache
+    :return: NaN
+    """
     global filesize
     capacity = Config['capacity']
     while filesize + size > capacity:
@@ -121,6 +144,11 @@ def RandomReplacement(size: int) -> None: #random
 
 
 def LeastRecentlyUsed(size: int) -> None: #LRU
+    """
+    least recently used policy
+    :param size: the size of the cache
+    :return: NaN
+    """
     global filesize
     capacity = Config['capacity']
     while filesize + size > capacity:
@@ -207,6 +235,11 @@ def mem_invalidate(key: str) -> bool:
 """Funcitions"""
 
 def invalidateKey(key):
+    """
+    call mem_invalidate(key) to perform key invalidation
+    :param key: the key to be invalidate
+    :return: JSON response
+    """
     global reqs
     reqs += 1
     print("invalidate key")
@@ -221,6 +254,10 @@ def invalidateKey(key):
     return response
 
 def refreshConfiguration():
+    """
+    read the configuration info
+    :return: JSON response
+    """
     global reqs
     reqs += 1
     print("refresh configuration")
@@ -234,7 +271,12 @@ def refreshConfiguration():
     return response
 
 def subPUT(key,value):
-    """put the key in to the cache"""
+    """
+    put the key in to the cache
+    :param key: the key given by user
+    :param value: the file content
+    :return: JSON response
+    """
     global reqs
     reqs += 1
     print("put")
@@ -249,7 +291,11 @@ def subPUT(key,value):
 
 
 def subGET(key):
-    """do something"""
+    """
+    perform a get request, calculate the hit and miss info
+    :param key: the key to be get
+    :return: JSON response
+    """
     global hit
     global miss
     global reqs
@@ -278,6 +324,10 @@ def subGET(key):
     return response
 
 def subCLEAR():
+    """
+    call  mem_clear() to clean the cache
+    :return: JSON response
+    """
     global reqs
     reqs += 1
     print("clear")
@@ -288,6 +338,8 @@ def subCLEAR():
         mimetype='application/json',
     )
     return response
+
+"interfaces"
 
 @webapp.route('/', methods=['POST', 'GET'])
 def welcome():
@@ -317,6 +369,11 @@ def INVALIDATEKEY():
 
 @webapp.route('/keys',methods=['GET'])
 def keys():
+    """
+    list all the keys in the memcache
+    :return: JSON response
+    """
+
     keys = sorted(key_queue) # ascending order
     data = {
             "success": "true",
@@ -332,9 +389,4 @@ def keys():
 
 @webapp.route('/refresh',methods= ['POST' , 'GET'])
 def REFRESH():
-    return refreshConfiguration()
-
-@webapp.route('/testread',methods=['POST', 'GET'])
-def TEST():
-    print(Config['policy'],Config['capacity'])
     return refreshConfiguration()
