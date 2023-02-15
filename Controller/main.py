@@ -29,6 +29,12 @@ class CacheController:
     partition_dict = {} # used to map partition with memcache nodes
 
     def __init__(self, memcache_servers: list[str]):
+        """ Create a new Cache Controller instance with a list of memcache node
+            servers.
+
+        Args:
+            memcache_servers (list[str]): list of addresses of the memcache node
+        """
         assert(len(memcache_servers) > 0)
         self.memcache_nodes = memcache_servers
         self.pool_size = 1
@@ -37,13 +43,28 @@ class CacheController:
             self.partition_dict[hex(i)[2:]] = memcache_servers[0]
 
     def get_node(self, key: str) -> str:
-        """ Return the corresponding node of this key
+        """ Get corresponding node address by key.
+
+        Args:
+            key (str): key
+
+        Returns:
+            str: the address of the corresponding node
         """
         h = get_hash(key)
         node = self.partition_dict[h[0]]
         return node
     
     def modify_pool_size(self, size: int):
+        """ Modify the number of activating node, and convey data stored in 
+            old nodes into newer ones.
+
+        Args:
+            size (int): new size of the activated nodes
+
+        Raises:
+            ValueError: size not 
+        """
         if size <= 0: raise ValueError("Size must greater than 0")
         if size > size: raise ValueError("Size must smaller or equal to pool size (%d)" % (self.pool_size))
         self.pool_size = size
