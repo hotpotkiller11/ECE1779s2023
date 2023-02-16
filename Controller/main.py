@@ -55,3 +55,21 @@ def CLEAR():
         mimetype='application/json',
     )
     return response
+
+@webapp.route('/refresh',methods= ['POST' , 'GET'])
+def REFRESH():
+    nodes = control.activated_nodes()
+    for node in nodes:
+        requests.post(node + "/refresh")
+    
+    response = webapp.response_class(
+        response=json.dumps(Config),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route('/keys',methods=['GET'])
+def keys():
+    nodes = control.activated_nodes()
+    
