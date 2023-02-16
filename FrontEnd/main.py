@@ -285,6 +285,7 @@ def deleteFile(filename:str)->bool:
         if os.path.isdir(filepath):
             print(os.path.isdir(filepath))
             del_list = os.listdir(filepath)
+            del_list.remove(".gitignore") # DO NOT REMOVE GITIGNORE
             print(del_list)
             for f in del_list:
                 file_path = os.path.join(filepath, f)
