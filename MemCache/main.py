@@ -1,10 +1,10 @@
 
 from flask import  request, g
 import datetime
-from BackEnd import webapp
+from MemCache import webapp
 import random
 import mysql.connector
-from BackEnd.config import db_config
+from MemCache.config import db_config
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json

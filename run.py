@@ -1,7 +1,7 @@
 from werkzeug.serving import run_simple  # werkzeug development server
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 """IMPORT FLASK INSTANCES FROM FOLDER Memcache AND FrontEnd"""
-from BackEnd import webapp as back
+from MemCache import webapp as back
 from FrontEnd import webapp as front
 
 """MERGE TWO FLASK INSTANCES: MEMCACHE AND FRONTEND"""
