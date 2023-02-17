@@ -163,6 +163,10 @@ def memory_inspect():
         nodes = res.json()['nodes']
         n = res.json()['count']
         size = res.json()['total_size']
+        # Convert size of each node
+        for node in nodes:
+            if node["activate"]:
+                node["size"] = unit_convertor(node["size"])
     else:
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     try:

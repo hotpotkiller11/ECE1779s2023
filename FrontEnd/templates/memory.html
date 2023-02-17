@@ -19,7 +19,7 @@
                         {% for n in nodes %}
                             
                             {% if n.activate %}
-                            <p><b>Node {{n.id}}</b>: <span style="color:green">activated</span></p>
+                            <p><b>Node {{n.id}}</b>: <span style="color:green">activated</span> ({{n.size}})</p>
                                 
                                 {% if n.key|length > 0 %}
                                     <ul>
