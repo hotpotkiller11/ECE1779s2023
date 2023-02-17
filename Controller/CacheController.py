@@ -36,7 +36,15 @@ class CacheController:
         Returns:
             list[str]: activated nodes
         """
-        return self.memcache_nodes[0:self.activated_nodes]
+        return self.memcache_nodes[0:self.pool_size]
+    
+    def not_activated_nodes(self) -> list[str]:
+        """ Get a list of all not activated nodes
+
+        Returns:
+            list[str]: not activated nodes
+        """
+        return self.memcache_nodes[self.pool_size: len(self.memcache_nodes)]
 
     def get_node(self, key: str) -> str:
         """ Get corresponding node address by key.

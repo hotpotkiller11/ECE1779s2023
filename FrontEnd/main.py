@@ -160,9 +160,9 @@ def memory_inspect():
     """
     res = requests.get(backend + '/keys') # get keys list
     if (res.status_code == 200):
-        keys = res.json()['keys']
-        n = len(keys)
-        size = res.json()['size']
+        nodes = res.json()['nodes']
+        n = res.json()['count']
+        size = res.json()['total_size']
     else:
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     try:
@@ -178,7 +178,7 @@ def memory_inspect():
     except Exception as e:
         print(e)
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
-    return render_template("memory.html", keys = keys, n = n, size = unit_convertor(size),
+    return render_template("memory.html", nodes = nodes, n = n, size = unit_convertor(size),
         capacity = unit_convertor(capacity), policy = policy)
 
 def unit_convertor(byte: int) -> str:

@@ -63,7 +63,7 @@ def REFRESH():
         requests.post(node + "/refresh")
     
     response = webapp.response_class(
-        response=json.dumps(Config),
+        response=json.dumps("OK"),
         status=200,
         mimetype='application/json',
     )
@@ -71,5 +71,32 @@ def REFRESH():
 
 @webapp.route('/keys',methods=['GET'])
 def keys():
-    nodes = control.activated_nodes()
+    result = []
+    active_nodes = control.activated_nodes()
+    for node in active_nodes:
+        res = requests.get(node + '/keys') # get keys list
+        n = 0
+        total_size = 0
+        i = 0
+        # if (res.status_code == 200):
+        keys = res.json()['keys']
+        n += len(keys)
+        size = res.json()['size']
+        total_size += size
+        node_stat = {"id": i, "activate": True, "key": keys, "size": size}
+        i += 1
+        result.append(node_stat)
     
+    not_active_nodes = control.not_activated_nodes()
+    for node in not_active_nodes:
+        node_stat = {"id": i, "activate": False}
+        i += 1
+        result.append(node_stat)
+    
+    # Return the response
+    response = webapp.response_class(
+        response=json.dumps({"count": n, "total_size": total_size, "nodes": result}),
+        status=200,
+        mimetype='application/json',
+    )
+    return response

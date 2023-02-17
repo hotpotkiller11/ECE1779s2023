@@ -15,19 +15,29 @@
                     <div class="column">
                         <h2>All keys in memory</h2>
                         <p>{{n}} keys in total, {{size}} bytes used</p>
-                        <ul>
-                            {% for k in keys %}
+                        
+                        {% for n in nodes %}
                             
-                            <!-- your code starts here --> 
-                            <li>{{k}}</li>
-                            <!-- your code ends here --> 
-
-                            {% endfor %}
-                        </ul>
+                            {% if n.activate %}
+                            <p><b>Node {{n.id}}</b>: <span style="color:green">activated</span></p>
+                                
+                                {% if n.key|length > 0 %}
+                                    <ul>
+                                        {% for k in n.key %}
+                                        <li>k</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>This node is empty</p>
+                                {% endif %}
+                            {% else %}
+                                <p><b>Node {{n.id}}</b>: <span style="color:red">not activated</span></p>
+                            {% endif %}
+                        {% endfor %}
                         <a href = "{{ url_for('mem_key_delete') }}">Delete all figure cache</a>
                     </div>
                     <div class="column">
-                        <h2>Memcache Configurations</h2>
+                        <h2>Memcache Node Configurations</h2>
                         <p>Current configurations:</p>
                         <ul>
                             <li>Capacity: {{capacity}} bytes</li>
