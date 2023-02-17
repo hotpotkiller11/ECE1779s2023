@@ -3,11 +3,11 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 """IMPORT FLASK INSTANCES FROM FOLDER Memcache AND FrontEnd"""
 from MemCache import webapp as memcache
 from FrontEnd import webapp as front
+from Controller import webapp as controller
 
-"""MERGE TWO FLASK INSTANCES: MEMCACHE AND FRONTEND"""
 
 app = DispatcherMiddleware(front, {
-    '/back': memcache
+    '/controller': controller
 })
 
 if __name__ == "__main__":
@@ -19,7 +19,3 @@ if __name__ == "__main__":
                use_debugger=False,
                use_evalex=False,
                threaded=True)
-    # back.run(host="127.0.0.1", port=5000)
-    # front.run(host="127.0.0.1", port=5000)
-
-
