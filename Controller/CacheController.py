@@ -1,7 +1,9 @@
 import hashlib
 
 def get_hash(key: str) -> bytes:
-    return hashlib.md5(str.encode('utf-8')).hexdigest()
+    h = hashlib.md5(key.encode('utf-8')).hexdigest()
+    # print(h)
+    return h
 
 class CacheController:
     """ CacheController class provide an object that manage all 

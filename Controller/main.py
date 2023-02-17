@@ -75,10 +75,10 @@ def keys():
     active_nodes = control.activated_nodes()
     n = 0
     i = 0
+    total_size = 0
     for node in active_nodes:
         res = requests.get(node + '/keys') # get keys list
         
-        total_size = 0
         # if (res.status_code == 200):
         keys = res.json()['keys']
         n += len(keys)

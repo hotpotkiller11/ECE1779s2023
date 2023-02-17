@@ -7,7 +7,7 @@ from Controller import webapp as controller
 
 
 app = DispatcherMiddleware(front, {
-    '/memcache1': memcache, '/memcache2': memcache, '/controller': controller
+    '/controller': controller
 })
 
 if __name__ == "__main__":

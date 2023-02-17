@@ -76,58 +76,6 @@ def get_config_info():
     print(rows[0][0],rows[0][1])
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
 
-def write_stat():
-    """
-    writing stat in to the configuration table in database
-    :return: NaN
-    """
-    with webapp.app_context():
-        global hit
-        global miss
-        global reqs
-        global total_hit
-        global total_miss
-        global total_reqs
-        cnx = get_db()
-        cursor = cnx.cursor()
-        total_hit += hit
-        total_miss += miss
-        total_reqs += reqs
-        stat_list.append([hit, miss, reqs])
-        if len(stat_list) > 10 * 60 / 5 + 1: # element that more than 10 min ago
-            element = stat_list.pop(0)
-            total_hit -= element[0]
-            total_miss -= element[1]
-            total_reqs -= element[2]
-        now = datetime.datetime.now() # now time
-        previous = now - datetime.timedelta(minutes=20) # 20 mins old time
-        
-        now = now.strftime('%Y-%m-%d %H:%M:%S')
-        previous = previous.strftime('%Y-%m-%d %H:%M:%S')
-        query = '''INSERT INTO backend_statistic (timestamp, hit, miss,
-                                        size, picture_count, request_count) VALUES (%s,%s,%s,%s,%s,%s)'''
-        cursor.execute(query, (now, total_hit, total_miss, filesize, len(key_queue), total_reqs))
-        # print((now, total_hit, total_miss, filesize, len(key_queue), total_reqs))
-        query2 = "DELETE FROM backend_statistic WHERE timestamp <= %s"
-        cursor.execute(query2, (previous,))
-
-        cnx.commit()
-        # Reset after each sql commit
-        hit = 0
-        miss = 0
-        reqs = 0
-
-with webapp.app_context():
-    """
-    looping for 5 seconds, doing job write stat
-    """
-    #get_config_info()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
-    scheduler.start()
-    atexit.register(lambda: scheduler.shutdown())
-
-
 def RandomReplacement(size: int) -> None: #random
     """
     randonreplacement policy cache
