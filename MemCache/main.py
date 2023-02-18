@@ -257,7 +257,7 @@ def subPUTLIST(files: list) -> Response:
     for file in files:
         key = file.pop("key")
         if (len(key_queue) > 0): # if previous key queue not depleted
-            key_old = key_queue[0]
+            key_old = key_queue[0] # peek the head of the old key queue
             while file["last_access"] <= mem_dict[key_old]["last_access"]: # key that previously in the node is newer
                 # store a element previously in the node
                 size = len(mem_dict[key_old]["file"])
@@ -273,7 +273,7 @@ def subPUTLIST(files: list) -> Response:
         new_key_queue.append(key)
         new_key_queue[key] = file
         filesize += size
-    else: # All file in files stored but not reach the capacity limit yet
+    else: # All file in incoming file list are stored but not reach the capacity limit yet
         for key_old in key_queue:
             # Try to store all the keys in previous key queue until it reach the capacity limit
             size = len(mem_dict[key_old]["file"])
