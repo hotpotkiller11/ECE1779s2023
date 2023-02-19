@@ -3,10 +3,20 @@ from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
+from botocore.config import Config
 import base64
 import os
 import requests
+import boto3
 
+config = Config(
+    region_name = 'us-east-1',
+    retries = {
+        'max_attempts': 10,
+        'mode': 'standard'
+    }
+)
+s3 = boto3.client('s3',config=config)
 @webapp.route('/')
 def home():
     print("to home")
@@ -94,14 +104,19 @@ def process_figure(request, key):
         # save the figure in the local file system
         try:
             if original is None:
-                file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                #file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                base64_image = base64.b64encode(file.read())
+                s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket', ContentType='image')
                 key_path.add_key_and_path(key, filename)
                 return 'SUCCESS'
             else:
                 if key_path.delete_term_by_key(key):
-                    if deleteFile(original):
-                        print("File replaced: %s" % original)
-                    file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                    # if deleteFile(original):
+                    #     print("File replaced: %s" % original)
+                    # file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+                    s3.delete_object (Bucket= 'ece1779-ass2-bucket', Key=filename)
+                    base64_image = base64.b64encode(file.read())
+                    s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket', ContentType='image')
                     key_path.add_key_and_path(key, filename)
                     request_json = {'key':key}
                     res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
@@ -129,7 +144,8 @@ def show_figure():
             if filename is None:
                 return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
             else:
-                base64_figure = convertToBase64(filename)
+                #base64_figure = convertToBase64(filename)
+                base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)
                 print(res.json())               
@@ -140,15 +156,27 @@ def show_figure():
     else:
         return render_template('show_figure.html')
 
+def download_image(key):
+    try: 
+        with open('Temp.txt', 'wb') as file:
+            s3.download_fileobj('ece1779-ass2-bucket', key, file)
+        with open('Temp.txt', 'rb') as file:
+            base64_image = file.read().decode('utf-8')
+        file.close()
+        os.remove("Temp.txt")
+        return base64_image
+    except:
+        return 'Image Not Found in S3'
+
 def convertToBase64(filename):
     """
     :param filename: the file's name and path
     :return: base64 figure content
     """
     with open(os.path.dirname(os.path.abspath(__file__)) + '/static/figure/'+filename,'rb') as figure:
-        #e  ncode the original binary code to b64 code
+        #encode the original binary code to b64 code
         base64_figure=base64.b64encode(figure.read())
-    #   decode the b64 byte code in utf-8 format
+    # decode the b64 byte code in utf-8 format
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
 

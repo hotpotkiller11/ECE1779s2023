@@ -1,4 +1,4 @@
-python3 ./run_node.py 7000 &
+python3 ./run_node.py 7002 &
 python3 ./run_node.py 7001 &
 # Modification according to advice of chatGPT
 echo ""
