@@ -1,6 +1,6 @@
 
 from flask import  request, g, Response
-import datetime
+from datetime import datetime
 from MemCache import webapp
 import random
 import mysql.connector
@@ -178,7 +178,7 @@ def mem_invalidate(key: str) -> bool:
     if key not in mem_dict: return False
     key_queue.remove(key)
     removed = mem_dict.pop(key)
-    filesize -= len(removed) # decrease size
+    filesize -= len(removed["file"]) # decrease size
     return True
 
 """Funcitions"""
@@ -252,10 +252,13 @@ def subPUTLIST(files: list) -> Response:
     capacity = Config['capacity']
     # Ordered merge sort
     new_key_queue = []
-    new_mem_dict = []
+    new_mem_dict = {}
     filesize = 0 # Set it back to 0
     for file in files:
         key = file.pop("key")
+        s = file["last_access"]
+        print(s)
+        file["last_access"] = datetime.strptime(s[:26], '%Y-%m-%d %H:%M:%S.%f')
         if (len(key_queue) > 0): # if previous key queue not depleted
             key_old = key_queue[0] # peek the head of the old key queue
             while file["last_access"] <= mem_dict[key_old]["last_access"]: # key that previously in the node is newer
@@ -263,15 +266,18 @@ def subPUTLIST(files: list) -> Response:
                 size = len(mem_dict[key_old]["file"])
                 if size + filesize > capacity: break
                 new_key_queue.append(key_old)
-                new_key_queue[key] = mem_dict[key_old]
+                new_mem_dict[key_old] = mem_dict[key_old]
                 filesize += size
                 key_old = key_queue.pop(0) # remove this element from the previous key queue
+                # grab new element if not empty
+                if len(key_queue) == 0: break
+                key_old = key_queue[0]
                 
         # Store a file from incoming file list if key is newer or previous key_queue has depleted
         size = len(file["file"])
         if size + filesize > capacity: break
         new_key_queue.append(key)
-        new_key_queue[key] = file
+        new_mem_dict[key] = file
         filesize += size
     else: # All file in incoming file list are stored but not reach the capacity limit yet
         for key_old in key_queue:
@@ -279,7 +285,7 @@ def subPUTLIST(files: list) -> Response:
             size = len(mem_dict[key_old]["file"])
             if size + filesize > capacity: break
             new_key_queue.append(key_old)
-            new_key_queue[key] = mem_dict[key_old]
+            new_mem_dict[key_old] = mem_dict[key_old]
             filesize += size
     
     # Update the storage
@@ -346,8 +352,7 @@ def subCLEAR():
 
 def subDROP(keys: list) -> Response:
     for key in keys:
-        mem_dict.pop(key)
-        key_queue.remove(key)
+        mem_invalidate(key)
     response = webapp.response_class(
         response=json.dumps('ok'),
         status=200,
@@ -372,7 +377,7 @@ def get_all() -> Response:
         files.append(d)
     
     response = webapp.response_class(
-        response=json.dumps(files),
+        response=json.dumps(files, default=str),
         status=200,
         mimetype='application/json',
     )
@@ -433,15 +438,16 @@ def keys():
         )
     return response
 
-@webapp.route('/refresh',methods= ['POST' , 'GET'])
+@webapp.route('/refresh', methods= ['POST' , 'GET'])
 def REFRESH():
     return refreshConfiguration()
 
-@webapp.route("/get/all")
+@webapp.route("/get/all", methods= ['POST' , 'GET'])
 def GETALL():
     return get_all()
 
-@webapp.route("/drop")
+@webapp.route("/drop", methods= ['POST' , 'GET'])
 def DROP():
-    keys = request.json[keys]
+    keys = request.json["keys"]
+    print(keys)
     return subDROP(keys)

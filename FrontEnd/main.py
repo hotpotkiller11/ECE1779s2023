@@ -241,7 +241,15 @@ def mem_config_set():
         return render_template("success.html", msg = "Configuration updated")
     else:
         return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
-
+    
+@webapp.route('/memory/pool', methods=['POST'])
+def mem_pool_set():
+    active = int(request.form.get('new_active'))
+    res = requests.post(backend + '/pool', json = {"new_active": active})
+    if (res.status_code == 200):
+        return render_template("success.html", msg = "Configuration updated")
+    else:
+        return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
 
 """The function used to store file in to static"""
 def saveDataToFile(filename:str, input:bytes):

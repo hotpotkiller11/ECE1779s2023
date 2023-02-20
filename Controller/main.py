@@ -1,9 +1,6 @@
 
 from flask import  request, Response
-import datetime
 from Controller import webapp, control
-import random
-import mysql.connector
 from Controller.config import db_config
 from apscheduler.schedulers.background import BackgroundScheduler
 from Controller.CacheController import CacheController
@@ -43,7 +40,7 @@ def GET():
     return forward_response(res)
 
 @webapp.route('/invalidatekey', methods=['POST', 'GET'])
-def GET():
+def INVALIDATE():
     key = request.json["key"]
     node = control.get_node(key)
     res = requests.post(node + "/invalidatekey", json = request.json)
@@ -76,7 +73,7 @@ def REFRESH():
     )
     return response
 
-@webapp.route('/keys',methods=['GET'])
+@webapp.route('/keys',methods=['GET', 'POST'])
 def keys():
     result = []
     active_nodes = control.activated_nodes()
@@ -104,6 +101,17 @@ def keys():
     # Return the response
     response = webapp.response_class(
         response=json.dumps({"count": n, "total_size": total_size, "nodes": result}),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route('/pool',methods=['POST'])
+def pool_config():
+    active = request.json["new_active"]
+    control.modify_pool_size(active)
+    response = webapp.response_class(
+        response=json.dumps("OK"),
         status=200,
         mimetype='application/json',
     )
