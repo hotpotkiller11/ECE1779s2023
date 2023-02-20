@@ -42,6 +42,13 @@ def GET():
     res = requests.post(node + "/get", json = request.json)
     return forward_response(res)
 
+@webapp.route('/invalidatekey', methods=['POST', 'GET'])
+def GET():
+    key = request.json["key"]
+    node = control.get_node(key)
+    res = requests.post(node + "/invalidatekey", json = request.json)
+    return forward_response(res)
+
 @webapp.route('/clear',methods=['POST', 'GET'])
 def CLEAR():
     # clear all activated nodes
