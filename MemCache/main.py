@@ -1,6 +1,6 @@
 
-from flask import  request, g
-import datetime
+from flask import  request, g, Response
+from datetime import datetime
 from MemCache import webapp
 import random
 import mysql.connector
@@ -138,7 +138,7 @@ def mem_add(key: str, file: bytes) -> bool:
     if size > capacity: return False
     if size + filesize > capacity:
         mem_cleanup(size)
-    mem_dict[key] = file
+    mem_dict[key] = {"file": file, "last_access": datetime.now()}
     key_queue.insert(0, key)
     filesize += size
     return True
@@ -165,7 +165,8 @@ def mem_get(key: str): #-> bytes | None:
     if key not in mem_dict: return None
     key_queue.remove(key)
     key_queue.insert(0, key) # Place the key to the most recent used
-    return mem_dict[key]
+    mem_dict[key]["last_access"] = datetime.now()
+    return mem_dict[key]["file"]
 
 def mem_invalidate(key: str) -> bool:
     '''
@@ -177,7 +178,7 @@ def mem_invalidate(key: str) -> bool:
     if key not in mem_dict: return False
     key_queue.remove(key)
     removed = mem_dict.pop(key)
-    filesize -= len(removed) # decrease size
+    filesize -= len(removed["file"]) # decrease size
     return True
 
 """Funcitions"""
@@ -237,6 +238,68 @@ def subPUT(key,value):
     )
     return response
 
+def subPUTLIST(files: list) -> Response:
+    """
+    Put a list of files into the cache
+    :param key: the key given by user
+    :param value: the file content
+    :return: JSON response
+    """
+    global filesize
+    global mem_dict
+    global key_queue
+    print("put list")
+    capacity = Config['capacity']
+    # Ordered merge sort
+    new_key_queue = []
+    new_mem_dict = {}
+    filesize = 0 # Set it back to 0
+    for file in files:
+        key = file.pop("key")
+        s = file["last_access"]
+        print(s)
+        file["last_access"] = datetime.strptime(s[:26], '%Y-%m-%d %H:%M:%S.%f')
+        if (len(key_queue) > 0): # if previous key queue not depleted
+            key_old = key_queue[0] # peek the head of the old key queue
+            while file["last_access"] <= mem_dict[key_old]["last_access"]: # key that previously in the node is newer
+                # store a element previously in the node
+                size = len(mem_dict[key_old]["file"])
+                if size + filesize > capacity: break
+                new_key_queue.append(key_old)
+                new_mem_dict[key_old] = mem_dict[key_old]
+                filesize += size
+                key_old = key_queue.pop(0) # remove this element from the previous key queue
+                # grab new element if not empty
+                if len(key_queue) == 0: break
+                key_old = key_queue[0]
+                
+        # Store a file from incoming file list if key is newer or previous key_queue has depleted
+        size = len(file["file"])
+        if size + filesize > capacity: break
+        new_key_queue.append(key)
+        new_mem_dict[key] = file
+        filesize += size
+    else: # All file in incoming file list are stored but not reach the capacity limit yet
+        for key_old in key_queue:
+            # Try to store all the keys in previous key queue until it reach the capacity limit
+            size = len(mem_dict[key_old]["file"])
+            if size + filesize > capacity: break
+            new_key_queue.append(key_old)
+            new_mem_dict[key_old] = mem_dict[key_old]
+            filesize += size
+    
+    # Update the storage
+    mem_dict  = new_mem_dict
+    key_queue = new_key_queue
+        
+    # print(res)
+    response = webapp.response_class(
+        response=json.dumps('ok'),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
 
 def subGET(key):
     """
@@ -287,6 +350,41 @@ def subCLEAR():
     )
     return response
 
+def subDROP(keys: list) -> Response:
+    for key in keys:
+        mem_invalidate(key)
+    response = webapp.response_class(
+        response=json.dumps('ok'),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+        
+
+def get_all() -> Response:
+    """ Get all files the node. Return all stored data.
+        The files will be returned in least recent used 
+        order from the newest to oldest
+
+    Returns:
+        Response: Stored files
+    """
+    files = []
+    
+    for key in key_queue:
+        d = {"key": key}
+        d.update(mem_dict[key]) # append mem_dict element with its key
+        files.append(d)
+    
+    response = webapp.response_class(
+        response=json.dumps(files, default=str),
+        status=200,
+        mimetype='application/json',
+    )
+    
+    return response
+    
+
 "interfaces"
 
 @webapp.route('/', methods=['POST', 'GET'])
@@ -299,6 +397,11 @@ def PUT():
     key = request.json["key"]
     value = request.json["value"]
     return subPUT(key,value)
+
+@webapp.route('/put/list', methods=['POST', 'GET'])
+def PUTLIST():
+    files = request.json
+    return subPUTLIST(files)
 
 @webapp.route('/get', methods=['POST', 'GET'])
 def GET():
@@ -335,6 +438,16 @@ def keys():
         )
     return response
 
-@webapp.route('/refresh',methods= ['POST' , 'GET'])
+@webapp.route('/refresh', methods= ['POST' , 'GET'])
 def REFRESH():
     return refreshConfiguration()
+
+@webapp.route("/get/all", methods= ['POST' , 'GET'])
+def GETALL():
+    return get_all()
+
+@webapp.route("/drop", methods= ['POST' , 'GET'])
+def DROP():
+    keys = request.json["keys"]
+    print(keys)
+    return subDROP(keys)

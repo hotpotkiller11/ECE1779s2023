@@ -1,9 +1,11 @@
 import hashlib
+import requests
 
 def get_hash(key: str) -> bytes:
     h = hashlib.md5(key.encode('utf-8')).hexdigest()
     # print(h)
     return h
+
 
 class CacheController:
     """ CacheController class provide an object that manage all 
@@ -72,17 +74,54 @@ class CacheController:
             ValueError: size not 
         """
         if size <= 0: raise ValueError("Size must greater than 0")
-        if size > size: raise ValueError("Size must smaller or equal to pool size (%d)" % (self.pool_size))
+        if size > len(self.memcache_nodes): raise ValueError("Size must smaller or equal to pool size (%d)" % (self.pool_size))
+        if size == self.pool_size: return # No modification
         self.pool_size = size
         new_partition_dict = {}
         # generate new partition dict
         for i in range(16):
             new_partition_dict[hex(i)[2:]] = self.memcache_nodes[i % size]
-    
+
+        # Find nodes that has lost any partition (they need to convey some files to new place)
+        shrunk_nodes = []
         for i in range(16):
-            if new_partition_dict[hex(i)[2:]] != self.partition_dict[hex(i)[2:]]:
-                # Notify node to convey data to new place
-                pass
+            node = self.partition_dict[hex(i)[2:]]
+            if node != new_partition_dict[hex(i)[2:]] and node not in shrunk_nodes:
+                shrunk_nodes.append(self.partition_dict[hex(i)[2:]])
         
         # Update the partition dict
         self.partition_dict = new_partition_dict
+        
+        for node in shrunk_nodes:
+            res = requests.post(node + "/get/all")
+            files = res.json() # list of all files (contains key, file and timestamp)
+            send_dict = {} # dictionary that defines files and its new storing node destination
+            drop_list = []
+            # Find files and its new destination
+            for file in files:
+                file_node = self.get_node(file["key"])
+                if file_node != node: 
+                    drop_list.append(file["key"]) # file to drop
+                    if file_node not in send_dict.keys():
+                        send_dict[file_node] = [file] # a list of file
+                    else:
+                        send_dict[file_node].append(file)
+            # send files to its new destination
+            for new_node in send_dict.keys():
+                res = requests.post(new_node + "/put/list", json = send_dict[new_node])
+                if res.status_code != 200: print("File transition filed (%s)" % (new_node))
+             
+            # Remove conveyed files from original node
+            if node in self.not_activated_nodes():
+                res = requests.post(node + "/clear")
+                if res.status_code != 200: print("Node clear failed (%s)" % (new_node))
+            else:
+                res = requests.post(node + "/drop", json = {"keys": drop_list})
+                
+                
+                    
+        
+        
+        
+        
+        

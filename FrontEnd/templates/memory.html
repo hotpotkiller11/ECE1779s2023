@@ -14,11 +14,13 @@
                 <div class="column_box">
                     <div class="column">
                         <h2>All keys in memory</h2>
+                        {% set active = namespace(value=0) %}
                         <p>{{n}} keys in total, {{size}} bytes used</p>
                         
                         {% for n in nodes %}
                             
                             {% if n.activate %}
+                            {% set active.value = active.value + 1 %}
                             <p><b>Node {{n.id}}</b>: <span style="color:green">activated</span> ({{n.size}})</p>
                                 
                                 {% if n.key|length > 0 %}
@@ -37,6 +39,39 @@
                         <a href = "{{ url_for('mem_key_delete') }}">Delete all figure cache</a>
                     </div>
                     <div class="column">
+                        <h2>Memcache Pool Configurations</h2>
+                            <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
+                            <form method="post" action="{{ url_for('mem_pool_set') }}">
+                                <p><b>Change active node</b></p>
+                                <p>
+                                    <input type="range" min="1" max="{{ nodes|length }}" value="{{ active.value }}" id="new_active" name="new_active">
+                                    value: <span id="value"></span>
+                                </p>
+                                <p>
+                                    <input type="button" onclick="halven()" value="halven active node">
+                                    <input type="button" onclick="double()" value="double active node">
+                                </p>
+                                <input type="submit">
+                            </form>
+                            <script>
+                                var slider = document.getElementById("new_active");
+                                var output = document.getElementById("value");
+                                output.innerHTML = slider.value; // Initialization
+                                
+                                slider.oninput = function() {
+                                    output.innerHTML = this.value;
+                                }
+
+                                function double() {
+                                    slider.value = Math.min(slider.value * 2, slider.max)
+                                    output.innerHTML = slider.value
+                                }
+
+                                function halven() {
+                                    slider.value = Math.max(slider.value / 2, slider.min)
+                                    output.innerHTML = slider.value
+                                }
+                            </script>
                         <h2>Memcache Node Configurations</h2>
                         <p>Current configurations:</p>
                         <ul>
