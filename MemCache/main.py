@@ -88,7 +88,7 @@ def RandomReplacement(size: int) -> None: #random
         remove_index = random.randint(0, len(key_queue) - 1)
         removed_key = key_queue.pop(remove_index)
         removed_file = mem_dict.pop(removed_key)
-        filesize -= len(removed_file)
+        filesize -= len(removed_file['file'])
 
 
 def LeastRecentlyUsed(size: int) -> None: #LRU
@@ -102,7 +102,7 @@ def LeastRecentlyUsed(size: int) -> None: #LRU
     while filesize + size > capacity:
         removed_key = key_queue.pop() # The last one in the LRU list will be removed
         removed_file = mem_dict.pop(removed_key)
-        filesize -= len(removed_file)
+        filesize -= len(removed_file['file'])
 
 
 def mem_cleanup(size: int) -> bool:
