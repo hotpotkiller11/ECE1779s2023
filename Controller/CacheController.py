@@ -74,7 +74,7 @@ class CacheController:
             ValueError: size not 
         """
         if size <= 0: raise ValueError("Size must greater than 0")
-        if size > size: raise ValueError("Size must smaller or equal to pool size (%d)" % (self.pool_size))
+        if size > len(self.memcache_nodes): raise ValueError("Size must smaller or equal to pool size (%d)" % (self.pool_size))
         if size == self.pool_size: return # No modification
         self.pool_size = size
         new_partition_dict = {}
