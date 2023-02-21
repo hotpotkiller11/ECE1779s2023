@@ -60,7 +60,7 @@ def all_key_delete():
     :return: error or success info html
     """
     result = key_path.delete_all_key_path_term()
-    result2 = deleteFile("")
+    result2 = clear_figure_S3()
     res = requests.get(backend + '/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
@@ -349,3 +349,13 @@ def page_not_found(e):
     :return: 404.html
     """
     return render_template('404.html')
+
+def clear_figure_S3():
+    """
+    clear all images in S3 bucket
+    :return: bool
+    """
+    s3_clear = boto3.resource('s3',config=config)
+    bucket = s3_clear.Bucket('ece1779-ass2-bucket')
+    bucket.objects.all().delete()
+    return True
