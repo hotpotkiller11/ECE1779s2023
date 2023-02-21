@@ -24,7 +24,7 @@ body {
     align-items:center;
 }
 a {display: inline-block}
-button {
+.home_button {
     width: 30vmin;
     height: 30vmin;
     border: none;
@@ -64,7 +64,7 @@ h1, h2{
     flex: 50%;
 }
 
-button:hover {
+.home_button:hover {
     font-weight: bold;
 }
 
