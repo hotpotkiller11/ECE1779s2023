@@ -16,8 +16,8 @@ class CacheController:
         Fixed 16 partitions (16 nodes)
     """
 
-    memcache_nodes = []
-    pool_size = 0
+    memcache_nodes = [] # Nodes (activated + not activated)
+    pool_size = 0 # Activated node count
     partition_dict = {} # used to map partition with memcache nodes
 
     def __init__(self, memcache_servers: list[str]):
