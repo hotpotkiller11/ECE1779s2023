@@ -114,7 +114,7 @@ def process_figure(request, key):
                     # if deleteFile(original):
                     #     print("File replaced: %s" % original)
                     # file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                    s3.delete_object (Bucket= 'ece1779-ass2-bucket', Key=filename)
+                    s3.delete_object (Bucket= 'ece1779-ass2-bucket', Key=original)
                     base64_image = base64.b64encode(file.read())
                     s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket', ContentType='image')
                     key_path.add_key_and_path(key, filename)
