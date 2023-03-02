@@ -5,24 +5,26 @@ from MemCache import webapp
 import random
 import mysql.connector
 from MemCache.config import db_config
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
+#from apscheduler.schedulers.background import BackgroundScheduler
+#import atexit
 import json
-
-
+from MemCache.stater import Stater
 
 """Global variables"""
 global Config
 
 """statistical info"""
 global filesize # Size of the current figures in cache memory (unit: byte)
+stater = Stater()
+"""
 miss = 0
 hit = 0
 reqs = 0
 total_reqs = 0
 total_miss = 0
 total_hit = 0
-stat_list = [] # (hit, miss) queue, update every 5 seconds
+stat_list = []
+""" # (hit, miss) queue, update every 5 seconds
 
 
 """mem cache structure"""
@@ -35,7 +37,6 @@ def init_db():
     initialization database
     :return: database initialization
     """
-
     return mysql.connector.connect(user=db_config['user'],
                                    password=db_config['password'],
                                    host=db_config['host'],
@@ -189,8 +190,8 @@ def invalidateKey(key):
     :param key: the key to be invalidate
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
+    print(stater.reqs)
     print("invalidate key")
     result = mem_invalidate(key)
     if result == False:
@@ -207,8 +208,7 @@ def refreshConfiguration():
     read the configuration info
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("refresh configuration")
     get_config_info()   #configuration refresh, read in refresh
     mem_cleanup(0) # clean up mem until maximum capacity reached
@@ -226,8 +226,7 @@ def subPUT(key,value):
     :param value: the file content
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("put")
     res = mem_add(key, value)
     # print(res)
@@ -307,10 +306,7 @@ def subGET(key):
     :param key: the key to be get
     :return: JSON response
     """
-    global hit
-    global miss
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("get")
     img = mem_get(key)
     if img is not None:
@@ -324,14 +320,14 @@ def subGET(key):
             status=200,
             mimetype='application/json',
         )
-        hit += 1
+        stater.hit += 1
     else:
         response = webapp.response_class(
             response=json.dumps("MISS"),
             status=404,
             mimetype='application/json',
         )
-        miss += 1
+        stater.miss += 1
     return response
 
 def subCLEAR():
@@ -339,8 +335,7 @@ def subCLEAR():
     call  mem_clear() to clean the cache
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("clear")
     mem_clear()
     response = webapp.response_class(

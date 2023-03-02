@@ -98,6 +98,26 @@ class CloudWatchWrapper:
             raise
         return stat
 
+    def post_statistics(self):
+        self.cloudwatch_resource.put_metric_data(
+            MetricData=[
+                {
+                    'MetricName': 'PAGES_VISITED',
+                    'Dimensions': [
+                        {
+                            'Name': 'UNIQUE_PAGES',
+                            'Value': 'URLS'
+                        },
+                    ],
+                    'Unit': 'None',
+                    'Value': 1.0
+                },
+            ],
+            Namespace='CACHE/STATISTIC'
+        )
+        return "success"
+
+
 if __name__ == '__main__':
     client = boto3.client('cloudwatch')
     statManager = CloudWatchWrapper(client)
