@@ -27,7 +27,7 @@ class CacheController:
             memcache_servers (list[str]): list of addresses of the memcache node
         """
         assert(len(memcache_servers) > 0)
-        self.memcache_nodes = memcache_servers
+        self.memcache_nodes = memcache_servers# IPs
         self.pool_size = 1
         # 16 partitions all map to the same node
         for i in range(16):

@@ -108,7 +108,7 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60,EC2id=''):
+    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60, EC2id=[]):
         misslist = []
         for i in EC2id:
             stat = self.cloudwatch_resource.client.get_metric_statistics(
@@ -121,7 +121,7 @@ class CloudWatchWrapper:
                 Unit='Percent',
                 Dimensions=[{'Name': 'InstanceId', 'Value': i}])
             misslist.appent(stat)
-        return stat
+        return misslist
 
 if __name__ == '__main__':
     client = boto3.client('cloudwatch')
