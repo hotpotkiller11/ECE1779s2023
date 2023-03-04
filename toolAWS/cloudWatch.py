@@ -59,7 +59,7 @@ class CloudWatchWrapper:
         :return: json stat
         """
         try:
-            stat = self.cloudwatch_resource.client.get_metric_statistics(
+            stat = client.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=60 * 60),
                 EndTime=datetime.utcnow() - timedelta(seconds=0 * 60),
@@ -78,7 +78,7 @@ class CloudWatchWrapper:
             missrate: value to send
             instance_name: current memcache instance identifier (could be anything based on your implementation)
         """
-        response = self.cloudwatch_resource.client.put_metric_data(
+        response = client.put_metric_data(
             MetricData=[{
                 'MetricName': 'miss_rate',
                 'Dimensions': [{
@@ -111,7 +111,7 @@ class CloudWatchWrapper:
     def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60, EC2id=[]):
         misslist = []
         for i in EC2id:
-            stat = self.cloudwatch_resource.client.get_metric_statistics(
+            stat = client.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=intervals),
                 EndTime=datetime.utcnow() - timedelta(seconds=intervals),
