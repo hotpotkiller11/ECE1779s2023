@@ -28,12 +28,12 @@ class EC2Wrapper:
             self.ec2_resource.instances.filter(InstanceIds=[instance.id]).terminate()
         #self.ec2_resource.instances.terminate()
 
-    def startInstance(id):
+    def startInstance(self,id):
         """
         start instance by id
         :return: response
         """
-        instance = ec2.instances.filter(InstanceIds=[id])
+        instance = self.ec2_resource.instances.filter(InstanceIds=[id])
         if instance is None:
             logger.info("No instance to start.")
             return 0
@@ -48,12 +48,12 @@ class EC2Wrapper:
         else:
             return response
 
-    def stop(id):
+    def stop(self, id):
         """
         Stops an instance and waits for it to be in a stopped state.
         :return: The response to the stop request.
         """
-        instance = ec2.instances.filter(InstanceIds=[id])
+        instance = self.ec2_resource.instances.filter(InstanceIds=[id])
         if instance is None:
                 logger.info("No instance to stop.")
                 return
