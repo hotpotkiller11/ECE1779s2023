@@ -10,9 +10,6 @@ import boto3
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
-        """
-        :param cloudwatch_resource: A Boto3 CloudWatch resource.
-        """
         self.cloudwatch_resource = cloudwatch_resource
 
     def create_metric_alarm(
@@ -55,29 +52,6 @@ class CloudWatchWrapper:
         else:
             return alarm
 
-    def list_metrics(self, namespace, name, recent=False):
-        """
-        Gets the metrics within a namespace that have the specified name.
-        If the metric has no dimensions, a single metric is returned.
-        Otherwise, metrics for all dimensions are returned.
-
-        :param namespace: The namespace of the metric.
-        :param name: The name of the metric.
-        :param recent: When True, only metrics that have been active in the last
-                       three hours are returned.
-        :return: An iterator that yields the retrieved metrics.
-        """
-        try:
-            kwargs = {'Namespace': namespace, 'MetricName': name}
-            if recent:
-                kwargs['RecentlyActive'] = 'PT3H'  # List past 3 hours only
-            metric_iter = self.cloudwatch_resource.metrics.filter(**kwargs)
-            logger.info("Got metrics for %s.%s.", namespace, name)
-        except ClientError:
-            logger.exception("Couldn't get metrics for %s.%s.", namespace, name)
-            raise
-        else:
-            return metric_iter
     def list_statistics(self, metric_name, period):
         """
         :param metric_name: see listed commands above
@@ -85,12 +59,12 @@ class CloudWatchWrapper:
         :return: json stat
         """
         try:
-            stat = client.get_metric_statistics(
+            stat = self.cloudwatch_resource.client.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=60 * 60),
                 EndTime=datetime.utcnow() - timedelta(seconds=0 * 60),
                 MetricName=metric_name,
-                Namespace='AWS/EC2',  # Unit='Percent',
+                Namespace='1779/STATISTIC',  # Unit='Percent',
                 Statistics=['Maximum'],
                 Dimensions=[{'Name': 'InstanceId', 'Value': 'i-09c738fc558cb24a6'}])
         except ClientError:
@@ -98,25 +72,56 @@ class CloudWatchWrapper:
             raise
         return stat
 
-    def post_statistics(self):
-        self.cloudwatch_resource.put_metric_data(
-            MetricData=[
-                {
-                    'MetricName': 'PAGES_VISITED',
-                    'Dimensions': [
-                        {
-                            'Name': 'UNIQUE_PAGES',
-                            'Value': 'URLS'
-                        },
-                    ],
-                    'Unit': 'None',
-                    'Value': 1.0
-                },
-            ],
-            Namespace='CACHE/STATISTIC'
-        )
-        return "success"
+    def post_missrate(self, missrate, instance_id):
+        """
+            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            missrate: value to send
+            instance_name: current memcache instance identifier (could be anything based on your implementation)
+        """
+        response = self.cloudwatch_resource.client.put_metric_data(
+            MetricData=[{
+                'MetricName': 'miss_rate',
+                'Dimensions': [{
+                    'Name': 'instance',
+                    'Value': instance_id
+                }],
+                'Unit': 'Percent',
+                'Value': missrate}],
+            Namespace='1779/STATISTIC')
+        return response
 
+    def post_hitrate(self, hitrate, instance_id):
+        """
+            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            missrate: value to send
+            instance_name: current memcache instance identifier (could be anything based on your implementation)
+        """
+        response = self.cloudwatch_resource.client.put_metric_data(
+            MetricData=[{
+                'MetricName': 'hit_rate',
+                'Dimensions': [{
+                    'Name': 'instance',
+                    'Value': instance_id
+                }],
+                'Unit': 'Percent',
+                'Value': hitrate}],
+            Namespace='1779/STATISTIC')
+        return response
+
+    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60,EC2id=''):
+        misslist = []
+        for i in EC2id:
+            stat = self.cloudwatch_resource.client.get_metric_statistics(
+                Period=period,
+                StartTime=datetime.utcnow() - timedelta(seconds=intervals),
+                EndTime=datetime.utcnow() - timedelta(seconds=intervals),
+                MetricName=metric_name,
+                Namespace='1779/STATISTIC',
+                Statistics=['Maximum'],
+                Unit='Percent',
+                Dimensions=[{'Name': 'InstanceId', 'Value': i}])
+            misslist.appent(stat)
+        return stat
 
 if __name__ == '__main__':
     client = boto3.client('cloudwatch')

@@ -3,7 +3,6 @@ import requests
 
 def get_hash(key: str) -> bytes:
     h = hashlib.md5(key.encode('utf-8')).hexdigest()
-    # print(h)
     return h
 
 
@@ -118,10 +117,5 @@ class CacheController:
             else:
                 res = requests.post(node + "/drop", json = {"keys": drop_list})
                 
-                
-                    
-        
-        
-        
-        
+
         

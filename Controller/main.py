@@ -1,10 +1,6 @@
 
 from flask import  request, Response
 from Controller import webapp, control
-from Controller.config import db_config
-from apscheduler.schedulers.background import BackgroundScheduler
-from Controller.CacheController import CacheController
-import atexit
 import json
 import requests
 
