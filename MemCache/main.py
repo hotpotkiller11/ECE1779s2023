@@ -76,7 +76,7 @@ def get_config_info():
 def write_stat():
     """
     writing stat in to the configuration table in database
-    :return: NaN
+    :return: None
     """
     with webapp.app_context():
         statManager.post_req(stater.reqs)
@@ -85,7 +85,7 @@ def write_stat():
 
         statManager.post_numitem(len(key_queue))
         statManager.post_size(filesize)
-        # Reset after each sql commit
+        # Reset after each stater commit
         stater.hit = 0
         stater.miss = 0
         stater.reqs = 0
