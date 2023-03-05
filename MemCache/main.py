@@ -5,10 +5,12 @@ from MemCache import webapp
 import random
 import mysql.connector
 from MemCache.config import db_config
-#from apscheduler.schedulers.background import BackgroundScheduler
-#import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 import json
 from MemCache.stater import Stater
+from toolAWS.cloudWatch import CloudWatchWrapper
+import boto3
 
 """Global variables"""
 global Config
@@ -16,15 +18,8 @@ global Config
 """statistical info"""
 global filesize # Size of the current figures in cache memory (unit: byte)
 stater = Stater()
-"""
-miss = 0
-hit = 0
-reqs = 0
-total_reqs = 0
-total_miss = 0
-total_hit = 0
-stat_list = []
-""" # (hit, miss) queue, update every 5 seconds
+client = boto3.client('cloudwatch')
+statManager = CloudWatchWrapper(client)
 
 
 """mem cache structure"""
@@ -76,6 +71,35 @@ def get_config_info():
     global Config
     print(rows[0][0],rows[0][1])
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
+
+
+def write_stat():
+    """
+    writing stat in to the configuration table in database
+    :return: NaN
+    """
+    with webapp.app_context():
+        statManager.post_req(stater.reqs)
+        statManager.post_hit(stater.hit)
+        statManager.post_hit(stater.miss)
+
+        statManager.post_numitem(len(key_queue))
+        statManager.post_size(filesize)
+        # Reset after each sql commit
+        stater.hit = 0
+        stater.miss = 0
+        stater.reqs = 0
+
+
+with webapp.app_context():
+    """
+    looping for 5 seconds, doing job write stat
+    """
+    # get_config_info()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
 
 def RandomReplacement(size: int) -> None: #random
     """

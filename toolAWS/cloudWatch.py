@@ -81,7 +81,7 @@ class CloudWatchWrapper:
             raise
         return stat
 
-    def post_missrate(self, missrate):
+    def post_miss(self, missrate):
         """
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
@@ -102,7 +102,7 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def post_hitrate(self, hitrate):
+    def post_hit(self, hitrate):
         """
             Send Memcache Hit Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
