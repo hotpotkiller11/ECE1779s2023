@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from botocore.args import logger
 from botocore.exceptions import ClientError
@@ -6,6 +7,14 @@ import boto3
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
 # StatusCheckFailed_System
+def getCurrentID():
+    '''
+    get the current ec2 id
+    return: string id
+    '''
+    id = os.system('wget -q -O - http://169.254.169.254/latest/meta-data/instance-id')
+    print(id)
+    return id
 
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
@@ -72,12 +81,14 @@ class CloudWatchWrapper:
             raise
         return stat
 
-    def post_missrate(self, missrate, instance_id):
+    def post_missrate(self, missrate):
         """
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
-            instance_name: current memcache instance identifier (could be anything based on your implementation)
         """
+        instance_id = getCurrentID()
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = client.put_metric_data(
             MetricData=[{
                 'MetricName': 'miss_rate',
@@ -85,17 +96,20 @@ class CloudWatchWrapper:
                     'Name': 'instance',
                     'Value': instance_id
                 }],
+                'Timestamp': now,
                 'Unit': 'Percent',
                 'Value': missrate}],
             Namespace='1779/STATISTIC')
         return response
 
-    def post_hitrate(self, hitrate, instance_id):
+    def post_hitrate(self, hitrate):
         """
-            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            Send Memcache Hit Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
-            instance_name: current memcache instance identifier (could be anything based on your implementation)
         """
+        instance_id = getCurrentID()
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.client.put_metric_data(
             MetricData=[{
                 'MetricName': 'hit_rate',
@@ -103,8 +117,72 @@ class CloudWatchWrapper:
                     'Name': 'instance',
                     'Value': instance_id
                 }],
+                'Timestamp': now,
                 'Unit': 'Percent',
                 'Value': hitrate}],
+            Namespace='1779/STATISTIC')
+        return response
+
+    def post_numitem(self, numitem):
+        """
+            Send Memcache items to AWS Cloudwatch. Return a response message.
+            numitem: value to send
+        """
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
+        instance_id = getCurrentID()
+        response = self.cloudwatch_resource.client.put_metric_data(
+            MetricData=[{
+                'MetricName': 'numitem',
+                'Dimensions': [{
+                    'Name': 'instance',
+                    'Value': instance_id
+                }],
+                'Timestamp': now,
+                'Unit': 'Percent',
+                'Value': numitem}],
+            Namespace='1779/STATISTIC')
+        return response
+
+    def post_size(self, filesize):
+        """
+            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            filesize: value to send
+        """
+        instance_id = getCurrentID()
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
+        response = self.cloudwatch_resource.client.put_metric_data(
+            MetricData=[{
+                'MetricName': 'numitem',
+                'Dimensions': [{
+                    'Name': 'instance',
+                    'Value': instance_id
+                }],
+                'Timestamp': now,
+                'Unit': 'Percent',
+                'Value': filesize}],
+            Namespace='1779/STATISTIC')
+        return response
+
+    def post_req(self,req):
+        """
+            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            filesize: value to send
+        """
+        instance_id = getCurrentID()
+        now = datetime.datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
+        response = self.cloudwatch_resource.client.put_metric_data(
+            MetricData=[{
+                'MetricName': 'req',
+                'Dimensions': [{
+                    'Name': 'instance',
+                    'Value': instance_id
+                }],
+                'Timestamp': now,
+                'Unit': 'Percent',
+                'Value': req}],
             Namespace='1779/STATISTIC')
         return response
 
@@ -127,3 +205,5 @@ if __name__ == '__main__':
     client = boto3.client('cloudwatch')
     statManager = CloudWatchWrapper(client)
     print(statManager.list_statistics('CPUUtilization',1*60))
+    statManager.list_statistics('CPUUtilization', 1 * 60)
+
