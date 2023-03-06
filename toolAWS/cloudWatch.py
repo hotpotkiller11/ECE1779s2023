@@ -142,14 +142,14 @@ class CloudWatchWrapper:
                     'Value': instance_id
                 }],
                 'Timestamp': now,
-                'Unit': 'Percent',
+                'Unit': 'Count',
                 'Value': numitem}],
             Namespace='1779/STATISTIC')
         return response
 
     def post_size(self, filesize):
         """
-            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            Send Memcache current file size to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
         # instance_id = getCurrentID()
@@ -164,14 +164,14 @@ class CloudWatchWrapper:
                     'Value': instance_id
                 }],
                 'Timestamp': now,
-                'Unit': 'Percent',
+                'Unit': 'Count',
                 'Value': filesize}],
             Namespace='1779/STATISTIC')
         return response
 
     def post_req(self,req):
         """
-            Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
+            Send Memcache count to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
         #instance_id = getCurrentID()
@@ -186,7 +186,7 @@ class CloudWatchWrapper:
                     'Value': instance_id
                 }],
                 'Timestamp': now,
-                'Unit': 'Percent',
+                'Unit': 'Count',
                 'Value': req}],
             Namespace='1779/STATISTIC')
         return response
