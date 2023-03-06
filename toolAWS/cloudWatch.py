@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from botocore.args import logger
 from botocore.exceptions import ClientError
 import boto3
+import subprocess
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
@@ -12,10 +13,10 @@ def getCurrentID() -> str:
     get the current ec2 id
     return: string id
     '''
-    id = os.system('wget -q -O - http://169.254.169.254/latest/meta-data/instance-id')
-    res = str(id)[:-1]
-    print(res)
-    return str(res)
+    x = subprocess.check_output(['wget', '-q', '-O', '-', 'http://169.254.169.254/latest/meta-data/instance-id'])
+    id = x.decode("utf-8")
+    print(id)
+    return id
 
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
