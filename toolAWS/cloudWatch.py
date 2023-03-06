@@ -68,7 +68,7 @@ class CloudWatchWrapper:
         :return: json stat
         """
         try:
-            stat = client.get_metric_statistics(
+            stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=60 * 60),
                 EndTime=datetime.utcnow() - timedelta(seconds=0 * 60),
@@ -86,10 +86,11 @@ class CloudWatchWrapper:
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        instance_id = getCurrentID()
-        now = datetime.datetime.now()
+        # instance_id = getCurrentID()
+        instance_id = 'i-09c738fc558cb24a6'
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        response = client.put_metric_data(
+        response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'miss_rate',
                 'Dimensions': [{
@@ -97,7 +98,7 @@ class CloudWatchWrapper:
                     'Value': instance_id
                 }],
                 'Timestamp': now,
-                'Unit': 'Percent',
+                'Unit': 'Count',
                 'Value': missrate}],
             Namespace='1779/STATISTIC')
         return response
@@ -107,10 +108,11 @@ class CloudWatchWrapper:
             Send Memcache Hit Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        instance_id = getCurrentID()
-        now = datetime.datetime.now()
+        # instance_id = getCurrentID()
+        instance_id = 'i-09c738fc558cb24a6'
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        response = self.cloudwatch_resource.client.put_metric_data(
+        response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'hit_rate',
                 'Dimensions': [{
@@ -128,10 +130,11 @@ class CloudWatchWrapper:
             Send Memcache items to AWS Cloudwatch. Return a response message.
             numitem: value to send
         """
-        now = datetime.datetime.now()
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        instance_id = getCurrentID()
-        response = self.cloudwatch_resource.client.put_metric_data(
+        # instance_id = getCurrentID()
+        instance_id = 'i-09c738fc558cb24a6'
+        response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'numitem',
                 'Dimensions': [{
@@ -149,10 +152,11 @@ class CloudWatchWrapper:
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        instance_id = getCurrentID()
-        now = datetime.datetime.now()
+        # instance_id = getCurrentID()
+        instance_id = 'i-09c738fc558cb24a6'
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        response = self.cloudwatch_resource.client.put_metric_data(
+        response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'numitem',
                 'Dimensions': [{
@@ -170,10 +174,11 @@ class CloudWatchWrapper:
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        instance_id = getCurrentID()
-        now = datetime.datetime.now()
+        #instance_id = getCurrentID()
+        instance_id = 'i-09c738fc558cb24a6'
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        response = self.cloudwatch_resource.client.put_metric_data(
+        response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'req',
                 'Dimensions': [{
@@ -186,10 +191,10 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60, EC2id=[]):
+    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60, EC2id=[]):# add id list in
         misslist = []
         for i in EC2id:
-            stat = client.get_metric_statistics(
+            stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=intervals),
                 EndTime=datetime.utcnow() - timedelta(seconds=intervals),
@@ -204,6 +209,6 @@ class CloudWatchWrapper:
 if __name__ == '__main__':
     client = boto3.client('cloudwatch')
     statManager = CloudWatchWrapper(client)
-    print(statManager.list_statistics('CPUUtilization',1*60))
-    statManager.list_statistics('CPUUtilization', 1 * 60)
+    #print(statManager.list_statistics('CPUUtilization',1*60))
+    statManager.post_req(0)
 

@@ -89,6 +89,7 @@ def write_stat():
         stater.hit = 0
         stater.miss = 0
         stater.reqs = 0
+        print("success looping")
 
 
 with webapp.app_context():
