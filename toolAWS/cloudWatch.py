@@ -196,12 +196,17 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_missmean(self, EC2id):# add id list in
+    def monitor_mean(self, EC2id):# add id list in
+        """
+        should calc for mean for 'miss'/'hit'
+        :param EC2id:
+        :return:
+        """
         misslist = []
         metric_name = 'miss'
         intervals = 30
         period = 60
-        for i in EC2id:
+        for id in EC2id:
             stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=intervals),
@@ -210,12 +215,34 @@ class CloudWatchWrapper:
                 Namespace='1779/STATISTIC',
                 Statistics=['Maximum'],
                 Unit='Count',
-                Dimensions=[{'Name': 'InstanceId', 'Value': i}])
+                Dimensions=[{'Name': 'InstanceId', 'Value': id}])
             misslist.append(stat['Datapoints'])
-
-
         print(misslist)
         return misslist
+
+    def monitor_sum(self, metric_name, intervals=30,period = 60,EC2id=[]):  # add id list in
+        """
+        calc for sum between ec2 instances
+        :param metric_name: 'size'/'numitem'/'req'
+        :param intervals:
+        :param period:
+        :param EC2id: id list
+        :return:
+        """
+        #sizelist = []
+        #sum = 0
+        for id in EC2id:
+            stat = self.cloudwatch_resource.get_metric_statistics(
+                Period=period,
+                StartTime=datetime.utcnow() - timedelta(seconds=intervals),
+                EndTime=datetime.utcnow(),
+                MetricName=metric_name,
+                Namespace='1779/STATISTIC',
+                Statistics=['Maximum'],
+                Unit='Count',
+                Dimensions=[{'Name': 'InstanceId', 'Value': id}])
+            #sum += stat['Datapoints'][-1]
+
 
 if __name__ == '__main__':
 
