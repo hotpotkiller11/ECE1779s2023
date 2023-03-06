@@ -13,8 +13,9 @@ def getCurrentID() -> str:
     return: string id
     '''
     id = os.system('wget -q -O - http://169.254.169.254/latest/meta-data/instance-id')
-    print(id)
-    return str(id)[:-1]
+    res = str(id)[:-1]
+    print(res)
+    return str(res)
 
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
