@@ -123,7 +123,7 @@ class CloudWatchWrapper:
                     'Value': instance_id
                 }],
                 'Timestamp': now,
-                'Unit': 'Percent',
+                'Unit': 'Count',
                 'Value': hitrate}],
             Namespace='1779/STATISTIC')
         return response
