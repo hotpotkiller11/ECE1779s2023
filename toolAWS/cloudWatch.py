@@ -7,14 +7,14 @@ import boto3
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
 # StatusCheckFailed_System
-def getCurrentID():
+def getCurrentID() -> str:
     '''
     get the current ec2 id
     return: string id
     '''
     id = os.system('wget -q -O - http://169.254.169.254/latest/meta-data/instance-id')
     print(id)
-    return id
+    return str(id)
 
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
