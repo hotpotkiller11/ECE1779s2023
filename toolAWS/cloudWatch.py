@@ -92,7 +92,7 @@ class CloudWatchWrapper:
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
-                'MetricName': 'miss_rate',
+                'MetricName': 'miss',
                 'Dimensions': [{
                     'Name': 'instance',
                     'Value': instance_id
@@ -114,7 +114,7 @@ class CloudWatchWrapper:
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
-                'MetricName': 'hit_rate',
+                'MetricName': 'hit',
                 'Dimensions': [{
                     'Name': 'instance',
                     'Value': instance_id
