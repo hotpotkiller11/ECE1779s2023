@@ -54,7 +54,6 @@ def teardown_db(exception):
     if db is not None:
         db.close()
 
-
 def get_config_info():
     """
     get the information of the configuration

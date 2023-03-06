@@ -38,6 +38,4 @@ cnx.commit()
 cursor.close()
 cnx.close()
 
-cnx.close()
-
 # main.Config = {'capacity': 400, 'policy': "random"}
