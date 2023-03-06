@@ -14,12 +14,13 @@ def getCurrentID() -> str:
     '''
     id = os.system('wget -q -O - http://169.254.169.254/latest/meta-data/instance-id')
     print(id)
-    return str(id)
+    return str(id)[:-1]
 
 class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
         self.cloudwatch_resource = cloudwatch_resource
+        self.current_id = getCurrentID()
 
     def create_metric_alarm(
             self, metric_namespace, metric_name, alarm_name, stat_type, period,
@@ -86,7 +87,7 @@ class CloudWatchWrapper:
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        instance_id = getCurrentID()
+        instance_id = self.current_id
         #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -108,7 +109,7 @@ class CloudWatchWrapper:
             Send Memcache Hit Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        instance_id = getCurrentID()
+        instance_id = self.current_id
         #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -132,7 +133,7 @@ class CloudWatchWrapper:
         """
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        instance_id = getCurrentID()
+        instance_id = self.current_id
         #instance_id = 'i-09c738fc558cb24a6'
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
@@ -152,7 +153,7 @@ class CloudWatchWrapper:
             Send Memcache current file size to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        instance_id = getCurrentID()
+        instance_id = self.current_id
         #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -174,7 +175,7 @@ class CloudWatchWrapper:
             Send Memcache count to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        instance_id = getCurrentID()
+        instance_id = self.current_id
         #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
