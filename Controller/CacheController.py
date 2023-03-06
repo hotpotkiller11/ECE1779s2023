@@ -3,7 +3,6 @@ import requests
 
 def get_hash(key: str) -> bytes:
     h = hashlib.md5(key.encode('utf-8')).hexdigest()
-    # print(h)
     return h
 
 
@@ -28,7 +27,7 @@ class CacheController:
             memcache_servers (list[str]): list of addresses of the memcache node
         """
         assert(len(memcache_servers) > 0)
-        self.memcache_nodes = memcache_servers
+        self.memcache_nodes = memcache_servers# IPs
         self.pool_size = 1
         # 16 partitions all map to the same node
         for i in range(16):
@@ -118,4 +117,5 @@ class CacheController:
         for new_node in send_dict.keys():
                 res = requests.post(new_node + "/put/list", json = send_dict[new_node])
                 if res.status_code != 200: print("File transition filed (%s)" % (new_node))
+
         

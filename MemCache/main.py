@@ -8,21 +8,18 @@ from MemCache.config import db_config
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json
-
-
+from MemCache.stater import Stater
+from toolAWS.cloudWatch import CloudWatchWrapper
+import boto3
 
 """Global variables"""
 global Config
 
 """statistical info"""
 global filesize # Size of the current figures in cache memory (unit: byte)
-miss = 0
-hit = 0
-reqs = 0
-total_reqs = 0
-total_miss = 0
-total_hit = 0
-stat_list = [] # (hit, miss) queue, update every 5 seconds
+stater = Stater()
+client = boto3.client('cloudwatch')
+statManager = CloudWatchWrapper(client)
 
 
 """mem cache structure"""
@@ -35,7 +32,6 @@ def init_db():
     initialization database
     :return: database initialization
     """
-
     return mysql.connector.connect(user=db_config['user'],
                                    password=db_config['password'],
                                    host=db_config['host'],
@@ -74,6 +70,36 @@ def get_config_info():
     global Config
     print(rows[0][0],rows[0][1])
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
+
+
+def write_stat():
+    """
+    writing stat in to the configuration table in database
+    :return: None
+    """
+    with webapp.app_context():
+        statManager.post_req(stater.reqs)
+        statManager.post_hit(stater.hit)
+        statManager.post_miss(stater.miss)
+
+        statManager.post_numitem(len(key_queue))
+        statManager.post_size(filesize)
+        # Reset after each stater commit
+        stater.hit = 0
+        stater.miss = 0
+        stater.reqs = 0
+        print("success looping")
+
+
+with webapp.app_context():
+    """
+    looping for 5 seconds, doing job write stat
+    """
+    # get_config_info()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
 
 def RandomReplacement(size: int) -> None: #random
     """
@@ -188,8 +214,8 @@ def invalidateKey(key):
     :param key: the key to be invalidate
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
+    print(stater.reqs)
     print("invalidate key")
     result = mem_invalidate(key)
     if result == False:
@@ -206,8 +232,7 @@ def refreshConfiguration():
     read the configuration info
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("refresh configuration")
     get_config_info()   #configuration refresh, read in refresh
     mem_cleanup(0) # clean up mem until maximum capacity reached
@@ -225,8 +250,7 @@ def subPUT(key,value):
     :param value: the file content
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("put")
     res = mem_add(key, value)
     # print(res)
@@ -306,10 +330,7 @@ def subGET(key):
     :param key: the key to be get
     :return: JSON response
     """
-    global hit
-    global miss
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("get")
     img = mem_get(key)
     if img is not None:
@@ -323,14 +344,14 @@ def subGET(key):
             status=200,
             mimetype='application/json',
         )
-        hit += 1
+        stater.hit += 1
     else:
         response = webapp.response_class(
             response=json.dumps("MISS"),
             status=404,
             mimetype='application/json',
         )
-        miss += 1
+        stater.miss += 1
     return response
 
 def subCLEAR():
@@ -338,8 +359,7 @@ def subCLEAR():
     call  mem_clear() to clean the cache
     :return: JSON response
     """
-    global reqs
-    reqs += 1
+    stater.reqs += 1
     print("clear")
     mem_clear()
     response = webapp.response_class(
