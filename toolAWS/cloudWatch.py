@@ -86,8 +86,8 @@ class CloudWatchWrapper:
             Send Memcache Miss Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        # instance_id = getCurrentID()
-        instance_id = 'i-09c738fc558cb24a6'
+        instance_id = getCurrentID()
+        #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -108,8 +108,8 @@ class CloudWatchWrapper:
             Send Memcache Hit Rate to AWS Cloudwatch. Return a response message.
             missrate: value to send
         """
-        # instance_id = getCurrentID()
-        instance_id = 'i-09c738fc558cb24a6'
+        instance_id = getCurrentID()
+        #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -132,8 +132,8 @@ class CloudWatchWrapper:
         """
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
-        # instance_id = getCurrentID()
-        instance_id = 'i-09c738fc558cb24a6'
+        instance_id = getCurrentID()
+        #instance_id = 'i-09c738fc558cb24a6'
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'numitem',
@@ -152,8 +152,8 @@ class CloudWatchWrapper:
             Send Memcache current file size to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        # instance_id = getCurrentID()
-        instance_id = 'i-09c738fc558cb24a6'
+        instance_id = getCurrentID()
+        #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -174,8 +174,8 @@ class CloudWatchWrapper:
             Send Memcache count to AWS Cloudwatch. Return a response message.
             filesize: value to send
         """
-        #instance_id = getCurrentID()
-        instance_id = 'i-09c738fc558cb24a6'
+        instance_id = getCurrentID()
+        #instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
