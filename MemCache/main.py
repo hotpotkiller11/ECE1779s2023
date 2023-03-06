@@ -81,7 +81,7 @@ def write_stat():
     with webapp.app_context():
         statManager.post_req(stater.reqs)
         statManager.post_hit(stater.hit)
-        statManager.post_hit(stater.miss)
+        statManager.post_miss(stater.miss)
 
         statManager.post_numitem(len(key_queue))
         statManager.post_size(filesize)
