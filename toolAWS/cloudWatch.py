@@ -4,6 +4,7 @@ from botocore.args import logger
 from botocore.exceptions import ClientError
 import boto3
 import subprocess
+from EC2 import EC2Wrapper
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
@@ -22,7 +23,8 @@ class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
         self.cloudwatch_resource = cloudwatch_resource
-        self.current_id = getCurrentID()
+        #self.current_id = getCurrentID()
+        self.current_id = 'i-09c738fc558cb24a6'
 
     def create_metric_alarm(
             self, metric_namespace, metric_name, alarm_name, stat_type, period,
@@ -194,24 +196,35 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_missmean(self, metric_name = 'miss_rate', intervals=60, period=60, EC2id=[]):# add id list in
+    def monitor_missmean(self, EC2id):# add id list in
         misslist = []
+        metric_name = 'miss'
+        intervals = 30
+        period = 60
         for i in EC2id:
             stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
                 StartTime=datetime.utcnow() - timedelta(seconds=intervals),
-                EndTime=datetime.utcnow() - timedelta(seconds=intervals),
+                EndTime=datetime.utcnow(),
                 MetricName=metric_name,
                 Namespace='1779/STATISTIC',
                 Statistics=['Maximum'],
-                Unit='Percent',
+                Unit='Count',
                 Dimensions=[{'Name': 'InstanceId', 'Value': i}])
-            misslist.appent(stat)
+            misslist.append(stat['Datapoints'])
+
+
+        print(misslist)
         return misslist
 
 if __name__ == '__main__':
-    client = boto3.client('cloudwatch')
-    statManager = CloudWatchWrapper(client)
-    #print(statManager.list_statistics('CPUUtilization',1*60))
+
+    cloudwatch = boto3.client('cloudwatch')
+    ec2 = boto3.resource('ec2')
+    statManager = CloudWatchWrapper(cloudwatch)
+    ec2Manager = EC2Wrapper(ec2)
+
+    ec2list = ec2Manager.checkAllInstance()#all instances in aws
+    statManager.monitor_missmean(ec2list)
     statManager.post_req(0)
 
