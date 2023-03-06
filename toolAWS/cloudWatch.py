@@ -156,7 +156,7 @@ class CloudWatchWrapper:
         """
         instance_id = self.current_id
         instance_id = 'i-09c738fc558cb24a6'
-        # now = datetime.now()
+        now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
