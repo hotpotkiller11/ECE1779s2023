@@ -15,5 +15,7 @@ for node_id in memcache_ip_list:
     
 control = CacheController(memcache_ip_list)
 # control.modify_pool_size(1)
+print(memcache_id_list)
+print(memcache_ip_list)
 
 from Controller import main
