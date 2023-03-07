@@ -9,6 +9,13 @@ from EC2 import EC2Wrapper
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
 # StatusCheckFailed_System
+
+memcache_id_list = ['i-06abd9e9282fc4a6f', 'i-0243a81799646f826',
+                    'i-0c5bd964679b374ce', 'i-09b9e45c8a0364959',
+                    'i-03e312d7cd17fa896', 'i-0de7d539f52225815',
+                    'i-0a1e0efb0b5698881', 'i-0a1e0efb0b5698881']
+# Now copied from Controller
+
 def getCurrentID() -> str:
     '''
     get the current ec2 id
@@ -196,7 +203,7 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_stat(self, metric_name: str, statistics: str, intervals=30, period = 60, EC2id=[]) -> list:# add id list in
+    def monitor_stat(self, metric_name: str, statistics: str, intervals=30, period = 60, EC2id=memcache_id_list) -> list:# add id list in
         """ Return cloud watch record of cloud watch of the specific ec2 instances
 
         Args:
@@ -234,7 +241,7 @@ class CloudWatchWrapper:
         Returns:
             float: miss rate calculated (0.0 if no hit or miss)
         """
-        result = self.monitor_stat("miss", "Sum", interval, interval * 60, ec2Manager.checkAllInstance())
+        result = self.monitor_stat("miss", "Sum", interval, interval * 60)
         # TODO: change the last param
         miss = 0
         for node in result:
@@ -243,7 +250,7 @@ class CloudWatchWrapper:
         # print(miss)
         if miss == 0: return 0.0 # No miss or no access, return 0.0 as miss rate
         
-        result = self.monitor_stat("hit", "Sum", interval, interval * 60, ec2Manager.checkAllInstance())
+        result = self.monitor_stat("hit", "Sum", interval, interval * 60)
         # TODO: change the last param
         hit = 0
         for node in result:
