@@ -196,16 +196,22 @@ class CloudWatchWrapper:
             Namespace='1779/STATISTIC')
         return response
 
-    def monitor_mean(self, EC2id):# add id list in
+    def monitor_stat(self, metric_name: str, statistics: str, intervals=30, period = 60, EC2id=[]) -> list:# add id list in
+        """ Return cloud watch record of cloud watch of the specific ec2 instances
+
+        Args:
+            metric_name (str): metric name ('hit'|'miss'|'size'|'numitem'|'req')
+            statistics (str): method to present the compression of data points 
+                (SampleCount, Average, Sum, Minimum, and Maximum)
+            intervals (int, optional): the time to report (unit min). Defaults to 30.
+            period (int, optional): resolution of the data points (unit sec). Defaults to 60.
+            EC2id (list, optional): a list of . Defaults to all EC2 nodes.
+
+        Returns:
+            list: the list of all data points, in the order of EC2id given
         """
-        should calc for mean for 'miss'/'hit'
-        :param EC2id:
-        :return:
-        """
-        misslist = []
-        metric_name = 'miss'
-        intervals = 30
-        period = 60
+        # TODO: implement the last param
+        result_list = []
         for id in EC2id:
             stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
@@ -213,37 +219,40 @@ class CloudWatchWrapper:
                 EndTime=datetime.utcnow(),
                 MetricName=metric_name,
                 Namespace='1779/STATISTIC',
-                Statistics=['Maximum'],
+                Statistics=[statistics],
                 Unit='Count',
                 Dimensions=[{'Name': 'instance', 'Value': id}])
-            misslist.append(stat['Datapoints'])
-            #misslist.append(stat)
-        print(misslist)
-        return misslist
+            result_list.append(stat['Datapoints'])
+        return result_list
+    
+    def monitor_miss_rate(self, interval = 5) -> float:
+        """ Calculate the miss rate of all nodes from last n minutes (n = interval)
 
-    def monitor_sum(self, metric_name, intervals=30,period = 60,EC2id=[]):  # add id list in
-        """
-        calc for sum between ec2 instances
-        :param metric_name: 'size'/'numitem'/'req'
-        :param intervals:
-        :param period:
-        :param EC2id: id list
-        :return:
-        """
-        #sizelist = []
-        #sum = 0
-        for id in EC2id:
-            stat = self.cloudwatch_resource.get_metric_statistics(
-                Period=period,
-                StartTime=datetime.utcnow() - timedelta(minutes=intervals),
-                EndTime=datetime.utcnow(),
-                MetricName=metric_name,
-                Namespace='1779/STATISTIC',
-                Statistics=['Maximum'],
-                Unit='Count',
-                Dimensions=[{'Name': 'instance', 'Value': id}])
-            #sum += stat['Datapoints'][-1]
+        Args:
+            interval (int, optional): The time interval (in minutes) to calculate the average miss rate. Defaults to 5.
 
+        Returns:
+            float: miss rate calculated (0.0 if no hit or miss)
+        """
+        result = self.monitor_stat("miss", "Sum", interval, interval * 60, ec2Manager.checkAllInstance())
+        # TODO: change the last param
+        miss = 0
+        for node in result:
+            for point in node:
+                miss += point["Sum"]
+        # print(miss)
+        if miss == 0: return 0.0 # No miss or no access, return 0.0 as miss rate
+        
+        result = self.monitor_stat("hit", "Sum", interval, interval * 60, ec2Manager.checkAllInstance())
+        # TODO: change the last param
+        hit = 0
+        for node in result:
+            for point in node:
+                hit += point["Sum"]
+        # print(hit)
+        return miss / (miss + hit) # at least one miss, no div_by_0 error
+                
+        
 
 if __name__ == '__main__':
 
@@ -253,6 +262,5 @@ if __name__ == '__main__':
     ec2Manager = EC2Wrapper(ec2)
 
     ec2list = ec2Manager.checkAllInstance()#all instances in aws
-    statManager.monitor_mean(ec2list)
-    statManager.post_req(0)
+    print(statManager.monitor_miss_rate())
 
