@@ -1,12 +1,19 @@
 from flask import Flask
 from Controller.CacheController import CacheController
+import boto3
 
 webapp = Flask(__name__)
-memcache_list = ["http://172.31.91.73:5000",  "http://172.31.59.184:5000", 
-                 "http://172.31.50.65:5000",  "http://172.31.61.162:5000", 
-                 "http://172.31.52.177:5000", "http://172.31.60.33:5000",
-                 "http://172.31.55.99:5000",  "http://172.31.61.205:5000"]
-control = CacheController(memcache_list)
+memcache_id_list = ['i-06abd9e9282fc4a6f', 'i-0243a81799646f826',
+                    'i-0c5bd964679b374ce', 'i-09b9e45c8a0364959',
+                    'i-03e312d7cd17fa896', 'i-0de7d539f52225815',
+                    'i-0a1e0efb0b5698881', 'i-0a1e0efb0b5698881']
+memcache_ip_list = []
+for node_id in memcache_ip_list:
+    ec2=boto3.client('ec2')
+    ip = ec2.describe_instances(InstanceIds=[node_id])['Reservations'][0]['Instances'][0]['PrivateDnsName']
+    memcache_ip_list.append(ip)
+    
+control = CacheController(memcache_ip_list)
 # control.modify_pool_size(1)
 
 from Controller import main
