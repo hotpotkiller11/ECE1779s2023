@@ -5,15 +5,11 @@ from botocore.exceptions import ClientError
 import boto3
 import subprocess
 from EC2 import EC2Wrapper
+from Controller.config import memcache_id_list
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,
 # StatusCheckFailed_System
-
-memcache_id_list = ['i-06abd9e9282fc4a6f', 'i-0243a81799646f826',
-                    'i-0c5bd964679b374ce', 'i-09b9e45c8a0364959',
-                    'i-03e312d7cd17fa896', 'i-0de7d539f52225815',
-                    'i-0a1e0efb0b5698881', 'i-0a1e0efb0b5698881']
 # Now copied from Controller
 
 def getCurrentID() -> str:
