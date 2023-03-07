@@ -209,13 +209,13 @@ class CloudWatchWrapper:
         for id in EC2id:
             stat = self.cloudwatch_resource.get_metric_statistics(
                 Period=period,
-                StartTime=datetime.utcnow() - timedelta(seconds=intervals),
+                StartTime=datetime.utcnow() - timedelta(minutes=intervals),
                 EndTime=datetime.utcnow(),
                 MetricName=metric_name,
                 Namespace='1779/STATISTIC',
                 Statistics=['Maximum'],
                 Unit='Count',
-                Dimensions=[{'Name': 'InstanceId', 'Value': id}])
+                Dimensions=[{'Name': 'instance', 'Value': id}])
             misslist.append(stat['Datapoints'])
             #misslist.append(stat)
         print(misslist)
