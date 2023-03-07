@@ -217,6 +217,7 @@ class CloudWatchWrapper:
                 Unit='Count',
                 Dimensions=[{'Name': 'InstanceId', 'Value': id}])
             misslist.append(stat['Datapoints'])
+            #misslist.append(stat)
         print(misslist)
         return misslist
 
@@ -252,6 +253,6 @@ if __name__ == '__main__':
     ec2Manager = EC2Wrapper(ec2)
 
     ec2list = ec2Manager.checkAllInstance()#all instances in aws
-    statManager.monitor_missmean(ec2list)
+    statManager.monitor_mean(ec2list)
     statManager.post_req(0)
 
