@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template
 from toolAWS import cloudWatch
 import boto3
+from datetime import datetime
 
 cloudwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
@@ -52,30 +53,41 @@ def stat():
     #     time += 5
 
     # return render_template("statistic.html", hit_xy = hit_xy, miss_xy = miss_xy, size_xy = size_xy, count_xy = count_xy, req_xy = req_xy)
-    
+    format = "%a, %d %b %Y %H:%M:%S %Z"
     results = get_stats()
-    hit = []
-    miss = []
-    for i in range(len(results["hit"])):
-        for j in range(len(results["hit"][i])):
-            if len(hit) <= j:
-                hit.append(results["hit"][i][j]["Sum"])
+    hit = {}
+    miss = {}
+    req = {}
+    for node in results["hit"]:
+        for point in node:
+            time = datetime.strptime(point["Timestamp"], format)
+            if time not in hit:
+                hit[time] = point["Sum"]
             else:
-                hit[j] += results["hit"][i][j]["Sum"]
-            if len(miss) <= j:
-                miss.append(results["miss"][i][j]["Sum"])
+                hit[time] += point["Sum"]
+    for node in results["miss"]:
+        for point in node:
+            time = datetime.strptime(point["Timestamp"], format)
+            if time not in miss:
+                miss[time] = point["Sum"]
             else:
-                miss[j] += results["miss"][i][j]["Sum"]
-    hit_rate = []
-    miss_rate = []
-    for i in range(len(hit)):
-        total = hit[i] + miss[i] 
-        if total == 0:
-            hit_rate.append(0.0)
-            miss_rate.append(0.0)
-        else:
-            hit_rate.append(hit[i] / total)
-            miss_rate.append(miss[i] / total)
-    print(hit_rate)
-    print(miss_rate)
-    return str([hit_rate, miss_rate])
+                miss[time] += point["Sum"]
+    for node in results["req"]:
+        for point in node:
+            time = datetime.strptime(point["Timestamp"], format)
+            if time not in req:
+                req[time] = point["Sum"]
+            else:
+                req[time] += point["Sum"]
+    # miss_rate = []
+    # for i in range(len(hit)):
+    #     total = hit[i] + miss[i] 
+    #     if total == 0:
+    #         hit_rate.append(0.0)
+    #         miss_rate.append(0.0)
+    #     else:
+    #         hit_rate.append(hit[i] / total)
+    #         miss_rate.append(miss[i] / total)
+    # print(hit_rate)
+    # print(miss_rate)
+    return str([hit, miss, req])
