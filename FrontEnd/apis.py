@@ -10,7 +10,7 @@ import base64
 import os
 import requests
 cloudwatch = boto3.client('cloudwatch')
-cloudwatch = CloudWatchWrapper()
+clo_manager = CloudWatchWrapper(cloudwatch)
 
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
@@ -263,9 +263,9 @@ def getNumNodes():
 def getRate(parameters):
     rate = parameters[5:]
     if rate == 'miss':
-        value = cloudwatch.monitor_miss_rate(interval = 1)
+        value = clo_manager.monitor_miss_rate(interval = 1)
     elif rate == 'hit':
-        value = cloudwatch.monitor_hit_rate(interval = 1)
+        value = clo_manager.monitor_hit_rate(interval = 1)
     data = {
         "success": "true",
         "rate": rate,
