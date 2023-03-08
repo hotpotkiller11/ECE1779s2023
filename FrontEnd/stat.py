@@ -79,15 +79,16 @@ def stat():
                 req[time] = point["Sum"]
             else:
                 req[time] += point["Sum"]
-    # miss_rate = []
-    # for i in range(len(hit)):
-    #     total = hit[i] + miss[i] 
-    #     if total == 0:
-    #         hit_rate.append(0.0)
-    #         miss_rate.append(0.0)
-    #     else:
-    #         hit_rate.append(hit[i] / total)
-    #         miss_rate.append(miss[i] / total)
-    # print(hit_rate)
-    # print(miss_rate)
+    miss_rate = {}
+    hit_rate = {}
+    for time in hit.keys:
+        total = hit[time] + miss[time] 
+        if total == 0:
+            hit_rate[time] = 0.0
+            miss_rate[time] = 0.0
+        else:
+            hit_rate[time] = hit[time] / total
+            hit_rate[time] = miss[time] / total
+    print(hit_rate)
+    print(miss_rate)
     return str([hit, miss, req])
