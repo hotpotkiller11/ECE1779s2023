@@ -1,5 +1,6 @@
 import hashlib
 import requests
+import math
 
 def get_hash(key: str) -> bytes:
     h = hashlib.md5(key.encode('utf-8')).hexdigest()
@@ -118,4 +119,12 @@ class CacheController:
                 res = requests.post(new_node + "/put/list", json = send_dict[new_node])
                 if res.status_code != 200: print("File transition filed (%s)" % (new_node))
 
-        
+    def multi_pool_size(self, parameter: float) -> None:
+        if parameter == 1.0: return
+        elif parameter < 1.0:
+            new_active = math.floor(self.pool_size * parameter)
+            new_active = max(1, new_active)
+        else: # parameter > 1.0
+            new_active = math.ceil(self.pool_size * parameter)
+            new_active = min(len(self.memcache_nodes), new_active)
+        self.modify_pool_size(new_active)

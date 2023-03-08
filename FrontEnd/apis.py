@@ -242,10 +242,11 @@ def convertToBase64(filename):
 
 @webapp.route('/api/getNumNodes',method = ['POST'])
 def getNumNodes():
-    res = control.pool_size
+    res = request.post(backend+'/pool_size')
+    num = res.json()["pool_size"]
     data = {
         "success": "true",
-        "numNodes":[res],
+        "numNodes":num,
     }
     response = webapp.response_class(
         response=json.dumps(data),
