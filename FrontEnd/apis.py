@@ -4,6 +4,7 @@ from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
+from toolAWS.cloudWatch import CloudWatchWrapper
 import base64
 import os
 import requests
@@ -247,6 +248,25 @@ def getNumNodes():
     data = {
         "success": "true",
         "numNodes":num
+    }
+    response = webapp.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route('/api/getRate/<parameters>', methods=['POST'])
+def getRate(parameter):
+    rate = parameter[5:]
+    if rate == 'miss':
+        value = CloudWatchWrapper.monitor_miss_rate(interval = 1)
+    elif rate == 'hit':
+        value = CloudWatchWrapper.monitor_hit_rate(interval = 1)
+    data = {
+        "success": "true",
+        "rate": rate,
+        "value":value
     }
     response = webapp.response_class(
         response=json.dumps(data),
