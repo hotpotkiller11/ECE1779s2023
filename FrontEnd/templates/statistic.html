@@ -42,18 +42,39 @@
             </div> 
         </div>
         <script>
+            // Color for chart lines
+            color_set = ["rgb(0,0,255)", "rgb(255,0,0)", "rgb(0,255,0)", "rgb(255,0,255)",
+                         "rgb(0,255,255)", "rgb(255,255,0)", "rgb(255,255,255)", "rgb(127,127,127)"]
+            size_datasets = []
+            for (let i = 0; i < size_xy.length; i++){
+                dict = {
+                    label: 'Node ' + i,
+                    pointRadius: 3,
+                    pointBackgroundColor: color_set[i],
+                    data: size_xy[i],
+                    showLine: true,
+                    fill: false,
+                    borderColor: color_set[i]
+                }
+                size_datasets.push(dict)
+            } 
+            count_datasets = []
+            for (let i = 0; i < count_xy.length; i++){
+                dict = {
+                    label: 'Node ' + i,
+                    pointRadius: 3,
+                    pointBackgroundColor: color_set[i],
+                    data: count_xy[i],
+                    showLine: true,
+                    fill: false,
+                    borderColor: color_set[i]
+                }
+                count_datasets.push(dict)
+            } 
             new Chart("chart_size", {
                         type: "line",
                         data: {
-                            datasets: [{
-                                label: 'Memory size',
-                                pointRadius: 3,
-                                pointBackgroundColor: "rgb(0,0,255)",
-                                data: size_xy[0],
-                                showLine: true,
-                                fill: false,
-                                borderColor: 'rgb(0,0,255)'
-                            }]
+                            datasets: size_datasets
                         }, 
                         options: {
                             tooltips: {
@@ -74,15 +95,7 @@
             new Chart("chart_count", {
                         type: "line",
                         data: {
-                            datasets: [{
-                                label: 'Figure count in cache',
-                                pointRadius: 3,
-                                pointBackgroundColor: "rgb(0,0,255)",
-                                data: count_xy[0],
-                                showLine: true,
-                                fill: false,
-                                borderColor: 'rgb(0,0,255)'
-                            }]
+                            datasets: count_datasets
                         }, 
                         options: {
                             tooltips: {
