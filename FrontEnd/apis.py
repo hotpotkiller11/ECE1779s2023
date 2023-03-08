@@ -5,10 +5,11 @@ from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
 from toolAWS.cloudWatch import CloudWatchWrapper
+import boto3
 import base64
 import os
 import requests
-
+cloudwatch = boto3.client('cloudwatch')
 cloudwatch = CloudWatchWrapper()
 
 @webapp.route('/api/delete_all', methods=['POST'])
