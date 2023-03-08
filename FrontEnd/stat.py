@@ -118,4 +118,4 @@ def stat():
         size_xy.append(size)
         count_xy.append(count)
         
-    return str(size_xy)
+    return render_template("statistic.html", hit_xy = hit_xy, miss_xy = miss_xy, size_xy = size_xy, count_xy = count_xy, req_xy = req_xy)
