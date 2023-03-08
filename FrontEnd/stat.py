@@ -82,7 +82,7 @@ def stat():
             miss_rate[time] = 0.0
         else:
             hit_rate[time] = hit[time] / total
-            hit_rate[time] = miss[time] / total
+            miss_rate[time] = miss[time] / total
     
     hit_xy = []
     miss_xy = []
