@@ -9,6 +9,8 @@ import base64
 import os
 import requests
 
+cloudwatch = CloudWatchWrapper()
+
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
     result = key_path.delete_all_key_path_term()
@@ -260,9 +262,9 @@ def getNumNodes():
 def getRate(parameters):
     rate = parameters[5:]
     if rate == 'miss':
-        value = CloudWatchWrapper.monitor_miss_rate(interval = 1)
+        value = cloudwatch.monitor_miss_rate(interval = 1)
     elif rate == 'hit':
-        value = CloudWatchWrapper.monitor_hit_rate(interval = 1)
+        value = cloudwatch.monitor_hit_rate(interval = 1)
     data = {
         "success": "true",
         "rate": rate,
