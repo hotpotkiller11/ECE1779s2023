@@ -81,7 +81,7 @@ def stat():
                 req[time] += point["Sum"]
     miss_rate = {}
     hit_rate = {}
-    for time in hit.keys:
+    for time in hit.keys():
         total = hit[time] + miss[time] 
         if total == 0:
             hit_rate[time] = 0.0
