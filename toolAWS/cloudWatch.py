@@ -25,8 +25,7 @@ class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
         self.cloudwatch_resource = cloudwatch_resource
-        #self.current_id = getCurrentID()
-        self.current_id = 'i-09c738fc558cb24a6'
+        self.current_id = getCurrentID()
 
     def create_metric_alarm(
             self, metric_namespace, metric_name, alarm_name, stat_type, period,
