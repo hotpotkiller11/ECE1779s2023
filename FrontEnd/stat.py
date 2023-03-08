@@ -53,28 +53,28 @@ def stat():
     #     time += 5
 
     # return render_template("statistic.html", hit_xy = hit_xy, miss_xy = miss_xy, size_xy = size_xy, count_xy = count_xy, req_xy = req_xy)
-    format = "%a, %d %b %Y %H:%M:%S %Z"
+    # format = "%a, %d %b %Y %H:%M:%S %Z"
     results = get_stats()
     hit = {}
     miss = {}
     req = {}
     for node in results["hit"]:
         for point in node:
-            time = datetime.strptime(point["Timestamp"], format)
+            time = point["Timestamp"]
             if time not in hit:
                 hit[time] = point["Sum"]
             else:
                 hit[time] += point["Sum"]
     for node in results["miss"]:
         for point in node:
-            time = datetime.strptime(point["Timestamp"], format)
+            time = point["Timestamp"]
             if time not in miss:
                 miss[time] = point["Sum"]
             else:
                 miss[time] += point["Sum"]
     for node in results["req"]:
         for point in node:
-            time = datetime.strptime(point["Timestamp"], format)
+            time = point["Timestamp"]
             if time not in req:
                 req[time] = point["Sum"]
             else:
