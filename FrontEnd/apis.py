@@ -240,13 +240,13 @@ def convertToBase64(filename):
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
 
-@webapp.route('/api/getNumNodes',method = ['POST'])
+@webapp.route('/api/getNumNodes', methods = ['POST'])
 def getNumNodes():
-    res = request.post(backend+'/pool_size')
+    res = requests.post(backend+'/pool_size')
     num = res.json()["pool_size"]
     data = {
         "success": "true",
-        "numNodes":num,
+        "numNodes":num
     }
     response = webapp.response_class(
         response=json.dumps(data),
