@@ -89,6 +89,18 @@ def stat():
         else:
             hit_rate[time] = hit[time] / total
             hit_rate[time] = miss[time] / total
-    print(hit_rate)
-    print(miss_rate)
-    return str([hit, miss, req])
+    
+    hit_xy = []
+    miss_xy = []
+    req_xy = []
+    
+    time_list = miss_rate.keys()
+    time_list.sort() #order the time list (asc)
+    
+    for time in time_list:
+        formatted_time = time.strftime("%Y-%b-%d %H:%M:%S") # format time
+        hit_xy.append({'x': formatted_time, 'y': hit_rate[time]})
+        miss_xy.append({'x': formatted_time, 'y': miss_rate[time]})
+        req_xy.append({'x': formatted_time, 'y': req[time]})
+    
+    return str(req_xy)
