@@ -93,6 +93,10 @@ def stat():
     hit_xy = []
     miss_xy = []
     req_xy = []
+    size_xy = []
+    count_xy = []
+    
+    # Averaged scalers
     
     time_list = list(miss_rate.keys())
     time_list.sort() #order the time list (asc)
@@ -103,4 +107,15 @@ def stat():
         miss_xy.append({'x': formatted_time, 'y': miss_rate[time]})
         req_xy.append({'x': formatted_time, 'y': req[time]})
     
-    return str(req_xy)
+    # Separated scalers
+    
+    for i in range(len(results["size"])):
+        size = []
+        count = []
+        for j in range(len(results["size"][i])):
+            size.append({"x": results["size"][i][j]["Timestamp"], "y": results["size"][i][j]["Average"]})
+            count.append({"x": results["items"][i][j]["Timestamp"], "y": results["items"][i][j]["Average"]})
+        size_xy.append(size)
+        count_xy.append(count)
+        
+    return str(size_xy)
