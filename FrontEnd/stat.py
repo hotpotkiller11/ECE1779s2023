@@ -94,7 +94,7 @@ def stat():
     miss_xy = []
     req_xy = []
     
-    time_list = miss_rate.keys()
+    time_list = list(miss_rate.keys())
     time_list.sort() #order the time list (asc)
     
     for time in time_list:
