@@ -5,7 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template
 from toolAWS import cloudWatch
 import boto3
-from datetime import datetime
+from datetime import datetime, timezone
 
 cloudwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
@@ -30,29 +30,23 @@ def get_stats() :#-> list[dict]:
               "items": items}
     return result
 
+def utc_to_local(utc_dt: datetime) -> datetime:
+    """ Convert utc datetime to local datetime
+
+    Args:
+        utc_dt (datetime): utc datetime
+
+    Returns:
+        datetime: local datetime
+    """
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
 @webapp.route('/statistic', methods = ['GET','POST'])
 def stat():
     """
     build the statistic list
     :return: html page render
     """
-    # hit_xy = []
-    # miss_xy = []
-    # size_xy = []
-    # count_xy = []
-    # req_xy = []
-    # stat_list = get_stats()
-    # length = len(stat_list)
-    # time = (length - 1) * -5
-    # for p in stat_list:
-    #     hit_xy.append({"x": time, "y": p["hit_rate"]})
-    #     miss_xy.append({"x": time, "y": p["miss_rate"]})
-    #     size_xy.append({"x": time, "y": p["size"]})
-    #     count_xy.append({"x": time, "y": p["count"]})
-    #     req_xy.append({"x": time, "y": p["req"]})
-    #     time += 5
-
-    # return render_template("statistic.html", hit_xy = hit_xy, miss_xy = miss_xy, size_xy = size_xy, count_xy = count_xy, req_xy = req_xy)
     # format = "%a, %d %b %Y %H:%M:%S %Z"
     results = get_stats()
     hit = {}
@@ -102,7 +96,7 @@ def stat():
     time_list.sort() #order the time list (asc)
     
     for time in time_list:
-        formatted_time = time.strftime("%Y-%b-%d %H:%M:%S") # format time
+        formatted_time = utc_to_local(time).strftime("%H:%M") # format time
         hit_xy.append({'x': formatted_time, 'y': hit_rate[time]})
         miss_xy.append({'x': formatted_time, 'y': miss_rate[time]})
         req_xy.append({'x': formatted_time, 'y': req[time]})
@@ -115,8 +109,10 @@ def stat():
         size = []
         count = []
         for j in range(len(results["size"][i])):
-            size.append({"x": results["size"][i][j]["Timestamp"], "y": results["size"][i][j]["Average"]})
-            count.append({"x": results["items"][i][j]["Timestamp"], "y": results["items"][i][j]["Average"]})
+            size.append({"x": utc_to_local(results["size"][i][j]["Timestamp"]).strftime("%H:%M"),
+                         "y": results["size"][i][j]["Average"]})
+            count.append({"x": utc_to_local(results["items"][i][j]["Timestamp"]).strftime("%H:%M"),
+                          "y": results["items"][i][j]["Average"]})
         size_xy.append(size)
         count_xy.append(count)
         
