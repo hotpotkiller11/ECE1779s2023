@@ -19,7 +19,7 @@ class CacheController:
     pool_size = 0 # Activated node count
     partition_dict = {} # used to map partition with memcache nodes
 
-    def __init__(self, memcache_servers: list[str]):
+    def __init__(self, memcache_servers: list):
         """ Create a new Cache Controller instance with a list of memcache node
             servers.
 
@@ -33,7 +33,7 @@ class CacheController:
         for i in range(16):
             self.partition_dict[hex(i)[2:]] = memcache_servers[0]
 
-    def activated_nodes(self) -> list[str]:
+    def activated_nodes(self) -> list:
         """ Get a list of all activated nodes
 
         Returns:
@@ -41,7 +41,7 @@ class CacheController:
         """
         return self.memcache_nodes[0:self.pool_size]
     
-    def not_activated_nodes(self) -> list[str]:
+    def not_activated_nodes(self) -> list:
         """ Get a list of all not activated nodes
 
         Returns:
