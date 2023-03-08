@@ -4,7 +4,6 @@ from botocore.args import logger
 from botocore.exceptions import ClientError
 import boto3
 import subprocess
-from EC2 import EC2Wrapper
 from Controller.config import memcache_id_list
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
@@ -26,8 +25,7 @@ class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
         self.cloudwatch_resource = cloudwatch_resource
-        #self.current_id = getCurrentID()
-        self.current_id = 'i-09c738fc558cb24a6'
+        self.current_id = getCurrentID()
 
     def create_metric_alarm(
             self, metric_namespace, metric_name, alarm_name, stat_type, period,
@@ -287,10 +285,6 @@ class CloudWatchWrapper:
 if __name__ == '__main__':
 
     cloudwatch = boto3.client('cloudwatch')
-    ec2 = boto3.resource('ec2')
     statManager = CloudWatchWrapper(cloudwatch)
-    ec2Manager = EC2Wrapper(ec2)
-
-    ec2list = ec2Manager.checkAllInstance()#all instances in aws
     print(statManager.monitor_miss_rate())
 
