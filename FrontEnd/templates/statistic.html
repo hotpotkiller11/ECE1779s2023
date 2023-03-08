@@ -43,7 +43,7 @@
         </div>
         <script>
             new Chart("chart_size", {
-                        type: "scatter",
+                        type: "line",
                         data: {
                             datasets: [{
                                 label: 'Memory size',
@@ -69,15 +69,12 @@
                                     ticks: {
                                     beginAtZero:true
                                     }
-                                }],
-                                x: {
-                                    type: 'time',
-                                }
+                                }]
                             }
                         }
             });
             new Chart("chart_count", {
-                        type: "scatter",
+                        type: "line",
                         data: {
                             datasets: [{
                                 label: 'Figure count in cache',
@@ -103,15 +100,12 @@
                                     ticks: {
                                     beginAtZero:true
                                     }
-                                }, ],
-                                x: {
-                                    type: 'time',
-                                }
+                                }]
                             }
                         }
             });
             new Chart("chart_hit_miss", {
-                        type: "scatter",
+                        type: "line",
                         data: {
                             datasets: [{
                                 label: 'Hit rate',
@@ -142,14 +136,11 @@
                             },
                             scales: {
                                 yAxes: [{ticks: {min: 0, max: 1, beginAtZero:true}}],
-                                x: {
-                                    type: 'time',
-                                }
                             }
                         }
             });
             new Chart("chart_req", {
-                        type: "scatter",
+                        type: "line",
                         data: {
                             datasets: [{
                                 label: 'Request count',
@@ -175,10 +166,7 @@
                                     ticks: {
                                     beginAtZero:true
                                     }
-                                }],
-                                x: {
-                                    type: 'time',
-                                }
+                                }]
                             }
                         }
             });
