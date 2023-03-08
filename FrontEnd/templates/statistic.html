@@ -21,30 +21,30 @@
                 <h1>Statistics</h1>
                 <div class="column_box">
                     <div class="column">
-                        <h2>Cache in used (bytes)</h2>
+                        <h2>Size on nodes (bytes)</h2>
                         <canvas id="chart_size"></canvas>
                     </div>
                     <div class="column">
-                        <h2>Files in cache</h2>
+                        <h2>File count on nodes</h2>
                         <canvas id="chart_count"></canvas>
                     </div>
                 </div>
                 <div class="column_box">
                     <div class="column">
-                        <h2>Hit/miss rate</h2>
+                        <h2>Overall Hit/Miss rate</h2>
                         <canvas id="chart_hit_miss"></canvas>
                     </div>
                     <div class="column">
-                        <h2>Request Count</h2>
+                        <h2>Total Request Count</h2>
                         <canvas id="chart_req"></canvas>
                     </div>
                 </div>
             </div> 
         </div>
         <script>
-            // Color for chart lines
+            // Colors for chart lines
             color_set = ["rgb(0,0,255)", "rgb(255,0,0)", "rgb(0,255,0)", "rgb(255,0,255)",
-                         "rgb(0,255,255)", "rgb(255,255,0)", "rgb(255,255,255)", "rgb(127,127,127)"]
+                         "rgb(0,255,255)", "rgb(255,255,0)", "rgb(0,0,0)", "rgb(127,127,127)"]
             size_datasets = []
             for (let i = 0; i < size_xy.length; i++){
                 dict = {
