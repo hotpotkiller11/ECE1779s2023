@@ -102,10 +102,31 @@ def keys():
     )
     return response
 
+@webapp.route('/pool_size',methods=['GET', 'POST'])
+def pool_size():
+    response = webapp.response_class(
+        response=json.dumps({"pool_size": control.pool_size}),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+    
+
 @webapp.route('/pool',methods=['POST'])
 def pool_config():
     active = request.json["new_active"]
     control.modify_pool_size(active)
+    response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route('/pool_multi',methods=['POST'])
+def pool_multi():
+    parameter = request.json["parameter"]
+    control.multi_pool_size(parameter)
     response = webapp.response_class(
         response=json.dumps("OK"),
         status=200,

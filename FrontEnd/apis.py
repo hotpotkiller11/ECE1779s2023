@@ -1,4 +1,5 @@
 from flask import render_template, request, json
+from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
@@ -238,3 +239,18 @@ def convertToBase64(filename):
     #decode the b64 byte code in utf-8 format
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
+
+@webapp.route('/api/getNumNodes',method = ['POST'])
+def getNumNodes():
+    res = request.post(backend+'/pool_size')
+    num = res.json()["pool_size"]
+    data = {
+        "success": "true",
+        "numNodes":num,
+    }
+    response = webapp.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
