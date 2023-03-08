@@ -110,7 +110,7 @@ def stat():
     # Separated scalers
     
     for i in range(len(results["size"])):
-        results["size"][i].sort(lambda x: x["Timestamp"]) # reorder the result list with timestamp
+        results["size"][i].sort(key = lambda x: x["Timestamp"]) # reorder the result list with timestamp
         size = []
         count = []
         for j in range(len(results["size"][i])):
