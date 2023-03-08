@@ -1,12 +1,20 @@
 from flask import Flask
 from Controller.CacheController import CacheController
+from Controller.config import memcache_id_list
+import boto3
 
 webapp = Flask(__name__)
-memcache_list = ["http://172.31.91.73:5000",  "http://172.31.59.184:5000", 
-                 "http://172.31.50.65:5000",  "http://172.31.61.162:5000", 
-                 "http://172.31.52.177:5000", "http://172.31.60.33:5000",
-                 "http://172.31.55.99:5000",  "http://172.31.61.205:5000"]
-control = CacheController(memcache_list)
+
+memcache_ip_list = []
+for node_id in memcache_id_list:
+    ec2=boto3.client('ec2')
+    ip = ec2.describe_instances(InstanceIds=[node_id])['Reservations'][0]['Instances'][0]['PrivateDnsName']
+    memcache_ip_list.append("http://" + ip + ":5000")
+    
+control = CacheController(memcache_ip_list)
 # control.modify_pool_size(1)
+print("Loading private ip from instance id")
+print(memcache_id_list)
+print(memcache_ip_list)
 
 from Controller import main

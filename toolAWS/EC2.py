@@ -8,14 +8,18 @@ class EC2Wrapper:
     def checkAllInstance(self):
         """
         get all running instance
-        :return:
+        :return: instance id list
         """
+        instanceID = []
         instances = self.ec2_resource.instances.filter(
             Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
         for instance in instances:
-            print(instance.id, instance.instance_type)
-        for status in self.ec2_resource.meta.client.describe_instance_status()['InstanceStatuses']:
-            print(status)
+            instanceID.append(instance.id)
+            #print(instance.id, instance.instance_type)
+        #for status in self.ec2_resource.meta.client.describe_instance_status()['InstanceStatuses']:
+        #    print(status)
+
+        return instanceID
 
     def terminateInstance(self):
         """
