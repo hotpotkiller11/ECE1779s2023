@@ -53,4 +53,21 @@ def stat():
 
     # return render_template("statistic.html", hit_xy = hit_xy, miss_xy = miss_xy, size_xy = size_xy, count_xy = count_xy, req_xy = req_xy)
     
-    return get_stats()
+    results = get_stats()
+    hit_rate = []
+    miss_rate = []
+    for i in range(len(results["hit"][0])):
+        for j in range(len(results)):
+            hit = 0
+            miss = 0
+            hit += results["hit"][j][i]
+            miss += results["miss"][j][i]
+        total = hit + miss
+        if total == 0:
+            hit_rate.append(0.0)
+            miss_rate.append(0.0)
+        else:
+            hit_rate.append(hit / total)
+            miss_rate.append(miss / total)
+    
+    return [hit_rate, miss_rate]
