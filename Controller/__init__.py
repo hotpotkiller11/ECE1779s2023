@@ -20,9 +20,9 @@ print(memcache_ip_list)
 
 #statistic
 global T_max_miss
-T_max_miss = 0.8#   init value
+
 global T_max_miss
-T_max_miss = 0.2 #   init value
+
 global expand
 global shrink
 
