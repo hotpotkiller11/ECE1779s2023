@@ -35,12 +35,16 @@ def auto_scale():
             print("---no need for scale---")
         elif current_miss > T_max_miss:
             print("---miss rate large, expanding---")
-            control.modify_pool_size(len(control.activated_nodes)*expand)
-
+            if len(control.activated_nodes)*expand >= 8:
+                control.modify_pool_size(8)
+            else:
+                control.modify_pool_size(len(control.activated_nodes)*expand)
         else:
             print("---miss rate samll, shrinking---")
-            control.modify_pool_size(len(control.activated_nodes) * shrink)
-
+            if len(control.activated_nodes)*shrink <= 1:
+                control.modify_pool_size(1)
+            else:
+                control.modify_pool_size(len(control.activated_nodes)*shrink)
     print("success looping, current pool size",)
 
 
