@@ -253,9 +253,9 @@ def mem_config_set():
     policy = request.form.get('policy')
     try:
         save_conf_todb(capacity,policy)
-        render_template("success.html", msg = "Configuration updated")
+        return render_template("success.html", msg = "Configuration updated")
     except Exception as e:
-        render_template("error.html", msg = e)
+        return render_template("error.html", msg = e)
     
 
 
