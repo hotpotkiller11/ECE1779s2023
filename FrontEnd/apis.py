@@ -288,9 +288,13 @@ def configure_cache():
     print(type(mode))
     # if 'numNodes' in res:
     numNodes=request.args.get("numNodes")
+    print(numNodes)
+    print(type(numNodes))
     res = requests.post(backend + '/pool', json = {"new_active": int(str(numNodes))})
     # if 'cacheSize' in res:
     cacheSize = request.args.get("cacheSize")
+    print(cacheSize)
+    print(type(cacheSize))
     # if 'policy' in res:
     policy  = request.args.get("policy")
     try:
