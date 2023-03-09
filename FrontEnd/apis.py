@@ -290,7 +290,7 @@ def configure_cache():
     numNodes=request.args.get("numNodes")
     print(numNodes)
     print(type(numNodes))
-    res = requests.post(backend + '/pool', json = {"new_active": int(str(numNodes))})
+    res = requests.post(backend + '/pool', json = {"new_active": int(numNodes)})
     # if 'cacheSize' in res:
     cacheSize = request.args.get("cacheSize")
     print(cacheSize)
@@ -298,8 +298,9 @@ def configure_cache():
     # if 'policy' in res:
     policy  = request.args.get("policy")
     try:
+        int(cacheSize)
         cacheSize *= 1024 * 1024
-        save_conf_todb(int(cacheSize),policy)
+        save_conf_todb(cacheSize,policy)
     except Exception as e:
         data = {
             "success" : "false"
