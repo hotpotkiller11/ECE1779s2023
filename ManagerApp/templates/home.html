@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+</head>
+    <body>
+        <div>
+            <h1> Manager APP G12</h1>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div>
+                <div class = 'button-group'>
+                    <a href="{{ url_for('memory_inspect') }}">
+                        <button type="button" style="background-color: #d7eaf7" class="home_button">Memcache Inspect</button>
+                    </a>
+                    <a href="{{ url_for('stat') }}">
+                        <button type="button" style="background-color: #8aadcd" class="home_button">Statistics</button>
+                    </a>
+                </div>
+        </div>
+
+    </body>
+</html>

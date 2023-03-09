@@ -3,10 +3,12 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 """IMPORT FLASK INSTANCES FROM FOLDER Memcache AND FrontEnd"""
 from FrontEnd import webapp as front
 from Controller import webapp as controller
+from ManagerApp import webapp as manager
 
 
 app = DispatcherMiddleware(front, {
-    '/controller': controller
+    '/controller': controller,
+    '/manager': manager
 })
 
 if __name__ == "__main__":
