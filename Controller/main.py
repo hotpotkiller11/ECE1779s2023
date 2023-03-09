@@ -26,11 +26,16 @@ def auto_scale():
     :return: None
     """
     with webapp.app_context():
-        global T_max_miss
+        """global T_max_miss
         global T_min_miss
         global expand
-        global shrink
+        global shrink"""
+        T_max_miss = 0.8
+        T_min_miss = 0.2
+        expand = 2
+        shrink = 0.5
         current_miss = statManager.monitor_miss_rate()
+
         if current_miss < T_max_miss and current_miss > T_min_miss:
             print("---no need for scale---")
         elif current_miss > T_max_miss:
