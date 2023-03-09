@@ -281,37 +281,37 @@ def getRate(parameters):
 
 @webapp.route('/api/configure_cache/',methods=['POST'])
 def configure_cache():
-    res=request.json
-    if 'mode' in res:
-        mode = request.args.get("mode")
-    if 'numNodes' in res:
-        numNodes=request.args.get("numNodes")
-        res = requests.post(backend + '/pool', json = {"new_active": numNodes})
-    if 'cacheSize' in res:
-        cacheSize = request.args.get("cacheSize")
-        if 'policy' in res:
-            policy  = request.args.get("policy")
-            try:
-                cacheSize *= 1024 * 1024
-                save_conf_todb(cacheSize,policy)
-            except Exception as e:
-                data = {
-                    "success" : "false"
-                }
-                response = webapp.response_class(
-                    response=json.dumps(data),
-                    status=500,
-                    mimetype='application/json'
-                )
-                return response
-    if 'expRatio' in res:
-        expRatio= request.args.get("expRatio")
-    if 'shrinkRatio' in res:
-        shrinkRatio = request.args.get("shrinkRatio")
-    if 'maxMiss' in res:
-        maxMiss= request.args.get("maxMiss")
-    if 'minMiss' in res:
-        minMiss= request.args.get("minMiss")
+    #res=request.form
+    # if 'mode' in res:
+    mode = request.args.get("mode")
+    # if 'numNodes' in res:
+    numNodes=request.args.get("numNodes")
+    res = requests.post(backend + '/pool', json = {"new_active": numNodes})
+    # if 'cacheSize' in res:
+    cacheSize = request.args.get("cacheSize")
+    if 'policy' in res:
+        policy  = request.args.get("policy")
+        try:
+            cacheSize *= 1024 * 1024
+            save_conf_todb(cacheSize,policy)
+        except Exception as e:
+            data = {
+                "success" : "false"
+            }
+            response = webapp.response_class(
+                response=json.dumps(data),
+                status=500,
+                mimetype='application/json'
+            )
+            return response
+    # if 'expRatio' in res:
+    expRatio= request.args.get("expRatio")
+    # if 'shrinkRatio' i res:
+    shrinkRatio = request.args.get("shrinkRatio")
+    # if 'maxMiss' in res:
+    maxMiss= request.args.get("maxMiss")
+    # if 'minMiss' in res:
+    minMiss= request.args.get("minMiss")
     data = {
                     "success": "true",
                     "mode": [mode],
