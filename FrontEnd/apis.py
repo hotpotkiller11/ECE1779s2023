@@ -293,7 +293,7 @@ def configure_cache():
     policy  = request.args.get("policy")
     try:
         cacheSize *= 1024 * 1024
-        save_conf_todb(cacheSize,policy)
+        save_conf_todb(int(cacheSize),policy)
     except Exception as e:
         data = {
             "success" : "false"
