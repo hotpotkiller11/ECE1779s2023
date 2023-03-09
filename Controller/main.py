@@ -54,7 +54,7 @@ with webapp.app_context():
     """
     # get_config_info()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=auto_scale, trigger="interval", minutes=1)
+    scheduler.add_job(func=auto_scale, trigger="interval", seconds=5)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 
