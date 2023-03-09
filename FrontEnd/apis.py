@@ -281,7 +281,7 @@ def getRate(parameters):
 
 @webapp.route('/api/configure_cache/',methods=['POST'])
 def configure_cache():
-    res=request.json()
+    res=request.json
     if 'mode' in res:
         mode = request.args.get("mode")
     if 'numNodes' in res:
