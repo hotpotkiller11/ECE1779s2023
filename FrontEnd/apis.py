@@ -325,7 +325,7 @@ def configure_cache():
                     "success": "true",
                     "mode": [mode],
                     "numNodes": [numNodes],
-                    "cacheSize": [int],
+                    "cacheSize": [int(capacity/(1024*1024))],
                     "policy": [policy]
                 }
     response = webapp.response_class(
