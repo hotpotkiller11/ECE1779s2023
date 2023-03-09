@@ -25,11 +25,11 @@ def auto_scale():
     Ratio by which to shrink the pool (e.g., shrink ratio of 0.5, shuts down 50% of the current memcache nodes).
     :return: None
     """
-    global T_max_miss
-    global T_min_miss
-    global expand
-    global shrink
     with webapp.app_context():
+        global T_max_miss
+        global T_min_miss
+        global expand
+        global shrink
         current_miss = statManager.monitor_miss_rate()
         if current_miss < T_max_miss and current_miss > T_min_miss:
             print("---no need for scale---")
