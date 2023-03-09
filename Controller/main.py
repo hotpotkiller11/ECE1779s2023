@@ -50,7 +50,7 @@ def auto_scale():
                 control.modify_pool_size(1)
             else:
                 control.modify_pool_size(len(control.activated_nodes())*shrink)
-    print("success looping, current pool size",)
+    print("success looping, current avaliable",control.activated_nodes())
 
 
 with webapp.app_context():
