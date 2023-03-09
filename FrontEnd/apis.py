@@ -284,6 +284,8 @@ def configure_cache():
     #res=request.form
     # if 'mode' in res:
     mode = request.args.get("mode")
+    print(mode)
+    print(type(mode))
     # if 'numNodes' in res:
     numNodes=request.args.get("numNodes")
     res = requests.post(backend + '/pool', json = {"new_active": int(str(numNodes))})
