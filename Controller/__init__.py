@@ -17,4 +17,10 @@ print("Loading private ip from instance id")
 print(memcache_id_list)
 print(memcache_ip_list)
 
+#statistic
+global T_max_miss
+global T_max_miss
+global expand
+global shrink
+
 from Controller import main
