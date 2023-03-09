@@ -44,7 +44,7 @@ def auto_scale():
                 control.modify_pool_size(1)
             else:
                 control.modify_pool_size(current_active*shrink)
-    print("success looping, current avaliable",control.activated_nodes())#ips
+    print("success looping, current avaliable",(len(control.activated_nodes())-1),control.activated_nodes())#ips
 
 
 with webapp.app_context():
