@@ -19,7 +19,6 @@ config = Config(
 s3 = boto3.client('s3',config=config)
 @webapp.route('/')
 def home():
-    print("to home")
     return render_template("home.html")
 
 # msg pages
