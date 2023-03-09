@@ -297,20 +297,20 @@ def configure_cache():
     print(type(cacheSize))
     # if 'policy' in res:
     policy  = request.args.get("policy")
-    try:
-        int(cacheSize)
-        cacheSize *= 1024 * 1024
-        save_conf_todb(cacheSize,policy)
-    except Exception as e:
-        data = {
-            "success" : "false"
-        }
-        response = webapp.response_class(
-            response=json.dumps(data),
-            status=500,
-            mimetype='application/json'
-        )
-        return response
+    # try:
+    int(cacheSize)
+    cacheSize *= 1024 * 1024
+    save_conf_todb(cacheSize,policy)
+    # except Exception as e:
+        # data = {
+        #     "success" : "false"
+        # }
+        # response = webapp.response_class(
+        #     response=json.dumps(data),
+        #     status=500,
+        #     mimetype='application/json'
+        # )
+        # return response
     # if 'expRatio' in res:
     expRatio= request.args.get("expRatio")
     # if 'shrinkRatio' i res:
