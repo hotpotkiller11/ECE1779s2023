@@ -1,6 +1,6 @@
 from flask import g
-from FrontEnd import webapp
-from FrontEnd.config import db_config
+from ManagerApp import webapp
+from ManagerApp.config import db_config
 import mysql.connector
 
 def init_db():

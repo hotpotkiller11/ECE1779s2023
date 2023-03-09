@@ -1,4 +1,4 @@
-from FrontEnd import db_connect
+from ManagerApp import db_connect
 
 def get_all_keys():# -> list[str]:
     ''' Return all keys stored in the database
