@@ -3,6 +3,7 @@ from Controller.CacheController import CacheController
 from Controller.config import memcache_id_list
 import boto3
 
+
 webapp = Flask(__name__)
 
 memcache_ip_list = []
@@ -16,5 +17,13 @@ control = CacheController(memcache_ip_list)
 print("Loading private ip from instance id")
 print(memcache_id_list)
 print(memcache_ip_list)
+
+#statistic
+global T_max_miss
+
+global T_max_miss
+
+global expand
+global shrink
 
 from Controller import main

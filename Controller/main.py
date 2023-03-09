@@ -1,8 +1,63 @@
-
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import  request, Response
 from Controller import webapp, control
 import json
 import requests
+
+import boto3
+from toolAWS.cloudWatch import CloudWatchWrapper
+from toolAWS.EC2 import EC2Wrapper
+# statistics
+cloudwatch = boto3.client('cloudwatch')
+ec2 = boto3.resource('ec2')
+statManager = CloudWatchWrapper(cloudwatch)
+ec2Manager = EC2Wrapper(ec2)
+
+def auto_scale():
+    """
+    read the max and min miss rate
+    and shrink/expand rate
+    do auto scale function
+    Max Miss Rate threshold (average for all nodes in the pool over the past 1 minute) for growing the pool.
+    Min Miss Rate threshold (average for all nodes in the pool over the past 1 minute) for shrinking the pool.
+    Ratio by which to expand the pool (e.g., expand ratio of 2.0, doubles the number of memcache nodes).
+    Ratio by which to shrink the pool (e.g., shrink ratio of 0.5, shuts down 50% of the current memcache nodes).
+    :return: None
+    """
+    global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink
+    with webapp.app_context():
+        current_miss = statManager.monitor_miss_rate()
+        if current_miss < T_max_miss and current_miss > T_min_miss:
+            print("---no need for scale---")
+        elif current_miss > T_max_miss:
+            print("---miss rate large, expanding---")
+            if len(control.activated_nodes)*expand >= 8:
+                control.modify_pool_size(8)
+            else:
+                control.modify_pool_size(len(control.activated_nodes)*expand)
+        else:
+            print("---miss rate samll, shrinking---")
+            if len(control.activated_nodes)*shrink <= 1:
+                control.modify_pool_size(1)
+            else:
+                control.modify_pool_size(len(control.activated_nodes)*shrink)
+    print("success looping, current pool size",)
+
+
+with webapp.app_context():
+    """
+    looping for 60 seconds, doing job write stat
+    """
+    # get_config_info()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=auto_scale, trigger="interval", minutes=1)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
+
 
 def forward_response(res: Response) -> Response:
     """ Get a new response that ready to be returned from another response
