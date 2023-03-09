@@ -14,6 +14,8 @@ ec2 = boto3.resource('ec2')
 statManager = CloudWatchWrapper(cloudwatch)
 ec2Manager = EC2Wrapper(ec2)
 
+# auto scale active
+Active = True
 def auto_scale():
     """
     read the max and min miss rate
@@ -25,26 +27,30 @@ def auto_scale():
     Ratio by which to shrink the pool (e.g., shrink ratio of 0.5, shuts down 50% of the current memcache nodes).
     :return: None
     """
-    with webapp.app_context():
 
-        current_miss = statManager.monitor_miss_rate()
-        current_active = len(control.activated_nodes())-1 # not including controller
+    if Active:
+        with webapp.app_context():
 
-        if current_miss < T_max_miss and current_miss > T_min_miss:
-            print("---no need for scale---")
-        elif current_miss > T_max_miss:
-            print("---miss rate large, expanding---")
-            if current_active*expand >= 8:
-                control.modify_pool_size(8)
+            current_miss = statManager.monitor_miss_rate()
+            current_active = len(control.activated_nodes())-1 # not including controller
+
+            if current_miss < T_max_miss and current_miss > T_min_miss:
+                print("---no need for scale---")
+            elif current_miss > T_max_miss:
+                print("---miss rate large, expanding---")
+                if current_active*expand >= 8:
+                    control.modify_pool_size(8)
+                else:
+                    control.modify_pool_size(current_active*expand)
             else:
-                control.modify_pool_size(current_active*expand)
-        else:
-            print("---miss rate samll, shrinking---")
-            if current_active*shrink <= 1:
-                control.modify_pool_size(1)
-            else:
-                control.modify_pool_size(current_active*shrink)
-    print("success looping, current avaliable",(len(control.activated_nodes())-1),control.activated_nodes())#ips
+                print("---miss rate samll, shrinking---")
+                if current_active*shrink <= 1:
+                    control.modify_pool_size(1)
+                else:
+                    control.modify_pool_size(current_active*shrink)
+        print("success looping, current avaliable",(len(control.activated_nodes())-1),control.activated_nodes())#ips
+    else:
+        pass
 
 
 with webapp.app_context():
