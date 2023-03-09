@@ -298,8 +298,10 @@ def configure_cache():
     # if 'policy' in res:
     policy  = request.args.get("policy")
     # try:
-    int(cacheSize)
+    float(cacheSize)
     cacheSize *= 1024 * 1024
+    print(cacheSize)
+    print(type(cacheSize))
     save_conf_todb(cacheSize,policy)
     # except Exception as e:
         # data = {
