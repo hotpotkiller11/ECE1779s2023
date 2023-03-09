@@ -26,31 +26,25 @@ def auto_scale():
     :return: None
     """
     with webapp.app_context():
-        """global T_max_miss
-        global T_min_miss
-        global expand
-        global shrink"""
-        T_max_miss = 0.8
-        T_min_miss = 0.2
-        expand = 2
-        shrink = 0.5
+
         current_miss = statManager.monitor_miss_rate()
+        current_active = len(control.activated_nodes())-1 # not including controller
 
         if current_miss < T_max_miss and current_miss > T_min_miss:
             print("---no need for scale---")
         elif current_miss > T_max_miss:
             print("---miss rate large, expanding---")
-            if len(control.activated_nodes())*expand >= 8:
+            if current_active*expand >= 8:
                 control.modify_pool_size(8)
             else:
-                control.modify_pool_size(len(control.activated_nodes())*expand)
+                control.modify_pool_size(current_active*expand)
         else:
             print("---miss rate samll, shrinking---")
-            if len(control.activated_nodes())*shrink <= 1:
+            if current_active*shrink <= 1:
                 control.modify_pool_size(1)
             else:
-                control.modify_pool_size(len(control.activated_nodes())*shrink)
-    print("success looping, current avaliable",control.activated_nodes())
+                control.modify_pool_size(current_active*shrink)
+    print("success looping, current avaliable",control.activated_nodes())#ips
 
 
 with webapp.app_context():
@@ -58,6 +52,15 @@ with webapp.app_context():
     looping for 60 seconds, doing job write stat
     """
     # get_config_info()
+    """global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink"""
+    T_max_miss = 0.8
+    T_min_miss = 0.2
+    expand = 2
+    shrink = 0.5
+
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=auto_scale, trigger="interval", seconds=5)
     scheduler.start()
