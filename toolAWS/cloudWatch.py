@@ -4,7 +4,6 @@ from botocore.args import logger
 from botocore.exceptions import ClientError
 import boto3
 import subprocess
-from EC2 import EC2Wrapper
 from Controller.config import memcache_id_list
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
@@ -26,8 +25,7 @@ class CloudWatchWrapper:
     """Encapsulates Amazon CloudWatch functions."""
     def __init__(self, cloudwatch_resource):
         self.cloudwatch_resource = cloudwatch_resource
-        #self.current_id = getCurrentID()
-        self.current_id = 'i-09c738fc558cb24a6'
+        self.current_id = getCurrentID()
 
     def create_metric_alarm(
             self, metric_namespace, metric_name, alarm_name, stat_type, period,
@@ -254,16 +252,39 @@ class CloudWatchWrapper:
                 hit += point["Sum"]
         # print(hit)
         return miss / (miss + hit) # at least one miss, no div_by_0 error
-                
+
+    def monitor_hit_rate(self, interval = 5) -> float:
+            """ Calculate the hit rate of all nodes from last n minutes (n = interval)
+
+            Args:
+                interval (int, optional): The time interval (in minutes) to calculate the average hit rate. Defaults to 5.
+
+            Returns:
+                float: miss rate calculated (0.0 if no hit or miss)
+            """
+            result = self.monitor_stat("miss", "Sum", interval, interval * 60)
+            # TODO: change the last param
+            miss = 0
+            for node in result:
+                for point in node:
+                    miss += point["Sum"]
+            # print(miss)
+            if miss == 0: return 0.0 # No miss or no access, return 0.0 as miss rate
+            
+            result = self.monitor_stat("hit", "Sum", interval, interval * 60)
+            # TODO: change the last param
+            hit = 0
+            for node in result:
+                for point in node:
+                    hit += point["Sum"]
+            # print(hit)
+            return hit / (miss + hit) # at least one miss, no div_by_0 error
+                    
         
 
 if __name__ == '__main__':
 
     cloudwatch = boto3.client('cloudwatch')
-    ec2 = boto3.resource('ec2')
     statManager = CloudWatchWrapper(cloudwatch)
-    ec2Manager = EC2Wrapper(ec2)
-
-    ec2list = ec2Manager.checkAllInstance()#all instances in aws
     print(statManager.monitor_miss_rate())
 

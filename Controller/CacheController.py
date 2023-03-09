@@ -1,5 +1,6 @@
 import hashlib
 import requests
+import math
 
 def get_hash(key: str) -> bytes:
     h = hashlib.md5(key.encode('utf-8')).hexdigest()
@@ -19,7 +20,7 @@ class CacheController:
     pool_size = 0 # Activated node count
     partition_dict = {} # used to map partition with memcache nodes
 
-    def __init__(self, memcache_servers: list[str]):
+    def __init__(self, memcache_servers: list):
         """ Create a new Cache Controller instance with a list of memcache node
             servers.
 
@@ -33,7 +34,7 @@ class CacheController:
         for i in range(16):
             self.partition_dict[hex(i)[2:]] = memcache_servers[0]
 
-    def activated_nodes(self) -> list[str]:
+    def activated_nodes(self) -> list:
         """ Get a list of all activated nodes
 
         Returns:
@@ -41,7 +42,7 @@ class CacheController:
         """
         return self.memcache_nodes[0:self.pool_size]
     
-    def not_activated_nodes(self) -> list[str]:
+    def not_activated_nodes(self) -> list:
         """ Get a list of all not activated nodes
 
         Returns:
@@ -118,4 +119,12 @@ class CacheController:
                 res = requests.post(new_node + "/put/list", json = send_dict[new_node])
                 if res.status_code != 200: print("File transition filed (%s)" % (new_node))
 
-        
+    def multi_pool_size(self, parameter: float) -> None:
+        if parameter == 1.0: return
+        elif parameter < 1.0:
+            new_active = math.floor(self.pool_size * parameter)
+            new_active = max(1, new_active)
+        else: # parameter > 1.0
+            new_active = math.ceil(self.pool_size * parameter)
+            new_active = min(len(self.memcache_nodes), new_active)
+        self.modify_pool_size(new_active)

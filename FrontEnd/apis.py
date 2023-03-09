@@ -1,11 +1,16 @@
 from flask import render_template, request, json
+from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
+from toolAWS.cloudWatch import CloudWatchWrapper
+import boto3
 import base64
 import os
 import requests
+cloudwatch = boto3.client('cloudwatch')
+clo_manager = CloudWatchWrapper(cloudwatch)
 
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
@@ -238,3 +243,37 @@ def convertToBase64(filename):
     #decode the b64 byte code in utf-8 format
     base64_figure = base64_figure.decode('utf-8')
     return base64_figure
+
+@webapp.route('/api/getNumNodes', methods = ['POST'])
+def getNumNodes():
+    res = requests.post(backend+'/pool_size')
+    num = res.json()["pool_size"]
+    data = {
+        "success": "true",
+        "numNodes":num
+    }
+    response = webapp.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route('/api/getRate/<parameters>', methods=['POST'])
+def getRate(parameters):
+    rate = parameters[5:]
+    if rate == 'miss':
+        value = clo_manager.monitor_miss_rate(interval = 1)
+    elif rate == 'hit':
+        value = clo_manager.monitor_hit_rate(interval = 1)
+    data = {
+        "success": "true",
+        "rate": rate,
+        "value":value
+    }
+    response = webapp.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
