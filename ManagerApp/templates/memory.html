@@ -7,7 +7,18 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 
         <script>
-            autoscale = "checked"
+            manual = true
+
+            if (manual == true){
+                document.getElementById("switch").checked = true;
+                document.getElementById("auto").style.display = "none";
+                document.getElementById("manual").style.display = "block";
+            } else{
+                document.getElementById("switch").checked = false;
+                document.getElementById("auto").style.display = "block";
+                document.getElementById("manual").style.display = "none";
+            }
+
         </script>
     </head>
     <body>
@@ -48,41 +59,47 @@
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
                             <p>Manual
                                 <label class="switch">
-                                    <input type="checkbox" {{ Autoscale }}>
+                                    <input type="checkbox" id="switch">
                                     <span class="slider round"></span>
                                 </label>
                             Auto</p>
-                            <form method="post" action="{{ url_for('mem_pool_set') }}">
-                                <p><b>Change active node</b></p>
-                                <p>
-                                    <input type="range" min="1" max="{{ nodes|length }}" value="{{ active.value }}" id="new_active" name="new_active">
-                                    value: <span id="value"></span>
-                                </p>
-                                <p>
-                                    <input type="button" onclick="halven()" value="halven active node">
-                                    <input type="button" onclick="double()" value="double active node">
-                                </p>
-                                <input type="submit">
-                            </form>
-                            <script>
-                                var slider = document.getElementById("new_active");
-                                var output = document.getElementById("value");
-                                output.innerHTML = slider.value; // Initialization
-                                
-                                slider.oninput = function() {
-                                    output.innerHTML = this.value;
-                                }
+                            <div id="manual">
+                                <form method="post" action="{{ url_for('mem_pool_set') }}">
+                                    <p><b>Change active node</b></p>
+                                    <p>
+                                        <input type="range" min="1" max="{{ nodes|length }}" value="{{ active.value }}" id="new_active" name="new_active">
+                                        value: <span id="value"></span>
+                                    </p>
+                                    <p>
+                                        <input type="button" onclick="halven()" value="halven active node">
+                                        <input type="button" onclick="double()" value="double active node">
+                                    </p>
+                                    <input type="submit">
+                                </form>
+                                <script>
+                                    var slider = document.getElementById("new_active");
+                                    var output = document.getElementById("value");
+                                    output.innerHTML = slider.value; // Initialization
+                                    
+                                    slider.oninput = function() {
+                                        output.innerHTML = this.value;
+                                    }
 
-                                function double() {
-                                    slider.value = Math.min(slider.value * 2, slider.max)
-                                    output.innerHTML = slider.value
-                                }
+                                    function double() {
+                                        slider.value = Math.min(slider.value * 2, slider.max)
+                                        output.innerHTML = slider.value
+                                    }
 
-                                function halven() {
-                                    slider.value = Math.max(slider.value / 2, slider.min)
-                                    output.innerHTML = slider.value
-                                }
-                            </script>
+                                    function halven() {
+                                        slider.value = Math.max(slider.value / 2, slider.min)
+                                        output.innerHTML = slider.value
+                                    }
+                                </script>
+                            </div>
+                            <div id="auto">
+
+                            </div>
+                        
                         <h2>Memcache Node Configurations</h2>
                         <p>Current configurations:</p>
                         <ul>
