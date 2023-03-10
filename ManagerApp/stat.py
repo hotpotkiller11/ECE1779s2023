@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from FrontEnd.db_connect import get_db
-from FrontEnd import webapp
+from ManagerApp.db_connect import get_db
+from ManagerApp import webapp
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template
 from toolAWS import cloudWatch

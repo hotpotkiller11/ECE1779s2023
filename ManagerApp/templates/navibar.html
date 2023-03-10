@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/navibar.css') }}" />
+    </head>
+    <body>
+        <div class="column_box">
+            <div class="navi_div"><a href="/" class="navi">Webfront Home</a></div>
+            <div class="navi_div"><a href="{{ url_for('home') }}" class="navi">Manager Home</a></div>
+            <div class="navi_div"><a href="{{ url_for('memory_inspect') }}" class="navi">Cache Config</a></div>
+            <div class="navi_div"><a href="{{ url_for('stat') }}" class="navi">Statistics</a></div>
+        </div>
+    </body>
+</html>

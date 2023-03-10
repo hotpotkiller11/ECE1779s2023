@@ -36,7 +36,8 @@
                                 <p><b>Node {{n.id}}</b>: <span style="color:red">not activated</span></p>
                             {% endif %}
                         {% endfor %}
-                        <a href = "{{ url_for('mem_key_delete') }}">Delete all figure cache</a>
+                        <a href = "{{ url_for('mem_key_delete') }}">Clear all Memcahce nodes</a>
+                        <a href = "{{ url_for('all_key_delete') }}">Delete all keys and values in S3 and nodes</a>
                     </div>
                     <div class="column">
                         <h2>Memcache Pool Configurations</h2>
