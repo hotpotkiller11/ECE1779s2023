@@ -237,7 +237,7 @@ def auto_scale(active: bool):
 
 @webapp.route("/auto", methods=['POST'])
 def auto_on_off():
-    active = request.form.get("auto")
+    active = request.form.get("auto", type=bool)
     auto_scale(active)
     response = webapp.response_class(
         response=json.dumps("OK"),
