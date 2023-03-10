@@ -5,6 +5,10 @@
         <title>Available keys</title>
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+
+        <script>
+            autoscale = "checked"
+        </script>
     </head>
     <body>
         {% include "navibar.html" %}
@@ -42,6 +46,12 @@
                     <div class="column">
                         <h2>Memcache Pool Configurations</h2>
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
+                            <p>Manual
+                                <label class="switch">
+                                    <input type="checkbox" {{ Autoscale }}>
+                                    <span class="slider round"></span>
+                                </label>
+                            Auto</p>
                             <form method="post" action="{{ url_for('mem_pool_set') }}">
                                 <p><b>Change active node</b></p>
                                 <p>
