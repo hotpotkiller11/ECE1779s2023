@@ -88,16 +88,16 @@
                                 <form method="post" action="{{ url_for('auto_params') }}">
                                     <p><b>Change auto-scaler parameters</b></p>
                                     <label for="max_miss">Max miss rate threshold: </label>
-                                    <input type="number" name="max_miss" id="max_miss" value="{{auto_scaler.max_miss * 100}}"
+                                    <input type="number" name="max_miss" id="max_miss" placeholder="{{auto_scaler.max_miss * 100}}"
                                         min="0" max="100" required onchange="input_boundary('max')"> %<br>
                                     <label for="min_miss">Min miss rate threshold: </label>
-                                    <input type="number" name="min_miss" id="min_miss" value="{{auto_scaler.min_miss * 100}}"
+                                    <input type="number" name="min_miss" id="min_miss" placeholder="{{auto_scaler.min_miss * 100}}"
                                         min="0" max="100" required onchange="input_boundary('min')"> %<br>
                                     <label for="shrink">Shrink ratio: </label>
-                                    <input type="number" name="shrink" value="{{auto_scaler.shrink}}"
+                                    <input type="number" name="shrink" placeholder="{{auto_scaler.shrink}}"
                                         min="0" max="1" step="0.1" required><br>
                                     <label for="expend">Expend ratio: </label>
-                                    <input type="number" name="expend" value="{{auto_scaler.expand}}"
+                                    <input type="number" name="expend" placeholder="{{auto_scaler.expand}}"
                                         min="1" max="{{ nodes|length }}" step="0.1" required><br>
                                     <input type="submit">
                                 </form>
