@@ -1,4 +1,6 @@
 import atexit
+import math
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import  request, Response
 from Controller import webapp, control
@@ -33,7 +35,7 @@ def auto_scale():
         with webapp.app_context():
 
             current_miss = statManager.monitor_miss_rate()
-            current_active = len(control.activated_nodes())-1 # not including controller
+            current_active = control.pool_size # not including controller
 
             if current_miss < T_max_miss and current_miss > T_min_miss:
                 print("---no need for scale---")
@@ -42,14 +44,15 @@ def auto_scale():
                 if current_active*expand >= 8:
                     control.modify_pool_size(8)
                 else:
-                    control.modify_pool_size(current_active*expand)
+                    control.modify_pool_size(math.ceil(current_active*expand))
             else:
                 print("---miss rate samll, shrinking---")
                 if current_active*shrink <= 1:
                     control.modify_pool_size(1)
                 else:
-                    control.modify_pool_size(current_active*shrink)
-        print("success looping, current avaliable",(len(control.activated_nodes())-1),control.activated_nodes())#ips
+                    control.modify_pool_size(math.floor(current_active*shrink))
+
+        print("success looping, current avaliable",(control.pool_size),control.activated_nodes())#ips
     else:
         pass
 
