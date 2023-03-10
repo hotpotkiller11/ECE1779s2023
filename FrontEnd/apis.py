@@ -1,7 +1,7 @@
 from flask import render_template, request, json
 from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
-from FrontEnd.main import save_conf_todb, process_figure
+from FrontEnd.main import save_conf_todb, process_figure, download_image
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
@@ -82,7 +82,7 @@ def deleteFile(filename:str)->bool:
         return False
 
 
-@webapp.route('/api/upload', methods = ['GET','POST'])
+@webapp.route('/api/upload', methods = ['GET','POST'])#tested OK
 # returns the upload page
 def upload():
     if request.method == 'POST':
@@ -130,38 +130,8 @@ def upload():
             return response
     return render_template('upload_figure.html')
 
-# def process_figure(request, key):
-#     # get the figure file
-#     file = request.files['file']
-#     _, extension = os.path.splitext(file.filename)
-#     # print(extension)
-#     # if the figure is one of the allowed extensions
-#     if extension.lower() in IMAGE_FORMAT:
-#         filename = key + extension
-#         original = key_path.get_path_by_key(key)
-#         # save the figure in the local file system
-#         try:
-#             if original is None:
-#                 file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-#                 key_path.add_key_and_path(key, filename)
-#                 return 'SUCCESS'
-#             else:
-#                 if key_path.delete_term_by_key(key):
-#                     if deleteFile(original):
-#                         print("File replaced: %s" % original)
-#                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-#                     key_path.add_key_and_path(key, filename)
-#                     request_json = {'key':key}
-#                     res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
-#                     if (res.status_code != 200):
-#                         print("memcache object deletion failed.")
-#                     return 'SUCCESS'
-#         except Exception as e:
-#             print(e)
-#             return 'UNSUCCESS'
-#     return 'INVALID'
 
-@webapp.route('/api/list_keys', methods=['POST'])
+@webapp.route('/api/list_keys', methods=['POST'])#tested OK
 def list_keys():
     keys = key_path.get_all_keys()
     data = {
@@ -200,10 +170,10 @@ def show_figure_by_key(key_value):
                 )
                 return response
             else:
-                base64_figure = convertToBase64(filename)
+                base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)
-                print(res.json())               
+                #print(res.json())               
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
