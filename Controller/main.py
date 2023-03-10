@@ -237,7 +237,7 @@ def auto_scale(active: bool):
 
 @webapp.route("/auto", methods=['POST'])
 def auto_on_off():
-    active = request.form.get("auto", type=bool)
+    active = request.json["auto"]
     auto_scale(active)
     response = webapp.response_class(
         response=json.dumps("OK"),
@@ -249,10 +249,10 @@ def auto_on_off():
 
 @webapp.route("/auto_params", methods=['POST'])
 def auto_params():
-    max_miss = request.form.get("max_miss", T_max_miss, float) # original value if no key found
-    min_miss = request.form.get("min_miss", T_min_miss, float)
-    expand_ratio = request.form.get("expand", expand, float)
-    shrink_ratio = request.form.get("shrink", shrink, float)
+    max_miss = request.json["max_miss"] # original value if no key found
+    min_miss = request.json["min_miss"]
+    expand_ratio = request.json["expand"]
+    shrink_ratio = request.json["shrink"]
     
     set_auto_scale_param(max_miss, min_miss, expand_ratio, shrink_ratio)
     
