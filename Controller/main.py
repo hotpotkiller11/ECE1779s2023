@@ -249,10 +249,10 @@ def auto_on_off():
 
 @webapp.route("/auto_params", methods=['POST'])
 def auto_params():
-    max_miss = request.form.get("max_miss", T_max_miss) # original value if no key found
-    min_miss = request.form.get("min_miss", T_min_miss)
-    expand_ratio = request.form.get("expand", expand)
-    shrink_ratio = request.form.get("shrink", shrink)
+    max_miss = request.form.get("max_miss", T_max_miss, float) # original value if no key found
+    min_miss = request.form.get("min_miss", T_min_miss, float)
+    expand_ratio = request.form.get("expand", expand, float)
+    shrink_ratio = request.form.get("shrink", shrink, float)
     
     set_auto_scale_param(max_miss, min_miss, expand_ratio, shrink_ratio)
     
