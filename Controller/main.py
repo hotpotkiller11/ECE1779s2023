@@ -1,4 +1,6 @@
 import atexit
+import math
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import  request, Response
 from Controller import webapp, control
@@ -43,13 +45,14 @@ def auto_scale():
                 if current_active*expand >= 8:
                     control.modify_pool_size(8)
                 else:
-                    control.modify_pool_size(current_active*expand)
+                    control.modify_pool_size(math.ceil(current_active*expand))
             else:
                 print("---miss rate samll, shrinking---")
                 if current_active*shrink <= 1:
                     control.modify_pool_size(1)
                 else:
-                    control.modify_pool_size(current_active*shrink)
+                    control.modify_pool_size(math.floor(current_active*shrink))
+
         print("success looping, current avaliable",(control.pool_size),control.activated_nodes())#ips
     else:
         pass
