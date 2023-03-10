@@ -159,7 +159,7 @@ def mem_pool_set():
     else:
         return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
 
-@webapp.route('/memory/auto')
+@webapp.route('/memory/auto', methods=['POST'])
 def auto_on_off():
     active = request.form.get("auto")
     if active == None:
@@ -185,7 +185,7 @@ def auto_on_off():
         )
         return response
     
-@webapp.route("/memory/auto_params")
+@webapp.route("/memory/auto_params", methods=['POST'])
 def auto_params():
     max_miss = request.form.get("max_miss")
     min_miss = request.form.get("min_miss")
