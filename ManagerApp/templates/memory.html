@@ -157,7 +157,7 @@
                 async () => {
                     try {
                         const resp = await axios.post('{{ url_for("auto_on_off") }}', form);
-                        console.log(resp.data);
+                        console.log("success");
                     } catch (err) {
                         // Handle Error Here
                         console.error(err);
