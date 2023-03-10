@@ -155,10 +155,10 @@
                     document.getElementById("auto").style.display = "block";
                     document.getElementById("manual").style.display = "none";
                 }
-
+                form = {auto: auto}
                 const send = async () => {
                     try {
-                        const resp = await axios.post('{{ url_for("auto_on_off") }}', {auto: auto}, {
+                        const resp = await axios.post('{{ url_for("auto_on_off") }}', form, {
                             headers: {
                               'Content-Type': 'multipart/form-data'
                             }
