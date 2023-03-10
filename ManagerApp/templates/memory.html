@@ -85,16 +85,18 @@
                             <div id="auto">
                                 <form method="post" action="{{ url_for('mem_pool_set') }}">
                                     <p><b>Change auto-scaler parameters</b></p>
-                                    <input type="number" name="capacity" 
-                                        min="0" max="1024" required> 
-                                    <input type="number" name="capacity" 
-                                        min="0" max="1024" required> 
+                                    <label for="max_miss">Max miss rate threshold: </label>
+                                    <input type="number" name="max_miss" 
+                                        min="0" max="100" required> %<br>
+                                    <label for="max_miss">Min miss rate threshold: </label>
+                                    <input type="number" name="min_miss" 
+                                        min="0" max="100" required> %<br>
                                     <label for="shrink">Shrink ratio: </label>
                                     <input type="number" name="shrink" 
                                         min="0" max="1" required><br>
                                     <label for="expend">Expend ratio: </label>
                                     <input type="number" name="expend" 
-                                        min="1" required> 
+                                        min="1" required> <br>
                                 </form>
                             </div>
                         
