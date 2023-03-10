@@ -7,16 +7,27 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 
         <script>
-            manual = true
+            auto = true
 
-            if (manual == true){
-                document.getElementById("switch").checked = true;
+            if (auto == false){
+                document.getElementById("switch").checked = false;
                 document.getElementById("auto").style.display = "none";
                 document.getElementById("manual").style.display = "block";
             } else{
-                document.getElementById("switch").checked = false;
+                document.getElementById("switch").checked = true;
                 document.getElementById("auto").style.display = "block";
                 document.getElementById("manual").style.display = "none";
+            }
+
+            function switch_display(){
+                auto = document.getElementById("switch").checked
+                if (auto == false){
+                    document.getElementById("auto").style.display = "none";
+                    document.getElementById("manual").style.display = "block";
+                } else{
+                    document.getElementById("auto").style.display = "block";
+                    document.getElementById("manual").style.display = "none";
+                }
             }
 
         </script>
@@ -63,7 +74,7 @@
                                     <span class="slider round"></span>
                                 </label>
                             Auto</p>
-                            <div id="manual">
+                            <div id="manual" onclick="switch_display">
                                 <form method="post" action="{{ url_for('mem_pool_set') }}">
                                     <p><b>Change active node</b></p>
                                     <p>
@@ -97,7 +108,11 @@
                                 </script>
                             </div>
                             <div id="auto">
-
+                                <form method="post" action="{{ url_for('mem_pool_set') }}">
+                                    <p><b>Change auto-scaler parameters</b></p>
+                                    
+                                    <input type="submit">
+                                </form>
                             </div>
                         
                         <h2>Memcache Node Configurations</h2>
