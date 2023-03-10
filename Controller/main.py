@@ -261,5 +261,5 @@ def auto_params():
         status=200,
         mimetype='application/json',
     )
-    print("New parameters set. " + str(max_miss, min_miss, expand_ratio, shrink_ratio))
+    print("New parameters set. " + str([max_miss, min_miss, expand_ratio, shrink_ratio]))
     return response
