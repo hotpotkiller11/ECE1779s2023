@@ -44,8 +44,8 @@
                         <h2>Memcache Pool Configurations</h2>
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
                             <p>Manual
-                                <label class="switch" onclick="switch_display">
-                                    <input type="checkbox" id="switch">
+                                <label class="switch">
+                                    <input type="checkbox" id="switch" onclick="switch_display()">
                                     <span class="slider round"></span>
                                 </label>
                             Auto</p>
