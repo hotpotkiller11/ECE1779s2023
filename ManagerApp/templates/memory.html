@@ -154,7 +154,7 @@
                 }
 
                 const axios = require('axios').default;
-                let form = {"auto" = auto};
+                let form = {auto = auto};
                 async () => {
                     try {
                         const resp = await axios.post('{{ url_for("auto_on_off") }}', form);
