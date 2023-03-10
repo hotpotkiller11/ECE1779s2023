@@ -145,7 +145,7 @@ def list_keys():
             )
     return response
 
-@webapp.route('/api/key/<key_value>',methods=['GET','POST'])
+@webapp.route('/api/key/<key_value>',methods=['GET','POST'])#tested OK
 def show_figure_by_key(key_value):
     if request.method == 'POST':
         key = key_value
