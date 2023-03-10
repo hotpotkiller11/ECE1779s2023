@@ -153,10 +153,9 @@
                     document.getElementById("manual").style.display = "none";
                 }
 
-                let form = {auto: auto};
                 const send = async () => {
                     try {
-                        const resp = await axios.post('{{ url_for("auto_on_off") }}', form);
+                        const resp = await axios.post('{{ url_for("auto_on_off") }}', {auto: auto});
                         console.log("success");
                     } catch (err) {
                         // Handle Error Here
