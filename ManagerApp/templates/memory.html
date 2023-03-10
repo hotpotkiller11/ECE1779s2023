@@ -155,8 +155,12 @@
 
                 const send = async () => {
                     try {
-                        const resp = await axios.post('{{ url_for("auto_on_off") }}', {auto: auto});
-                        console.log("success");
+                        const resp = await axios.post('{{ url_for("auto_on_off") }}', {auto: auto}, {
+                            headers: {
+                              'Content-Type': 'multipart/form-data'
+                            }
+                        });
+                        console.log(resp);
                     } catch (err) {
                         // Handle Error Here
                         console.error(err);
