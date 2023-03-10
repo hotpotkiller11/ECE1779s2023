@@ -158,66 +158,45 @@ def mem_pool_set():
         return render_template("success.html", msg = "Configuration updated")
     else:
         return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
-"""The function used to store file in to static"""
-def saveDataToFile(filename:str, input:bytes):
-    """
-    :param filename: the file name string
-    :param input: how many bytes input
-    :return: debug info
-    """
-    filepath = "./FrontEnd/static/figure/"+filename
-    print(filepath)
-    try:
-        with open(filepath, "wb") as f:
-            f.write(input)
-            f.close()
-        return "save success"
-    except Exception as e:
-        return "save unsuccess (%s)"
 
-
-def getDataFromFile(filename:str)->bytes:
-    """The function used to read a file in to static index by its filename, if no such file, return None"""
-    filepath = "./FrontEnd/static/figure/"+filename
-    try:
-        f = open(filepath, 'rb')
-        output = (f.read())
-        f.close()
-        return output
-    except Exception as e:
-        print(e)
-        return None
-
-
-def listFileDictionary(dicname:str):#->list[str]:
-    """This function return the list of files in a specific dictionary name"""
-    filepath = "./FrontEnd/static/"+dicname
-    return os.listdir(filepath)
-
-
-
-def deleteFile(filename:str)->bool:
-    '''This function is used to delete all data in a specific document under static'''
-    filepath = "./FrontEnd/static/figure/"+filename
-    print(filepath)
-    try:
-        if os.path.isdir(filepath):
-            print(os.path.isdir(filepath))
-            del_list = os.listdir(filepath)
-            del_list.remove(".gitignore") # DO NOT REMOVE GITIGNORE
-            print(del_list)
-            for f in del_list:
-                file_path = os.path.join(filepath, f)
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-            return True
-        else:
-            os.remove(filepath)
-            print("remove is done")
-            return True
-    except Exception as e:
-        print(e)
-        return False
+@webapp.route('/memory/auto')
+def auto_on_off():
+    active = request.form.get("auto")
+    if active == None:
+        response = webapp.response_class(
+        response=json.dumps("Bad request"),
+        status=400,
+        mimetype='application/json',
+        )
+        return response
+    res = requests.post(backend + '/auto', json = {"auto": active})
+    if res.status_code == 200:
+        response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+        )
+        return response
+    else:
+        response = webapp.response_class(
+        response=json.dumps("Internal error"),
+        status=500,
+        mimetype='application/json',
+        )
+        return response
+    
+@webapp.route("memory/auto_params")
+def auto_params():
+    max_miss = request.form.get("max_miss")
+    min_miss = request.form.get("min_miss")
+    shrink = request.form.get("shrink")
+    expand = request.form.get("expand")
+    res = requests.post(backend + "/auto_params", 
+                  json = {"max_miss": max_miss, "min_miss": min_miss, "shrink": shrink, "expand": expand})
+    if res.status_code == 200:
+        return render_template("success.html", msg = "Auto scaler parameters updated")
+    else:
+        return render_template("error.html", msg = "Parameters update failed. Error code = %d" % (res.status_code))
 
 @webapp.errorhandler(404)
 # returns the 404 page
