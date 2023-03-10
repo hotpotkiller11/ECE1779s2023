@@ -6,31 +6,6 @@
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
 
-        <script>
-            auto = true
-
-            if (auto == false){
-                document.getElementById("switch").checked = false;
-                document.getElementById("auto").style.display = "none";
-                document.getElementById("manual").style.display = "block";
-            } else{
-                document.getElementById("switch").checked = true;
-                document.getElementById("auto").style.display = "block";
-                document.getElementById("manual").style.display = "none";
-            }
-
-            function switch_display(){
-                auto = document.getElementById("switch").checked
-                if (auto == false){
-                    document.getElementById("auto").style.display = "none";
-                    document.getElementById("manual").style.display = "block";
-                } else{
-                    document.getElementById("auto").style.display = "block";
-                    document.getElementById("manual").style.display = "none";
-                }
-            }
-
-        </script>
     </head>
     <body>
         {% include "navibar.html" %}
@@ -142,5 +117,30 @@
                 </div>
             </div> 
         </div>
+        <script>
+            auto = true
+
+            if (auto == false){
+                document.getElementById("switch").checked = false;
+                document.getElementById("auto").style.display = "none";
+                document.getElementById("manual").style.display = "block";
+            } else{
+                document.getElementById("switch").checked = true;
+                document.getElementById("auto").style.display = "block";
+                document.getElementById("manual").style.display = "none";
+            }
+
+            function switch_display(){
+                auto = document.getElementById("switch").checked
+                if (auto == false){
+                    document.getElementById("auto").style.display = "none";
+                    document.getElementById("manual").style.display = "block";
+                } else{
+                    document.getElementById("auto").style.display = "block";
+                    document.getElementById("manual").style.display = "none";
+                }
+            }
+
+        </script>
     </body>
 </html>
