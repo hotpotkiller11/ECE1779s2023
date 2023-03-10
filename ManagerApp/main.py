@@ -185,7 +185,7 @@ def auto_on_off():
         )
         return response
     
-@webapp.route("memory/auto_params")
+@webapp.route("/memory/auto_params")
 def auto_params():
     max_miss = request.form.get("max_miss")
     min_miss = request.form.get("min_miss")
