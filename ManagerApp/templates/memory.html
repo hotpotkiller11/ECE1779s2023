@@ -45,11 +45,11 @@
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
                             <p>Manual
                                 <label class="switch">
-                                    <input type="checkbox" id="switch">
+                                    <input type="checkbox" id="switch" onclick="switch_display">
                                     <span class="slider round"></span>
                                 </label>
                             Auto</p>
-                            <div id="manual" onclick="switch_display">
+                            <div id="manual">
                                 <form method="post" action="{{ url_for('mem_pool_set') }}">
                                     <p><b>Change active node</b></p>
                                     <p>
