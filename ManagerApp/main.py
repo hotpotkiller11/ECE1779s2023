@@ -176,6 +176,7 @@ def mem_pool_set():
 @webapp.route('/memory/auto', methods=['POST'])
 def auto_on_off():
     active = request.form.get("auto", type=bool)
+    print(active)
     if active == None:
         response = webapp.response_class(
         response=json.dumps("Bad request"),
