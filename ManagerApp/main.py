@@ -207,8 +207,8 @@ def auto_params():
     min_miss = request.form.get("min_miss", type=float) / 100 # percentage to decimal
     if(max_miss < min_miss):
         return render_template("error.html", msg = "max miss rate < min miss rate")
-    shrink = request.form.get("shrink")
-    expand = request.form.get("expand")
+    shrink = request.form.get("shrink", type=float)
+    expand = request.form.get("expand", type=float)
     res = requests.post(backend + "/auto_params", 
                   json = {"max_miss": max_miss, "min_miss": min_miss, "shrink": shrink, "expand": expand})
     if res.status_code == 200:
