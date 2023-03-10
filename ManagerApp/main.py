@@ -77,6 +77,20 @@ def memory_inspect():
                 node["size"] = unit_convertor(node["size"])
     else:
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
+    res = requests.get(backend + "/get_auto_params") # get auto-scaler params
+    if (res.status_code == 200):
+        auto = res.json()['auto']
+        max_miss = res.json()['max_miss']
+        min_miss = res.json()['min_miss']
+        expand = res.json()['expand']
+        shrink = res.json()['shrink']
+        auto_scaler = {"auto": auto,
+                       "max_miss": max_miss,
+                       "min_miss": min_miss,
+                       "expand": expand,
+                       "shrink": shrink}
+    else:
+        return render_template("error.html", msg = "Cannot get auto-scaler status.")
     try:
         db = get_db()
         query = '''SELECT capacity, policy
@@ -91,7 +105,7 @@ def memory_inspect():
         print(e)
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
     return render_template("memory.html", nodes = nodes, n = n, size = unit_convertor(size),
-        capacity = unit_convertor(capacity), policy = policy)
+        capacity = unit_convertor(capacity), policy = policy, auto_scaler = auto_scaler)
 
 def unit_convertor(byte: int) -> str:
     """

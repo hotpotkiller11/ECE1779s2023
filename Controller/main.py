@@ -263,3 +263,13 @@ def auto_params():
     )
     print("New parameters set. " + str([max_miss, min_miss, expand_ratio, shrink_ratio]))
     return response
+
+@webapp.route("/get_auto_params", methods=['GET', 'POST'])
+def get_params():
+    response = webapp.response_class(
+        response=json.dumps({"auto": Active, "max_miss": T_max_miss, "min_miss": T_min_miss,
+                             "expand": expand, "shrink": shrink}),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
