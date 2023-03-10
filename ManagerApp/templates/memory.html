@@ -50,7 +50,7 @@
                                     <span class="slider round"></span>
                                 </label>
                             Auto </p>
-                            <p id="auto_msg" style="color:green;"></p>
+                            <p id="auto_msg" style="color:green;"> </p>
                             <div id="manual">
                                 <form method="post" action="{{ url_for('mem_pool_set') }}">
                                     <p><b>Change active node</b></p>
@@ -178,12 +178,12 @@
 
             function input_boundary(element){
                 
-                max = document.getElementById("max_miss");
-                min = document.getElementById("min_miss");
+                max_rate = document.getElementById("max_miss");
+                min_rate = document.getElementById("min_miss");
                 if (element = "min"){ // input change another's boundary
-                    max.min = min.value
+                    max_rate.min = min_rate.value
                 } else{
-                    min.max = max.value
+                    min_rate.max = max_rate.value
                 }
                     
             }
