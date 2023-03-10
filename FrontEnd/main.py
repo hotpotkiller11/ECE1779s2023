@@ -251,6 +251,28 @@ def mem_config_set():
     if unit == "KB": capacity *= 1024
     elif unit == "MB": capacity *= 1024 * 1024
     policy = request.form.get('policy')
+    try:
+        save_conf_todb(capacity,policy)
+        return render_template("success.html", msg = "Configuration updated")
+    except Exception as e:
+        return render_template("error.html", msg = e)
+    
+
+
+def save_conf_todb(capacity:float, policy:str):
+    """_summary_
+
+    Args:
+        capacity (float): 
+        policy (str): LRU/Random
+
+    Raises:
+        Exception: Database insertion failed
+        Exception: Memcache update failed
+
+    Returns:
+        _type_: true/exception
+    """
     db = db_connect.get_db()
     query = 'INSERT INTO `backend_config` (`capacity`, `policy`) VALUES (%d, "%s")' % (capacity, policy)
     cursor = db.cursor()
@@ -263,13 +285,13 @@ def mem_config_set():
         db.rollback() # Try to rollback in case of error
         cursor.close()
         # db.close()
-        return render_template('error.html', msg = "Database insertion failed")
+        raise Exception("Database insertion failed")
     res = requests.get(backend + '/refresh') # get keys list
     if (res.status_code == 200):
-        return render_template("success.html", msg = "Configuration updated")
+        return True
     else:
-        return render_template("error.html", msg = "Memcache update failed: error %d" % res.status_code)
-    
+        raise Exception("Memcache update failed: error %d" % (res.status_code))
+
 @webapp.route('/memory/pool', methods=['POST'])
 def mem_pool_set():
     active = int(request.form.get('new_active'))
