@@ -16,6 +16,8 @@ ec2Manager = EC2Wrapper(ec2)
 
 # auto scale active
 Active = True
+
+
 def auto_scale():
     """
     read the max and min miss rate
