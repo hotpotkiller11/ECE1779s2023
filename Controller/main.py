@@ -244,6 +244,7 @@ def auto_on_off():
         status=200,
         mimetype='application/json',
     )
+    print("Auto scaler active: " + str(active))
     return response
 
 @webapp.route("/auto_params", methods=['POST'])
@@ -260,4 +261,5 @@ def auto_params():
         status=200,
         mimetype='application/json',
     )
+    print("New parameters set. " + str(max_miss, min_miss, expand_ratio, shrink_ratio))
     return response

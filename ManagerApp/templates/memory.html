@@ -5,6 +5,7 @@
         <title>Available keys</title>
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     </head>
     <body>
@@ -43,7 +44,7 @@
                     <div class="column">
                         <h2>Memcache Pool Configurations</h2>
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
-                            <p>Manual
+                            <p>Auto scaler: Manual
                                 <label class="switch">
                                     <input type="checkbox" id="switch" onclick="switch_display()">
                                     <span class="slider round"></span>
@@ -151,6 +152,18 @@
                     document.getElementById("auto").style.display = "block";
                     document.getElementById("manual").style.display = "none";
                 }
+
+                const axios = require('axios').default;
+                let form = {"auto" = auto};
+                async () => {
+                    try {
+                        const resp = await axios.post('{{ url_for("auto_on_off") }}', form);
+                        console.log(resp.data);
+                    } catch (err) {
+                        // Handle Error Here
+                        console.error(err);
+                    }
+                };
             }
 
         </script>
