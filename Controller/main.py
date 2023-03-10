@@ -203,3 +203,61 @@ def pool_multi():
         mimetype='application/json',
     )
     return response
+
+# Auto scaling settings
+
+def set_auto_scale_param(max_miss = T_max_miss, min_miss = T_min_miss, expand_ratio = expand, shrink_ratio = shrink):
+    """ Set auto scale parameters, default to original parameters. 
+
+    Args:
+        max_miss (float, optional): _description_. Defaults to T_max_miss.
+        min_miss (float_, optional): _description_. Defaults to T_min_miss.
+        expand_ratio (float, optional): _description_. Defaults to expand.
+        shrink_ratio (float, optional): _description_. Defaults to shrink.
+    """
+    
+    global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink
+    
+    T_max_miss = max_miss
+    T_min_miss = min_miss
+    expand = expand_ratio
+    shrink = shrink_ratio
+    
+def auto_scale(active: bool):
+    """ Turn on auto scaler or turn off auto scaler
+
+    Args:
+        active (bool): true: turn on, false: turn off
+    """
+    global Active
+    Active = active
+
+@webapp.route("/auto", methods=['POST'])
+def auto_on_off():
+    active = request.form.get("auto")
+    auto_scale(active)
+    response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+@webapp.route("/auto_params", methods=['POST'])
+def auto_params():
+    max_miss = request.form.get("max_miss", T_max_miss) # original value if no key found
+    min_miss = request.form.get("min_miss", T_min_miss)
+    expand_ratio = request.form.get("expand", expand)
+    shrink_ratio = request.form.get("shrink", shrink)
+    
+    set_auto_scale_param(max_miss, min_miss, expand_ratio, shrink_ratio)
+    
+    response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
