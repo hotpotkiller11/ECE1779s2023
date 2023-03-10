@@ -1,7 +1,7 @@
 from flask import render_template, request, json
 from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
-from FrontEnd.main import save_conf_todb
+from FrontEnd.main import save_conf_todb, process_figure
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
@@ -130,36 +130,36 @@ def upload():
             return response
     return render_template('upload_figure.html')
 
-def process_figure(request, key):
-    # get the figure file
-    file = request.files['file']
-    _, extension = os.path.splitext(file.filename)
-    # print(extension)
-    # if the figure is one of the allowed extensions
-    if extension.lower() in IMAGE_FORMAT:
-        filename = key + extension
-        original = key_path.get_path_by_key(key)
-        # save the figure in the local file system
-        try:
-            if original is None:
-                file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                key_path.add_key_and_path(key, filename)
-                return 'SUCCESS'
-            else:
-                if key_path.delete_term_by_key(key):
-                    if deleteFile(original):
-                        print("File replaced: %s" % original)
-                    file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                    key_path.add_key_and_path(key, filename)
-                    request_json = {'key':key}
-                    res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
-                    if (res.status_code != 200):
-                        print("memcache object deletion failed.")
-                    return 'SUCCESS'
-        except Exception as e:
-            print(e)
-            return 'UNSUCCESS'
-    return 'INVALID'
+# def process_figure(request, key):
+#     # get the figure file
+#     file = request.files['file']
+#     _, extension = os.path.splitext(file.filename)
+#     # print(extension)
+#     # if the figure is one of the allowed extensions
+#     if extension.lower() in IMAGE_FORMAT:
+#         filename = key + extension
+#         original = key_path.get_path_by_key(key)
+#         # save the figure in the local file system
+#         try:
+#             if original is None:
+#                 file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+#                 key_path.add_key_and_path(key, filename)
+#                 return 'SUCCESS'
+#             else:
+#                 if key_path.delete_term_by_key(key):
+#                     if deleteFile(original):
+#                         print("File replaced: %s" % original)
+#                     file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
+#                     key_path.add_key_and_path(key, filename)
+#                     request_json = {'key':key}
+#                     res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
+#                     if (res.status_code != 200):
+#                         print("memcache object deletion failed.")
+#                     return 'SUCCESS'
+#         except Exception as e:
+#             print(e)
+#             return 'UNSUCCESS'
+#     return 'INVALID'
 
 @webapp.route('/api/list_keys', methods=['POST'])
 def list_keys():
