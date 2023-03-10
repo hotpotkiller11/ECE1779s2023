@@ -89,10 +89,10 @@
                                     <p><b>Change auto-scaler parameters</b></p>
                                     <label for="max_miss">Max miss rate threshold: </label>
                                     <input type="number" name="max_miss" id="max_miss"
-                                        min="0" max="100" required onchange="input_boundary()"> %<br>
+                                        min="0" max="100" required onchange="input_boundary('max')"> %<br>
                                     <label for="min_miss">Min miss rate threshold: </label>
                                     <input type="number" name="min_miss" id="min_miss"
-                                        min="0" max="100" required onchange="input_boundary()"> %<br>
+                                        min="0" max="100" required onchange="input_boundary('min')"> %<br>
                                     <label for="shrink">Shrink ratio: </label>
                                     <input type="number" name="shrink" 
                                         min="0" max="1" step="0.1" value="1" required><br>
@@ -176,12 +176,16 @@
                 send();
             }
 
-            function input_boundary(){
+            function input_boundary(element){
+                
                 max = document.getElementById("max_miss");
                 min = document.getElementById("min_miss");
-
-                max.min = min.value
-                min.max = max.value
+                if (element = "min"){ // input change another's boundary
+                    max.min = min.value
+                } else{
+                    min.max = max.value
+                }
+                    
             }
 
         </script>
