@@ -1,0 +1,22 @@
+.navi:link,.navi:visited
+{
+display:block;
+width:100%;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#3b4c6f;
+text-align:center;
+padding:15px 0px;
+text-decoration:none;
+text-transform:uppercase;
+}
+.navi:hover,.navi:active
+{
+background-color:#545f75;
+}
+.navi_box{
+    display: flex;
+}
+.navi_div{
+    flex: 1;
+}

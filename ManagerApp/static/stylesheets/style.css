@@ -1,0 +1,116 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 1.2rem;
+    min-height: 100vh;
+    background:url("../mountain.png") no-repeat;
+    background-size: 100%,100%;
+    background-position: bottom;
+    font-family: 'Poppins', cursive;
+}
+
+/* home page */
+.container {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vmin;
+    flex-flow: column wrap;
+    row-gap: 5vmin;
+}
+
+.button-group{
+    text-align:center;
+    align-items:center;
+}
+a {display: inline-block}
+.home_button {
+    width: 30vmin;
+    height: 30vmin;
+    border: none;
+    font-size: 2.8vmin;
+    font-family: 'Poppins', cursive;
+    color: black;
+    cursor: pointer;
+    margin: 0 0 0 0;
+}
+
+h1, h2{
+    font-family: 'Poppins', cursive;
+    text-align: center;
+}
+
+.symbol{
+    height: 100px;
+    vertical-align: middle;
+}
+
+.center{
+    margin: auto;
+    width: 80%;
+}
+
+.text_box{
+    margin: 30px;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.70);
+}
+
+.column_box{
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+.home_button:hover {
+    font-weight: bold;
+}
+
+
+
+.wrapper {
+    position: relative;
+}
+
+.logoTitle{
+    display: flex;
+    align-items: center;
+    column-gap: 1.8vmin;
+    position: absolute;
+    margin: 2vmin 0 0 2vmin;
+}
+
+.title {
+    font-size: 3vmin;
+    font-weight: 24;
+    color: #DAD4CB;
+    margin-left: 2vmin;
+}
+
+.letter {
+    font-size: 4.5vmin;
+    font-weight: 20;
+    color: #DC9428;
+}
+/* end of home page */
+.navibar {
+    list-style-type: none;
+    margin: 0;
+    padding: 16px;
+    overflow: hidden;
+    width: 100vw;
+    background-color: grey;
+    display: flex;
+    justify-content: space-around;
+  }
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+canvas{
+    width: 100%;
+}
