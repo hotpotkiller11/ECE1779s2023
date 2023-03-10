@@ -154,7 +154,7 @@
                 }
 
                 let form = {auto: auto};
-                async () => {
+                const send = async () => {
                     try {
                         const resp = await axios.post('{{ url_for("auto_on_off") }}', form);
                         console.log("success");
@@ -163,6 +163,7 @@
                         console.error(err);
                     }
                 };
+                send();
             }
 
         </script>
