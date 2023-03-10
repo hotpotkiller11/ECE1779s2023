@@ -187,8 +187,10 @@ def auto_on_off():
     
 @webapp.route("/memory/auto_params", methods=['POST'])
 def auto_params():
-    max_miss = request.form.get("max_miss")
-    min_miss = request.form.get("min_miss")
+    max_miss = request.form.get("max_miss") / 100 # percentage to decimal
+    min_miss = request.form.get("min_miss") / 100 # percentage to decimal
+    if(max_miss < min_miss):
+        return render_template("error.html", msg = "max miss rate < min miss rate")
     shrink = request.form.get("shrink")
     expand = request.form.get("expand")
     res = requests.post(backend + "/auto_params", 
