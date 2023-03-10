@@ -55,7 +55,7 @@ def auto_scale():
 
 with webapp.app_context():
     """
-    looping for 60 seconds, doing job write stat
+    looping for 60 seconds, doing job auto scale
     """
     # get_config_info()
     """global T_max_miss
