@@ -44,9 +44,9 @@
                         <h2>Memcache Pool Configurations</h2>
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
                             <p>Manual
-                                <label class="switch">
-                                    <input type="checkbox" id="switch" onclick="switch_display">
-                                    <span class="slider round" onclick="switch_display"></span>
+                                <label class="switch" onclick="switch_display">
+                                    <input type="checkbox" id="switch">
+                                    <span class="slider round"></span>
                                 </label>
                             Auto</p>
                             <div id="manual">
@@ -132,6 +132,7 @@
 
             function switch_display(){
                 auto = document.getElementById("switch").checked
+                
                 if (auto == false){
                     document.getElementById("auto").style.display = "none";
                     document.getElementById("manual").style.display = "block";
