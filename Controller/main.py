@@ -32,7 +32,7 @@ def auto_scale():
         with webapp.app_context():
 
             current_miss = statManager.monitor_miss_rate()
-            current_active = len(control.activated_nodes())-1 # not including controller
+            current_active = control.pool_size # not including controller
 
             if current_miss < T_max_miss and current_miss > T_min_miss:
                 print("---no need for scale---")
@@ -48,7 +48,7 @@ def auto_scale():
                     control.modify_pool_size(1)
                 else:
                     control.modify_pool_size(current_active*shrink)
-        print("success looping, current avaliable",(len(control.activated_nodes())-1),control.activated_nodes())#ips
+        print("success looping, current avaliable",(control.pool_size),control.activated_nodes())#ips
     else:
         pass
 
