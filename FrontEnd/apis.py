@@ -292,7 +292,8 @@ def configure_cache():
         maxMiss= request.args.get("maxMiss")
         # if 'minMiss' in res:
         minMiss= request.args.get("minMiss")
-        requests.post(backend + '/auto_params',json = {"max_miss":float(maxMiss), "min_miss":float(minMiss), "expand":float(expRatio), "shrink":float(shrinkRatio)})
+        if(expRatio!=None and shrinkRatio!=None and minMiss!=None and maxMiss!=None):
+            requests.post(backend + '/auto_params',json = {"max_miss":float(maxMiss), "min_miss":float(minMiss), "expand":float(expRatio), "shrink":float(shrinkRatio)})
         data = {
                         "success": "true",
                         "mode": mode,
