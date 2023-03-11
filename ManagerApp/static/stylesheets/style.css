@@ -176,5 +176,5 @@ input:checked + .slider:before {
 }
 
 .param_form {
-    height: 200px;
+    min-height: 200px;
 }
