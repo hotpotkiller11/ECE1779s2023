@@ -279,7 +279,7 @@ def configure_cache():
     elif(policy=='LRU'):
         policysend='LRU'
     try:
-        if(capacity!=None and policy!=None):
+        if(cacheSize!=None and policy!=None):
             capacity=float(cacheSize)
             capacity *= 1024 * 1024
             # print(capacity)
