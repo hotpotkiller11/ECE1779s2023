@@ -17,12 +17,5 @@ control = CacheController(memcache_ip_list)
 # control.modify_pool_size(1)
 print("Loading private ip from instance id")
 print(memcache_id_list)
-print(memcache_ip_list)
-
-#statistic
-global T_max_miss
-global T_min_miss
-global expand
-global shrink
 
 from Controller import main

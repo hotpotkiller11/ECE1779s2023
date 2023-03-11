@@ -1,5 +1,5 @@
 from flask import render_template, request, json
-from ManagerApp import webapp, key_path, db_connect, backend
+from ManagerApp import webapp, key_path, db_connect, backend, autoscaler
 from ManagerApp.key_path import get_path_by_key
 from config import IMAGE_FORMAT 
 from ManagerApp.db_connect import get_db
@@ -185,7 +185,7 @@ def auto_on_off():
         mimetype='application/json',
         )
         return response
-    res = requests.post(backend + '/auto', json = {"auto": active})
+    res = requests.post(autoscaler + '/auto', json = {"auto": active})
     if res.status_code == 200:
         response = webapp.response_class(
         response=json.dumps("OK"),
@@ -209,7 +209,7 @@ def auto_params():
         return render_template("error.html", msg = "max miss rate < min miss rate")
     shrink = request.form.get("shrink", type=float)
     expand = request.form.get("expand", type=float)
-    res = requests.post(backend + "/auto_params", 
+    res = requests.post(autoscaler + "/auto_params", 
                   json = {"max_miss": max_miss, "min_miss": min_miss, "shrink": shrink, "expand": expand})
     if res.status_code == 200:
         return render_template("success.html", msg = "Auto scaler parameters updated")
