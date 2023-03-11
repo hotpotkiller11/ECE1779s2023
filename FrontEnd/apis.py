@@ -1,7 +1,7 @@
 from flask import render_template, request, json
 from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
-from FrontEnd.main import save_conf_todb, process_figure, download_image
+from FrontEnd.main import save_conf_todb, process_figure, download_image,clear_figure_S3
 from FrontEnd.key_path import get_path_by_key
 from FrontEnd.config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
@@ -16,7 +16,7 @@ clo_manager = CloudWatchWrapper(cloudwatch)
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
     result = key_path.delete_all_key_path_term()
-    result2 = deleteFile("")
+    result2 =  clear_figure_S3()
     res = requests.get(backend + '/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
