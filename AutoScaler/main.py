@@ -51,8 +51,6 @@ def auto_scale():
                     requests.post(control + "/pool", json={"new_active": 1})
                 else:
                     requests.post(control + "/pool", json={"new_active": math.floor(current_active*shrink)})
-
-        print("success looping, current available",(control.pool_size),control.activated_nodes())#ips
     else:
         pass
 
