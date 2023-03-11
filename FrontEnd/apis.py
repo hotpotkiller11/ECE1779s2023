@@ -278,42 +278,42 @@ def configure_cache():
         policysend='random'
     elif(policy=='LRU'):
         policysend='LRU'
-    # try:
-    capacity=float(cacheSize)
-    capacity *= 1024 * 1024
-    # print(capacity)
-    # print(type(capacity))
-    save_conf_todb(capacity,policysend)
-    # if 'expRatio' in res:
-    expRatio= request.args.get("expRatio")
-    # if 'shrinkRatio' i res:
-    shrinkRatio = request.args.get("shrinkRatio")
-    # if 'maxMiss' in res:
-    maxMiss= request.args.get("maxMiss")
-    # if 'minMiss' in res:
-    minMiss= request.args.get("minMiss")
-    requests.post(backend + '/auto_params',json = {"max_miss":maxMiss, "min_miss":minMiss, "expand":expRatio, "shrink":shrinkRatio})
-    data = {
-                    "success": "true",
-                    "mode": mode,
-                    "numNodes": int(numNodes),
-                    "cacheSize": int(capacity/(1024*1024)),
-                    "policy": policy
-                }
-    response = webapp.response_class(
-                    response=json.dumps(data),
-                    status=200,
-                    mimetype='application/json'
-                )
-    return response
-    # except Exception as e:
-    #     data = {
-    #         "success" : "false",
-    #         "ErrorMessage" : "lack parameters"
-    #     }
-    #     response = webapp.response_class(
-    #         response=json.dumps(data),
-    #         status=500,
-    #         mimetype='application/json'
-    #     )
-    #     return response
+    try:
+        capacity=float(cacheSize)
+        capacity *= 1024 * 1024
+        # print(capacity)
+        # print(type(capacity))
+        save_conf_todb(capacity,policysend)
+        # if 'expRatio' in res:
+        expRatio= request.args.get("expRatio")
+        # if 'shrinkRatio' i res:
+        shrinkRatio = request.args.get("shrinkRatio")
+        # if 'maxMiss' in res:
+        maxMiss= request.args.get("maxMiss")
+        # if 'minMiss' in res:
+        minMiss= request.args.get("minMiss")
+        requests.post(backend + '/auto_params',json = {"max_miss":maxMiss, "min_miss":minMiss, "expand":expRatio, "shrink":shrinkRatio})
+        data = {
+                        "success": "true",
+                        "mode": mode,
+                        "numNodes": int(numNodes),
+                        "cacheSize": int(capacity/(1024*1024)),
+                        "policy": policy
+                    }
+        response = webapp.response_class(
+                        response=json.dumps(data),
+                        status=200,
+                        mimetype='application/json'
+                    )
+        return response
+    except Exception as e:
+        data = {
+            "success" : "false",
+            "ErrorMessage" : "lack parameters"
+        }
+        response = webapp.response_class(
+            response=json.dumps(data),
+            status=500,
+            mimetype='application/json'
+        )
+        return response
