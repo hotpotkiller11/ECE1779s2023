@@ -77,7 +77,7 @@ def memory_inspect():
                 node["size"] = unit_convertor(node["size"])
     else:
         return render_template("error.html", msg = "Cannot connect to the memcache server.")
-    res = requests.get(backend + "/get_auto_params") # get auto-scaler params
+    res = requests.get(autoscaler + "/get_auto_params") # get auto-scaler params
     if (res.status_code == 200):
         auto = res.json()['auto']
         max_miss = res.json()['max_miss']
