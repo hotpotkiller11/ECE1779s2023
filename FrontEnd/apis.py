@@ -230,9 +230,9 @@ def getNumNodes():
     )
     return response
 
-@webapp.route('/api/getRate/<parameters>', methods=['POST'])
-def getRate(parameters):
-    rate = parameters[5:]
+@webapp.route('/api/getRate/', methods=['POST'])
+def getRate():
+    rate = request.args.get("rate")
     if rate == 'miss':
         value = clo_manager.monitor_miss_rate(interval = 1)
     elif rate == 'hit':
