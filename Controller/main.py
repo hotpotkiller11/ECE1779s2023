@@ -17,8 +17,7 @@ statManager = CloudWatchWrapper(cloudwatch)
 ec2Manager = EC2Wrapper(ec2)
 
 # auto scale active
-Active = True
-
+Active = False # default, close
 
 def auto_scale():
     """
@@ -203,6 +202,76 @@ def pool_multi():
     control.multi_pool_size(parameter)
     response = webapp.response_class(
         response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    return response
+
+# Auto scaling settings
+
+def set_auto_scale_param(max_miss = T_max_miss, min_miss = T_min_miss, expand_ratio = expand, shrink_ratio = shrink):
+    """ Set auto scale parameters, default to original parameters. 
+
+    Args:
+        max_miss (float, optional): _description_. Defaults to T_max_miss.
+        min_miss (float_, optional): _description_. Defaults to T_min_miss.
+        expand_ratio (float, optional): _description_. Defaults to expand.
+        shrink_ratio (float, optional): _description_. Defaults to shrink.
+    """
+    
+    global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink
+    
+    T_max_miss = max_miss
+    T_min_miss = min_miss
+    expand = expand_ratio
+    shrink = shrink_ratio
+    
+def auto_scale(active: bool):
+    """ Turn on auto scaler or turn off auto scaler
+
+    Args:
+        active (bool): true: turn on, false: turn off
+    """
+    global Active
+    Active = active
+
+@webapp.route("/auto", methods=['POST'])
+def auto_on_off():
+    active = request.json["auto"]
+    auto_scale(active)
+    response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    print("Auto scaler active: " + str(active))
+    return response
+
+@webapp.route("/auto_params", methods=['POST'])
+def auto_params():
+    max_miss = request.json["max_miss"] # original value if no key found
+    min_miss = request.json["min_miss"]
+    expand_ratio = request.json["expand"]
+    shrink_ratio = request.json["shrink"]
+    
+    set_auto_scale_param(max_miss, min_miss, expand_ratio, shrink_ratio)
+    
+    response = webapp.response_class(
+        response=json.dumps("OK"),
+        status=200,
+        mimetype='application/json',
+    )
+    print("New parameters set. " + str([max_miss, min_miss, expand_ratio, shrink_ratio]))
+    return response
+
+@webapp.route("/get_auto_params", methods=['GET', 'POST'])
+def get_params():
+    response = webapp.response_class(
+        response=json.dumps({"auto": Active, "max_miss": T_max_miss, "min_miss": T_min_miss,
+                             "expand": expand, "shrink": shrink}),
         status=200,
         mimetype='application/json',
     )
