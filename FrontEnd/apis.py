@@ -286,6 +286,7 @@ def configure_cache():
             # print(type(capacity))
             save_conf_todb(capacity,policysend)
         # if 'expRatio' in res:
+            
         expRatio= request.args.get("expRatio")
         # if 'shrinkRatio' i res:
         shrinkRatio = request.args.get("shrinkRatio")
@@ -299,7 +300,7 @@ def configure_cache():
                         "success": "true",
                         "mode": mode,
                         "numNodes": int(numNodes),
-                        "cacheSize": int(capacity/(1024*1024)),
+                        "cacheSize": int(cacheSize),
                         "policy": policy
                     }
         response = webapp.response_class(
