@@ -252,10 +252,10 @@ def getRate():
 @webapp.route('/api/configure_cache/',methods=['POST'])
 def configure_cache():
     # try:
-    if request.args.get("mode")!=None:
-        mode = request.args.get("mode")
-        print(type(mode))
-        print(type(str(mode)))
+    #request.args.get("mode")!=None:
+    mode = request.args.get("mode")
+    print(type(mode))
+    print(type(str(mode)))
     if(str(mode) == 'manual'):
         requests.post(backend + '/auto',json={"auto":False})
     elif(str(mode) == 'auto'):
