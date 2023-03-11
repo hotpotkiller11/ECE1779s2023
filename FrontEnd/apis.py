@@ -291,7 +291,7 @@ def configure_cache():
         data = {
                         "success": "true",
                         "mode": mode,
-                        "numNodes": numNodes,
+                        "numNodes": int(numNodes),
                         "cacheSize": int(capacity/(1024*1024)),
                         "policy": policy
                     }
