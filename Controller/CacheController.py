@@ -20,7 +20,7 @@ class CacheController:
     pool_size = 0 # Activated node count
     partition_dict = {} # used to map partition with memcache nodes
 
-    def __init__(self, memcache_servers: list):
+    def __init__(self, memcache_servers):
         """ Create a new Cache Controller instance with a list of memcache node
             servers.
 
@@ -111,7 +111,7 @@ class CacheController:
             # Remove conveyed files from original node
             if node in self.not_activated_nodes():
                 res = requests.post(node + "/clear")
-                if res.status_code != 200: print("Node clear failed (%s)" % (new_node))
+                if res.status_code != 200: print("Node clear failed (%s)" % (node))
             else:
                 res = requests.post(node + "/drop", json = {"keys": drop_list})
                 
@@ -124,7 +124,7 @@ class CacheController:
         elif parameter < 1.0:
             new_active = math.floor(self.pool_size * parameter)
             new_active = max(1, new_active)
-        else: # parameter > 1.0
+        else:
             new_active = math.ceil(self.pool_size * parameter)
             new_active = min(len(self.memcache_nodes), new_active)
         self.modify_pool_size(new_active)

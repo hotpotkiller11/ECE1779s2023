@@ -5,6 +5,8 @@
         <title>Available keys</title>
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     </head>
     <body>
         {% include "navibar.html" %}
@@ -42,37 +44,65 @@
                     <div class="column">
                         <h2>Memcache Pool Configurations</h2>
                             <p>Active nodes: {{ active.value }} / {{ nodes|length }}</p>
-                            <form method="post" action="{{ url_for('mem_pool_set') }}">
-                                <p><b>Change active node</b></p>
-                                <p>
-                                    <input type="range" min="1" max="{{ nodes|length }}" value="{{ active.value }}" id="new_active" name="new_active">
-                                    value: <span id="value"></span>
-                                </p>
-                                <p>
-                                    <input type="button" onclick="halven()" value="halven active node">
-                                    <input type="button" onclick="double()" value="double active node">
-                                </p>
-                                <input type="submit">
-                            </form>
-                            <script>
-                                var slider = document.getElementById("new_active");
-                                var output = document.getElementById("value");
-                                output.innerHTML = slider.value; // Initialization
-                                
-                                slider.oninput = function() {
-                                    output.innerHTML = this.value;
-                                }
+                            <p>Auto-scaler: Manual
+                                <label class="switch">
+                                    <input type="checkbox" id="switch" onclick="switch_display()">
+                                    <span class="slider round"></span>
+                                </label>
+                            Auto </p>
+                            <!-- <p id="auto_msg" style="color:green;"> </p> -->
+                            <div id="manual" class="param_form">
+                                <form method="post" action="{{ url_for('mem_pool_set') }}">
+                                    <p><b>Change active node</b></p>
+                                    <p>
+                                        <input type="range" min="1" max="{{ nodes|length }}" value="{{ active.value }}" id="new_active" name="new_active">
+                                        value: <span id="value"></span>
+                                    </p>
+                                    <p>
+                                        <input type="button" onclick="halven()" value="halven active node">
+                                        <input type="button" onclick="double()" value="double active node">
+                                    </p>
+                                    <input type="submit">
+                                </form>
+                                <script>
+                                    var slider = document.getElementById("new_active");
+                                    var output = document.getElementById("value");
+                                    output.innerHTML = slider.value; // Initialization
+                                    
+                                    slider.oninput = function() {
+                                        output.innerHTML = this.value;
+                                    }
 
-                                function double() {
-                                    slider.value = Math.min(slider.value * 2, slider.max)
-                                    output.innerHTML = slider.value
-                                }
+                                    function double() {
+                                        slider.value = Math.min(slider.value * 2, slider.max)
+                                        output.innerHTML = slider.value
+                                    }
 
-                                function halven() {
-                                    slider.value = Math.max(slider.value / 2, slider.min)
-                                    output.innerHTML = slider.value
-                                }
-                            </script>
+                                    function halven() {
+                                        slider.value = Math.max(slider.value / 2, slider.min)
+                                        output.innerHTML = slider.value
+                                    }
+                                </script>
+                            </div>
+                            <div id="auto" class="param_form">
+                                <form method="post" action="{{ url_for('auto_params') }}">
+                                    <p><b>Change auto-scaler parameters</b></p>
+                                    <label for="max_miss">Max miss rate threshold: </label>
+                                    <input type="number" name="max_miss" id="max_miss" value="{{auto_scaler.max_miss * 100}}"
+                                        min="0" max="100" required onchange="input_boundary('max')"> %<br>
+                                    <label for="min_miss">Min miss rate threshold: </label>
+                                    <input type="number" name="min_miss" id="min_miss" value="{{auto_scaler.min_miss * 100}}"
+                                        min="0" max="100" required onchange="input_boundary('min')"> %<br>
+                                    <label for="shrink">Shrink ratio: </label>
+                                    <input type="number" name="shrink" value="{{auto_scaler.shrink}}"
+                                        min="0" max="1" step="0.1" required><br>
+                                    <label for="expend">Expend ratio: </label>
+                                    <input type="number" name="expand" value="{{auto_scaler.expand}}"
+                                        min="1" max="{{ nodes|length }}" step="0.1" required><br>
+                                    <input type="submit">
+                                </form>
+                            </div>
+                        
                         <h2>Memcache Node Configurations</h2>
                         <p>Current configurations:</p>
                         <ul>
@@ -100,5 +130,66 @@
                 </div>
             </div> 
         </div>
+        <script>
+            False = false
+            True = true
+            auto_init = {{auto_scaler.auto}}
+
+            if (auto_init == false){
+                document.getElementById("switch").checked = false;
+                document.getElementById("auto").style.display = "none";
+                document.getElementById("manual").style.display = "block";
+            } else{
+                document.getElementById("switch").checked = true;
+                document.getElementById("auto").style.display = "block";
+                document.getElementById("manual").style.display = "none";
+            }
+
+            function switch_display(){
+                auto = document.getElementById("switch").checked
+                
+                if (auto == false){
+                    document.getElementById("auto").style.display = "none";
+                    document.getElementById("manual").style.display = "block";
+                } else{
+                    document.getElementById("auto").style.display = "block";
+                    document.getElementById("manual").style.display = "none";
+                }
+                form = {auto: auto}
+                const send = async () => {
+                    try {
+                        const resp = await axios.post('{{ url_for("auto_on_off") }}', form, {
+                            headers: {
+                              'Content-Type': 'multipart/form-data'
+                            }
+                        });
+                        console.log(resp);
+                        /* if (auto == true){
+                            msg = "Auto-scaler set to auto mode"
+                        } else{
+                            msg = "Auto-scaler set to manual mode"
+                        }
+                        document.getElementById("auto_msg").innerHTML = msg */
+                    } catch (err) {
+                        // Handle Error Here
+                        console.error(err);
+                    }
+                };
+                send();
+            }
+
+            function input_boundary(element){
+                
+                max_rate = document.getElementById("max_miss");
+                min_rate = document.getElementById("min_miss");
+                if (element == "min"){ // input change another's boundary
+                    max_rate.min = min_rate.value
+                } else{
+                    min_rate.max = max_rate.value
+                }
+                    
+            }
+
+        </script>
     </body>
 </html>

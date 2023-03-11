@@ -1,5 +1,13 @@
 class Stater:
     def __init__(self):
+        """
+        miss rate,
+        hit rate,
+        number of items in cache,
+        total size of items in cache,
+        number of requests served per minute.
+        """
+
         self.miss = 0  # total request number to be added during run time
         self.hit = 0
         self.reqs = 0 # within one minute
@@ -12,9 +20,7 @@ class Stater:
 
         self.items_in_cache = 0
         self.size_in_cache = 0
-        """miss rate,
-            hit rate,
-            number of items in cache,
-            total size of items in cache,
-            number of requests served per minute."""
+
+
+
 

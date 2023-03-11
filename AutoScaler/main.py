@@ -1,23 +1,13 @@
-from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
-from flask import Flask, request, Response, json
-from Controller.CacheController import CacheController
-from Controller.config import memcache_id_list
+import math
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import request
+from AutoScaler import webapp, control
+import json
+import requests
 import boto3
 from toolAWS.cloudWatch import CloudWatchWrapper
 from toolAWS.EC2 import EC2Wrapper
-
-import math
-
-#   init
-webapp = Flask(__name__)
-memcache_ip_list = []
-for node_id in memcache_id_list:
-    ec2 = boto3.client('ec2')
-    ip = ec2.describe_instances(InstanceIds=[node_id])['Reservations'][0]['Instances'][0]['PrivateDnsName']
-    memcache_ip_list.append("http://" + ip + ":5000")
-control = CacheController(memcache_ip_list)
-
 # statistics
 cloudwatch = boto3.client('cloudwatch')
 ec2 = boto3.resource('ec2')
@@ -43,24 +33,24 @@ def auto_scale():
         with webapp.app_context():
 
             current_miss = statManager.monitor_miss_rate(interval = 60)
-            current_active = control.pool_size # not including controller
+            # Get current setting
+            res = requests.post(control + "/pool_size")
+            current_active = res.json()["pool_size"] 
 
             if current_miss < T_max_miss and current_miss > T_min_miss:
                 print("---no need for scale---")
             elif current_miss > T_max_miss:
                 print("---miss rate large, expanding---")
                 if current_active*expand >= 8:
-                    control.modify_pool_size(8)
+                    requests.post(control + "/pool", json={"new_active": 8})
                 else:
-                    control.modify_pool_size(math.ceil(current_active*expand))
+                    requests.post(control + "/pool", json={"new_active": math.ceil(current_active*expand)})
             else:
                 print("---miss rate samll, shrinking---")
                 if current_active*shrink <= 1:
-                    control.modify_pool_size(1)
+                    requests.post(control + "/pool", json={"new_active": 1})
                 else:
-                    control.modify_pool_size(math.floor(current_active*shrink))
-
-        print("success looping, current avaliable",(control.pool_size),control.activated_nodes())#ips
+                    requests.post(control + "/pool", json={"new_active": math.floor(current_active*shrink)})
     else:
         pass
 
@@ -70,6 +60,10 @@ with webapp.app_context():
     looping for 60 seconds, doing job auto scale
     """
     # get_config_info()
+    """global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink"""
     T_max_miss = 0.8
     T_min_miss = 0.2
     expand = 2
@@ -80,52 +74,36 @@ with webapp.app_context():
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 
-
-def forward_response(res: Response) -> Response:
-    """ Get a new response that ready to be returned from another response
-    Args:
-        res (Response): The response from a request that to be forwarded
-    Returns:
-        Response: The ne response that ready to be returned
-    """
-    excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-    headers = [
-        (k,v) for k,v in res.raw.headers.items()
-        if k.lower() not in excluded_headers
-    ]
-    return Response(res.content, res.status_code, headers)
-
-
 # Auto scaling settings
 
-def set_auto_scale_param(max_miss=T_max_miss, min_miss=T_min_miss, expand_ratio=expand, shrink_ratio=shrink):
-    """ Set auto scale parameters, default to original parameters.
+def set_auto_scale_param(max_miss = T_max_miss, min_miss = T_min_miss, expand_ratio = expand, shrink_ratio = shrink):
+    """ Set auto scale parameters, default to original parameters. 
+
     Args:
         max_miss (float, optional): _description_. Defaults to T_max_miss.
         min_miss (float_, optional): _description_. Defaults to T_min_miss.
         expand_ratio (float, optional): _description_. Defaults to expand.
         shrink_ratio (float, optional): _description_. Defaults to shrink.
     """
-
+    
     global T_max_miss
     global T_min_miss
     global expand
     global shrink
-
+    
     T_max_miss = max_miss
     T_min_miss = min_miss
     expand = expand_ratio
     shrink = shrink_ratio
-
-
+    
 def auto_scale(active: bool):
     """ Turn on auto scaler or turn off auto scaler
+
     Args:
         active (bool): true: turn on, false: turn off
     """
     global Active
     Active = active
-
 
 @webapp.route("/auto", methods=['POST'])
 def auto_on_off():
@@ -139,16 +117,15 @@ def auto_on_off():
     print("Auto scaler active: " + str(active))
     return response
 
-
 @webapp.route("/auto_params", methods=['POST'])
 def auto_params():
-    max_miss = request.json["max_miss"]  # original value if no key found
+    max_miss = request.json["max_miss"] # original value if no key found
     min_miss = request.json["min_miss"]
     expand_ratio = request.json["expand"]
     shrink_ratio = request.json["shrink"]
-
+    
     set_auto_scale_param(max_miss, min_miss, expand_ratio, shrink_ratio)
-
+    
     response = webapp.response_class(
         response=json.dumps("OK"),
         status=200,
@@ -156,7 +133,6 @@ def auto_params():
     )
     print("New parameters set. " + str([max_miss, min_miss, expand_ratio, shrink_ratio]))
     return response
-
 
 @webapp.route("/get_auto_params", methods=['GET', 'POST'])
 def get_params():

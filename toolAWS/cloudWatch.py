@@ -4,7 +4,7 @@ from botocore.args import logger
 from botocore.exceptions import ClientError
 import boto3
 import subprocess
-from Controller.config import memcache_id_list
+from config import memcache_id_list
 #list of matrix name
 # CPUUtilization, NetworkIn, NetworkOut, NetworkPacketsIn, NetworkPacketsOut, DiskWriteBytes, DiskReadBytes,
 # DiskWriteOps, DiskReadOps, CPUCreditBalance, CPUCreditUsage, StatusCheckFailed, StatusCheckFailed_Instance,

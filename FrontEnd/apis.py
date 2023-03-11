@@ -1,8 +1,9 @@
 from flask import render_template, request, json
 from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
+from FrontEnd.main import save_conf_todb, process_figure, download_image,clear_figure_S3
 from FrontEnd.key_path import get_path_by_key
-from FrontEnd.config import IMAGE_FORMAT 
+from config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
 from toolAWS.cloudWatch import CloudWatchWrapper
 import boto3
@@ -15,7 +16,7 @@ clo_manager = CloudWatchWrapper(cloudwatch)
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
     result = key_path.delete_all_key_path_term()
-    result2 = deleteFile("")
+    result2 =  clear_figure_S3()
     res = requests.get(backend + '/clear') # get keys list
     if res.status_code != 200: print("memcache deletion failed")
     if result and result2 == True:
@@ -81,7 +82,7 @@ def deleteFile(filename:str)->bool:
         return False
 
 
-@webapp.route('/api/upload', methods = ['GET','POST'])
+@webapp.route('/api/upload', methods = ['GET','POST'])#tested OK
 # returns the upload page
 def upload():
     if request.method == 'POST':
@@ -91,7 +92,7 @@ def upload():
         if status == 'SUCCESS':
             data = {
                 "success": "true",
-                "key": [key]
+                "key": key
             }
             response = webapp.response_class(
                 response=json.dumps(data),
@@ -129,38 +130,8 @@ def upload():
             return response
     return render_template('upload_figure.html')
 
-def process_figure(request, key):
-    # get the figure file
-    file = request.files['file']
-    _, extension = os.path.splitext(file.filename)
-    # print(extension)
-    # if the figure is one of the allowed extensions
-    if extension.lower() in IMAGE_FORMAT:
-        filename = key + extension
-        original = key_path.get_path_by_key(key)
-        # save the figure in the local file system
-        try:
-            if original is None:
-                file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                key_path.add_key_and_path(key, filename)
-                return 'SUCCESS'
-            else:
-                if key_path.delete_term_by_key(key):
-                    if deleteFile(original):
-                        print("File replaced: %s" % original)
-                    file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                    key_path.add_key_and_path(key, filename)
-                    request_json = {'key':key}
-                    res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
-                    if (res.status_code != 200):
-                        print("memcache object deletion failed.")
-                    return 'SUCCESS'
-        except Exception as e:
-            print(e)
-            return 'UNSUCCESS'
-    return 'INVALID'
 
-@webapp.route('/api/list_keys', methods=['POST'])
+@webapp.route('/api/list_keys', methods=['POST'])#tested OK
 def list_keys():
     keys = key_path.get_all_keys()
     data = {
@@ -174,7 +145,7 @@ def list_keys():
             )
     return response
 
-@webapp.route('/api/key/<key_value>',methods=['GET','POST'])
+@webapp.route('/api/key/<key_value>',methods=['GET','POST'])#tested OK
 def show_figure_by_key(key_value):
     if request.method == 'POST':
         key = key_value
@@ -199,14 +170,14 @@ def show_figure_by_key(key_value):
                 )
                 return response
             else:
-                base64_figure = convertToBase64(filename)
+                base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)
-                print(res.json())               
+                #print(res.json())               
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
-                    "key": [key],
+                    "key": key,
                     "content": base64_figure
                 }
                 response = webapp.response_class(
@@ -259,9 +230,9 @@ def getNumNodes():
     )
     return response
 
-@webapp.route('/api/getRate/<parameters>', methods=['POST'])
-def getRate(parameters):
-    rate = parameters[5:]
+@webapp.route('/api/getRate/', methods=['POST'])
+def getRate():
+    rate = request.args.get("rate")
     if rate == 'miss':
         value = clo_manager.monitor_miss_rate(interval = 1)
     elif rate == 'hit':
@@ -277,3 +248,75 @@ def getRate(parameters):
         mimetype='application/json',
     )
     return response
+
+@webapp.route('/api/configure_cache/',methods=['POST'])
+def configure_cache():
+    # try:
+    #request.args.get("mode")!=None:
+    mode = request.args.get("mode")
+    print(type(mode))
+    print(type(str(mode)))
+    if(str(mode) == 'manual'):
+        requests.post(backend + '/auto',json={"auto":False})
+    elif(str(mode) == 'auto'):
+        requests.post(backend + '/auto',json={"auto":True})
+    # if 'numNodes' in res:
+    numNodes=request.args.get("numNodes")
+    # print(numNodes)
+    # print(type(numNodes))
+    if numNodes!=None:
+        res = requests.post(backend + '/pool', json = {"new_active": int(numNodes)})
+    else:
+        res = requests.post(backend+'/pool_size')
+        numNodes = res.json()["pool_size"]
+    cacheSize = request.args.get("cacheSize")
+    # print(cacheSize)
+    # print(type(cacheSize))
+    # if 'policy' in res:
+    policy  = request.args.get("policy")
+    if(policy=='RR'):
+        policysend='random'
+    elif(policy=='LRU'):
+        policysend='LRU'
+    try:
+        if(cacheSize!=None and policy!=None):
+            capacity=float(cacheSize)
+            capacity *= 1024 * 1024
+            # print(capacity)
+            # print(type(capacity))
+            save_conf_todb(capacity,policysend)
+        # if 'expRatio' in res:
+            
+        expRatio= request.args.get("expRatio")
+        # if 'shrinkRatio' i res:
+        shrinkRatio = request.args.get("shrinkRatio")
+        # if 'maxMiss' in res:
+        maxMiss= request.args.get("maxMiss")
+        # if 'minMiss' in res:
+        minMiss= request.args.get("minMiss")
+        if(expRatio!=None and shrinkRatio!=None and minMiss!=None and maxMiss!=None):
+            requests.post(backend + '/auto_params',json = {"max_miss":float(maxMiss), "min_miss":float(minMiss), "expand":float(expRatio), "shrink":float(shrinkRatio)})
+        data = {
+                        "success": "true",
+                        "mode": mode,
+                        "numNodes": int(numNodes),
+                        "cacheSize": int(cacheSize),
+                        "policy": policy
+                    }
+        response = webapp.response_class(
+                        response=json.dumps(data),
+                        status=200,
+                        mimetype='application/json'
+                    )
+        return response
+    except Exception as e:
+        data = {
+            "success" : "false",
+            "ErrorMessage" : "lack parameters"
+        }
+        response = webapp.response_class(
+            response=json.dumps(data),
+            status=500,
+            mimetype='application/json'
+        )
+        return response

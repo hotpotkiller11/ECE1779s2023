@@ -1,7 +1,8 @@
 from flask import render_template, request, json
 from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
-from FrontEnd.config import IMAGE_FORMAT
+from config import IMAGE_FORMAT 
+from FrontEnd.db_connect import get_db
 from botocore.config import Config
 import base64
 import os
@@ -198,3 +199,39 @@ def clear_figure_S3():
     bucket = s3_clear.Bucket('ece1779-ass2-bucket1')
     bucket.objects.all().delete()
     return True
+
+    
+
+
+def save_conf_todb(capacity:float, policy:str):
+    """_summary_
+
+    Args:
+        capacity (float): 
+        policy (str): LRU/Random
+
+    Raises:
+        Exception: Database insertion failed
+        Exception: Memcache update failed
+
+    Returns:
+        _type_: true/exception
+    """
+    db = db_connect.get_db()
+    query = 'INSERT INTO `backend_config` (`capacity`, `policy`) VALUES (%d, "%s")' % (capacity, policy)
+    cursor = db.cursor()
+    try:
+        cursor.execute(query)
+        db.commit() # Try to commit (confirm) the insertion
+        cursor.close()
+        # db.close()
+    except:
+        db.rollback() # Try to rollback in case of error
+        cursor.close()
+        # db.close()
+        raise Exception("Database insertion failed")
+    res = requests.get(backend + '/refresh') # get keys list
+    if (res.status_code == 200):
+        return True
+    else:
+        raise Exception("Memcache update failed: error %d" % (res.status_code))

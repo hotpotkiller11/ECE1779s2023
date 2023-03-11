@@ -31,11 +31,6 @@ else:
     main.Config = {'capacity': 1024000, 'policy': "random"} # Default value: 1000KB
 
 # Clear stat from last run
-query = '''DELETE FROM `backend_statistic`'''
-cursor = cnx.cursor()
-cursor.execute(query)
-cnx.commit()
-cursor.close()
 cnx.close()
 
 # main.Config = {'capacity': 400, 'policy': "random"}

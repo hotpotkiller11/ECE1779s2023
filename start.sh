@@ -1,1 +1,1 @@
-python3 "run.py"
+python3 "run_with_controller.py"
