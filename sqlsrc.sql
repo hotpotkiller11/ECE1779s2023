@@ -8,17 +8,6 @@ CREATE TABLE IF NOT EXISTS `backend_config` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS `backend_statistic` (
-  `timestamp` DATETIME NOT NULL,
-  `hit` int unsigned DEFAULT NULL,
-  `miss` int unsigned DEFAULT NULL,
-  `size` int unsigned DEFAULT NULL,
-  `picture_count` int unsigned DEFAULT NULL,
-  `request_count` int unsigned DEFAULT NULL,
-  PRIMARY KEY (`timestamp`),
-  UNIQUE KEY `timestamp_UNIQUE` (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE IF NOT EXISTS `key_picture` (
   `id` int NOT NULL AUTO_INCREMENT,
   `key` varchar(45) DEFAULT NULL,
