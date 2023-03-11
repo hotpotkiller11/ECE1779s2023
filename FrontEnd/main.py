@@ -106,7 +106,7 @@ def process_figure(request, key):
             if original is None:
                 #file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                 base64_image = base64.b64encode(file.read())
-                s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket1', ContentType='image')
+                s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket2', ContentType='image')
                 key_path.add_key_and_path(key, filename)
                 return 'SUCCESS'
             else:
@@ -114,9 +114,9 @@ def process_figure(request, key):
                     # if deleteFile(original):
                     #     print("File replaced: %s" % original)
                     # file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
-                    s3.delete_object (Bucket= 'ece1779-ass2-bucket1', Key=original)
+                    s3.delete_object (Bucket= 'ece1779-ass2-bucket2', Key=original)
                     base64_image = base64.b64encode(file.read())
-                    s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket1', ContentType='image')
+                    s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket2', ContentType='image')
                     key_path.add_key_and_path(key, filename)
                     request_json = {'key':key}
                     res = requests.get(backend + '/invalidatekey', json = request_json) # get keys list
@@ -159,7 +159,7 @@ def show_figure():
 def download_image(key):
     try: 
         with open('Temp.txt', 'wb') as file:
-            s3.download_fileobj('ece1779-ass2-bucket1', key, file)
+            s3.download_fileobj('ece1779-ass2-bucket2', key, file)
         with open('Temp.txt', 'rb') as file:
             base64_image = file.read().decode('utf-8')
         file.close()
@@ -196,7 +196,7 @@ def clear_figure_S3():
     :return: bool
     """
     s3_clear = boto3.resource('s3',config=config)
-    bucket = s3_clear.Bucket('ece1779-ass2-bucket1')
+    bucket = s3_clear.Bucket('ece1779-ass2-bucket2')
     bucket.objects.all().delete()
     return True
 

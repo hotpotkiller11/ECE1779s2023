@@ -232,6 +232,6 @@ def clear_figure_S3():
     :return: bool
     """
     s3_clear = boto3.resource('s3',config=config)
-    bucket = s3_clear.Bucket('ece1779-ass2-bucket1')
+    bucket = s3_clear.Bucket('ece1779-ass2-bucket2')
     bucket.objects.all().delete()
     return True
