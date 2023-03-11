@@ -50,8 +50,8 @@
                                     <span class="slider round"></span>
                                 </label>
                             Auto </p>
-                            <p id="auto_msg" style="color:green;"> </p>
-                            <div id="manual">
+                            <!-- <p id="auto_msg" style="color:green;"> </p> -->
+                            <div id="manual" class="param_form">
                                 <form method="post" action="{{ url_for('mem_pool_set') }}">
                                     <p><b>Change active node</b></p>
                                     <p>
@@ -84,7 +84,7 @@
                                     }
                                 </script>
                             </div>
-                            <div id="auto">
+                            <div id="auto" class="param_form">
                                 <form method="post" action="{{ url_for('auto_params') }}">
                                     <p><b>Change auto-scaler parameters</b></p>
                                     <label for="max_miss">Max miss rate threshold: </label>
@@ -164,12 +164,12 @@
                             }
                         });
                         console.log(resp);
-                        if (auto == true){
+                        /* if (auto == true){
                             msg = "Auto-scaler set to auto mode"
                         } else{
                             msg = "Auto-scaler set to manual mode"
                         }
-                        document.getElementById("auto_msg").innerHTML = msg
+                        document.getElementById("auto_msg").innerHTML = msg */
                     } catch (err) {
                         // Handle Error Here
                         console.error(err);

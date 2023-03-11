@@ -174,3 +174,7 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+.param_form {
+    height: 200px;
+}
