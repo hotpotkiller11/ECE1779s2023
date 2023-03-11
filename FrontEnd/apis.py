@@ -3,7 +3,7 @@ from Controller import control
 from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.main import save_conf_todb, process_figure, download_image,clear_figure_S3
 from FrontEnd.key_path import get_path_by_key
-from FrontEnd.config import IMAGE_FORMAT 
+from config import IMAGE_FORMAT 
 from FrontEnd.db_connect import get_db
 from toolAWS.cloudWatch import CloudWatchWrapper
 import boto3
