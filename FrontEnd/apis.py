@@ -272,7 +272,9 @@ def configure_cache():
     # if 'policy' in res:
     policy  = request.args.get("policy")
     if(policy=='RR'):
-            policysend='random'
+        policysend='random'
+    elif(policy=='LRU'):
+        policysend='LRU'
     # try:
     capacity=float(cacheSize)
     capacity *= 1024 * 1024
