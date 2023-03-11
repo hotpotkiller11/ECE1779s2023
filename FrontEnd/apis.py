@@ -256,9 +256,9 @@ def configure_cache():
         mode = request.args.get("mode")
         print(type(mode))
         print(type(str(mode)))
-        if(str(mode) is 'manual'):
+        if(str(mode) == 'manual'):
             requests.post(backend + '/auto',json={"auto":False})
-        elif(str(mode) is 'auto'):
+        elif(str(mode) == 'auto'):
             requests.post(backend + '/auto',json={"auto":True})
         # if 'numNodes' in res:
         numNodes=request.args.get("numNodes")
