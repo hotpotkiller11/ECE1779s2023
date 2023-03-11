@@ -10,4 +10,4 @@ global shrink
 
 control = "http://127.0.0.1:5000/controller"
 
-from Controller import main
+from AutoScaler import main
