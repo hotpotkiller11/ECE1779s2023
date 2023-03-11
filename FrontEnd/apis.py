@@ -128,7 +128,8 @@ def upload():
                 mimetype='application/json',
             )
             return response
-    return render_template('upload_figure.html')
+
+
 
 
 @webapp.route('/api/list_keys', methods=['POST'])#tested OK
@@ -173,8 +174,6 @@ def show_figure_by_key(key_value):
                 base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)
-                #print(res.json())               
-                #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
                     "key": key,
