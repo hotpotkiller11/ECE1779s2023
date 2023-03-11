@@ -1,6 +1,6 @@
 from flask import render_template, request, json
 from Controller import control
-from FrontEnd import webapp, key_path, db_connect, backend
+from FrontEnd import webapp, key_path, db_connect, backend, autoscaler
 from FrontEnd.main import save_conf_todb, process_figure, download_image,clear_figure_S3
 from FrontEnd.key_path import get_path_by_key
 from config import IMAGE_FORMAT 
@@ -257,9 +257,9 @@ def configure_cache():
     print(type(mode))
     print(type(str(mode)))
     if(str(mode) == 'manual'):
-        requests.post(backend + '/auto',json={"auto":False})
+        requests.post(autoscaler + '/auto',json={"auto":False})
     elif(str(mode) == 'auto'):
-        requests.post(backend + '/auto',json={"auto":True})
+        requests.post(autoscaler + '/auto',json={"auto":True})
     # if 'numNodes' in res:
     numNodes=request.args.get("numNodes")
     # print(numNodes)
@@ -295,7 +295,7 @@ def configure_cache():
         # if 'minMiss' in res:
         minMiss= request.args.get("minMiss")
         if(expRatio!=None and shrinkRatio!=None and minMiss!=None and maxMiss!=None):
-            requests.post(backend + '/auto_params',json = {"max_miss":float(maxMiss), "min_miss":float(minMiss), "expand":float(expRatio), "shrink":float(shrinkRatio)})
+            requests.post(autoscaler + '/auto_params',json = {"max_miss":float(maxMiss), "min_miss":float(minMiss), "expand":float(expRatio), "shrink":float(shrinkRatio)})
         data = {
                         "success": "true",
                         "mode": mode,
