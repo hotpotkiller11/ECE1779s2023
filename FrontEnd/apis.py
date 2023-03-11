@@ -271,12 +271,14 @@ def configure_cache():
         # print(type(cacheSize))
         # if 'policy' in res:
         policy  = request.args.get("policy")
+        if(policy=='RR'):
+             policysend='random'
         # try:
         capacity=float(cacheSize)
         capacity *= 1024 * 1024
         # print(capacity)
         # print(type(capacity))
-        save_conf_todb(capacity,policy)
+        save_conf_todb(capacity,policysend)
         # if 'expRatio' in res:
         expRatio= request.args.get("expRatio")
         # if 'shrinkRatio' i res:
