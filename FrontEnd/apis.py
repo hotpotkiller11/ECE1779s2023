@@ -279,11 +279,12 @@ def configure_cache():
     elif(policy=='LRU'):
         policysend='LRU'
     try:
-        capacity=float(cacheSize)
-        capacity *= 1024 * 1024
-        # print(capacity)
-        # print(type(capacity))
-        save_conf_todb(capacity,policysend)
+        if(capacity!=None and policy!=None):
+            capacity=float(cacheSize)
+            capacity *= 1024 * 1024
+            # print(capacity)
+            # print(type(capacity))
+            save_conf_todb(capacity,policysend)
         # if 'expRatio' in res:
         expRatio= request.args.get("expRatio")
         # if 'shrinkRatio' i res:
