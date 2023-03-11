@@ -1,6 +1,6 @@
 from flask import Flask
 from Controller.CacheController import CacheController
-from Controller.config import memcache_id_list
+from config import memcache_id_list
 import boto3
 
 
