@@ -1,8 +1,82 @@
+import atexit
+import math
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import  request, Response
 from Controller import webapp, control
 import json
 import requests
+
+import boto3
+from toolAWS.cloudWatch import CloudWatchWrapper
+from toolAWS.EC2 import EC2Wrapper
+# statistics
+cloudwatch = boto3.client('cloudwatch')
+ec2 = boto3.resource('ec2')
+statManager = CloudWatchWrapper(cloudwatch)
+ec2Manager = EC2Wrapper(ec2)
+
+# auto scale active
+Active = True
+
+
+def auto_scale():
+    """
+    read the max and min miss rate
+    and shrink/expand rate
+    do auto scale function
+    Max Miss Rate threshold (average for all nodes in the pool over the past 1 minute) for growing the pool.
+    Min Miss Rate threshold (average for all nodes in the pool over the past 1 minute) for shrinking the pool.
+    Ratio by which to expand the pool (e.g., expand ratio of 2.0, doubles the number of memcache nodes).
+    Ratio by which to shrink the pool (e.g., shrink ratio of 0.5, shuts down 50% of the current memcache nodes).
+    :return: None
+    """
+
+    if Active:
+        with webapp.app_context():
+
+            current_miss = statManager.monitor_miss_rate(interval = 60)
+            current_active = control.pool_size # not including controller
+
+            if current_miss < T_max_miss and current_miss > T_min_miss:
+                print("---no need for scale---")
+            elif current_miss > T_max_miss:
+                print("---miss rate large, expanding---")
+                if current_active*expand >= 8:
+                    control.modify_pool_size(8)
+                else:
+                    control.modify_pool_size(math.ceil(current_active*expand))
+            else:
+                print("---miss rate samll, shrinking---")
+                if current_active*shrink <= 1:
+                    control.modify_pool_size(1)
+                else:
+                    control.modify_pool_size(math.floor(current_active*shrink))
+
+        print("success looping, current avaliable",(control.pool_size),control.activated_nodes())#ips
+    else:
+        pass
+
+
+with webapp.app_context():
+    """
+    looping for 60 seconds, doing job auto scale
+    """
+    # get_config_info()
+    """global T_max_miss
+    global T_min_miss
+    global expand
+    global shrink"""
+    T_max_miss = 0.8
+    T_min_miss = 0.2
+    expand = 2
+    shrink = 0.5
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=auto_scale, trigger="interval", seconds=60)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
+
 
 def forward_response(res: Response) -> Response:
     """ Get a new response that ready to be returned from another response
