@@ -35,7 +35,7 @@ def auto_scale():
     if Active:
         with webapp.app_context():
 
-            current_miss = statManager.monitor_miss_rate()
+            current_miss = statManager.monitor_miss_rate(interval = 60)
             current_active = control.pool_size # not including controller
 
             if current_miss < T_max_miss and current_miss > T_min_miss:
@@ -73,7 +73,7 @@ with webapp.app_context():
     shrink = 0.5
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=auto_scale, trigger="interval", seconds=5)
+    scheduler.add_job(func=auto_scale, trigger="interval", seconds=60)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 
