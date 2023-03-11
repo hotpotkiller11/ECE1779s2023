@@ -134,7 +134,6 @@ def show_figure():
     show thenfigure by given key
     :return: show_figure.html
     """
-
     if request.method == 'POST':
         key = request.form.get('key')
         request_json = {'key':key}
@@ -144,7 +143,6 @@ def show_figure():
             if filename is None:
                 return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
             else:
-                #base64_figure = convertToBase64(filename)
                 base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)

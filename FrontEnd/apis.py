@@ -128,6 +128,13 @@ def upload():
                 mimetype='application/json',
             )
             return response
+    else:
+        response = webapp.response_class(
+            response=json.dumps("UN SUPPORTED METHOD"),
+            status=404,
+            mimetype='application/json',
+        )
+        return response
 
 
 
