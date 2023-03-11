@@ -66,7 +66,6 @@ def get_config_info():
     cursor = cnx.cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
-    # cnx.close() This might cause failure
     global Config
     print(rows[0][0],rows[0][1])
     Config = {'capacity': rows[0][0], 'policy': rows[0][1]}
@@ -78,16 +77,7 @@ def write_stat():
     :return: None
     """
     with webapp.app_context():
-        statManager.post_req(stater.reqs)
-        statManager.post_hit(stater.hit)
-        statManager.post_miss(stater.miss)
-
-        statManager.post_numitem(len(key_queue))
-        statManager.post_size(filesize)
-        # Reset after each stater commit
-        stater.hit = 0
-        stater.miss = 0
-        stater.reqs = 0
+        pass
         print("success looping")
 
 
@@ -95,7 +85,6 @@ with webapp.app_context():
     """
     looping for 5 seconds, doing job write stat
     """
-    # get_config_info()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=write_stat, trigger="interval", seconds=5)
     scheduler.start()
