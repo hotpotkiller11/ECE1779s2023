@@ -92,7 +92,7 @@ def upload():
         if status == 'SUCCESS':
             data = {
                 "success": "true",
-                "key": [key]
+                "key": key
             }
             response = webapp.response_class(
                 response=json.dumps(data),
@@ -177,7 +177,7 @@ def show_figure_by_key(key_value):
                 #return render_template('show_figure.html',exist = True, figure = base64_figure)
                 data = {
                     "success": "true",
-                    "key": [key],
+                    "key": key,
                     "content": base64_figure
                 }
                 response = webapp.response_class(
@@ -288,10 +288,10 @@ def configure_cache():
         requests.post(backend + '/auto_params',json = {"max_miss":maxMiss, "min_miss":minMiss, "expand":expRatio, "shrink":shrinkRatio})
         data = {
                         "success": "true",
-                        "mode": [mode],
-                        "numNodes": [numNodes],
-                        "cacheSize": [int(capacity/(1024*1024))],
-                        "policy": [policy]
+                        "mode": mode,
+                        "numNodes": numNodes,
+                        "cacheSize": int(capacity/(1024*1024)),
+                        "policy": policy
                     }
         response = webapp.response_class(
                         response=json.dumps(data),
