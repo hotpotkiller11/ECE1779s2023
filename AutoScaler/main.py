@@ -32,7 +32,8 @@ def auto_scale():
     if Active:
         with webapp.app_context():
 
-            current_miss = statManager.monitor_miss_rate(interval = 60)
+            #current_miss = statManager.monitor_miss_rate(interval = 60)
+            current_miss = 0
             # Get current setting
             res = requests.post(control + "/pool_size")
             current_active = res.json()["pool_size"] 
