@@ -33,6 +33,8 @@ class CacheController:
         # 16 partitions all map to the same node
         for i in range(16):
             self.partition_dict[hex(i)[2:]] = memcache_servers[0]
+        for node in memcache_servers:
+            requests.post(node + "/clear") # Clear all servers at start
 
     def activated_nodes(self) -> list:
         """ Get a list of all activated nodes
