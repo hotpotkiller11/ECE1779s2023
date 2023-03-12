@@ -233,9 +233,11 @@ def getNumNodes():
 def getRate():
     rate = request.args.get("rate")
     if rate == 'miss':
-        value = clo_manager.monitor_miss_rate(interval = 60)
+        value = 0.5
+        #value = clo_manager.monitor_miss_rate(interval = 60)
     elif rate == 'hit':
-        value = clo_manager.monitor_hit_rate(interval = 60)
+        value = 0.5
+        #value = clo_manager.monitor_hit_rate(interval = 60)
     data = {
         "success": "true",
         "rate": rate,

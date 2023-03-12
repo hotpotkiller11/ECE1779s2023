@@ -220,11 +220,5 @@ class CloudWatchWrapper:
             # print(hit)
             return hit / (miss + hit) # at least one miss, no div_by_0 error
                     
-        
 
-if __name__ == '__main__':
-
-    cloudwatch = boto3.client('cloudwatch')
-    statManager = CloudWatchWrapper(cloudwatch)
-    print(statManager.monitor_miss_rate())
 
