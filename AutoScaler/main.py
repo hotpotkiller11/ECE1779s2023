@@ -41,13 +41,13 @@ def auto_scale():
                 print("---no need for scale---")
             elif current_miss > T_max_miss:
                 print("---miss rate large, expanding---")
-                if current_active*expand >= 8:
+                if math.ceil(current_active*expand) >= 8:
                     requests.post(control + "/pool", json={"new_active": 8})
                 else:
                     requests.post(control + "/pool", json={"new_active": math.ceil(current_active*expand)})
             else:
                 print("---miss rate samll, shrinking---")
-                if current_active*shrink <= 1:
+                if math.floor(current_active*shrink) <= 1:
                     requests.post(control + "/pool", json={"new_active": 1})
                 else:
                     requests.post(control + "/pool", json={"new_active": math.floor(current_active*shrink)})
