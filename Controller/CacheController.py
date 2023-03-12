@@ -93,12 +93,13 @@ class CacheController:
         
         # Update the partition dict
         self.partition_dict = new_partition_dict
-        send_dict = {} # dictionary that defines files and its new storing node destination
+        send_dict_list = [] # a list of send dict, each original node will have a dict to send
         
         for node in shrunk_nodes:
             res = requests.post(node + "/get/all")
             files = res.json() # list of all files (contains key, file and timestamp)
             drop_list = []
+            send_dict = {} # dictionary that defines files and its new storing node destination
             # Find files and its new destination
             for file in files:
                 file_node = self.get_node(file["key"])
@@ -108,8 +109,9 @@ class CacheController:
                         send_dict[file_node] = [file] # a list of file
                     else:
                         send_dict[file_node].append(file)
-            # send files to its new destination
-             
+            # prepare to send files to its new destination
+            send_dict_list.append(send_dict)
+            
             # Remove conveyed files from original node
             if node in self.not_activated_nodes():
                 res = requests.post(node + "/clear")
@@ -117,6 +119,7 @@ class CacheController:
             else:
                 res = requests.post(node + "/drop", json = {"keys": drop_list})
                 
-        for new_node in send_dict.keys():
-                res = requests.post(new_node + "/put/list", json = send_dict[new_node])
-                if res.status_code != 200: print("File transition filed (%s)" % (new_node))
+        for send_dict in send_dict_list:
+            for new_node in send_dict.keys():
+                    res = requests.post(new_node + "/put/list", json = send_dict[new_node])
+                    if res.status_code != 200: print("File transition filed (%s)" % (new_node))
