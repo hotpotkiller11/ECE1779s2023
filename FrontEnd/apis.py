@@ -251,7 +251,7 @@ def getRate():
             "success": "False",
             "error": {
                         "code": "500",
-                        "message": "Pleas enter hit/miss"
+                        "message": "Pleas enter hit/miss not" + rate
                 }
         }
     response = webapp.response_class(
