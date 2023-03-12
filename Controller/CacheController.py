@@ -33,6 +33,8 @@ class CacheController:
         # 16 partitions all map to the same node
         for i in range(16):
             self.partition_dict[hex(i)[2:]] = memcache_servers[0]
+        for node in memcache_servers:
+            requests.post(node + "/clear") # Clear all servers at start
 
     def activated_nodes(self) -> list:
         """ Get a list of all activated nodes
@@ -91,12 +93,13 @@ class CacheController:
         
         # Update the partition dict
         self.partition_dict = new_partition_dict
-        send_dict = {} # dictionary that defines files and its new storing node destination
+        send_dict_list = [] # a list of send dict, each original node will have a dict to send
         
         for node in shrunk_nodes:
             res = requests.post(node + "/get/all")
             files = res.json() # list of all files (contains key, file and timestamp)
             drop_list = []
+            send_dict = {} # dictionary that defines files and its new storing node destination
             # Find files and its new destination
             for file in files:
                 file_node = self.get_node(file["key"])
@@ -106,8 +109,9 @@ class CacheController:
                         send_dict[file_node] = [file] # a list of file
                     else:
                         send_dict[file_node].append(file)
-            # send files to its new destination
-             
+            # prepare to send files to its new destination
+            send_dict_list.append(send_dict)
+            
             # Remove conveyed files from original node
             if node in self.not_activated_nodes():
                 res = requests.post(node + "/clear")
@@ -115,16 +119,7 @@ class CacheController:
             else:
                 res = requests.post(node + "/drop", json = {"keys": drop_list})
                 
-        for new_node in send_dict.keys():
-                res = requests.post(new_node + "/put/list", json = send_dict[new_node])
-                if res.status_code != 200: print("File transition filed (%s)" % (new_node))
-
-    def multi_pool_size(self, parameter: float) -> None:
-        if parameter == 1.0: return
-        elif parameter < 1.0:
-            new_active = math.floor(self.pool_size * parameter)
-            new_active = max(1, new_active)
-        else:
-            new_active = math.ceil(self.pool_size * parameter)
-            new_active = min(len(self.memcache_nodes), new_active)
-        self.modify_pool_size(new_active)
+        for send_dict in send_dict_list:
+            for new_node in send_dict.keys():
+                    res = requests.post(new_node + "/put/list", json = send_dict[new_node])
+                    if res.status_code != 200: print("File transition filed (%s)" % (new_node))
