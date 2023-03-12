@@ -128,7 +128,6 @@ def upload():
                 mimetype='application/json',
             )
             return response
-    return render_template('upload_figure.html')
 
 
 @webapp.route('/api/list_keys', methods=['POST'])#tested OK
