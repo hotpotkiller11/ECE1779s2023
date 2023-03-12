@@ -17,12 +17,17 @@ def get_stats() :#-> list[dict]:
     :return: list[dict]
     """
     # 3 increment values
-
-    result = {"miss":  0.5,
-              "hit":   0.5,
-              "req":   1,
-              "size":  100,
-              "items": 100}
+    miss = statManager.monitor_stat("miss", "Sum")
+    hit = statManager.monitor_stat("hit", "Sum")
+    req = statManager.monitor_stat("req", "Sum")
+    # 2 scaler values
+    size = statManager.monitor_stat("size", "Average")
+    items = statManager.monitor_stat("numitem", "Average")
+    result = {"miss":  miss,
+              "hit":   hit,
+              "req":   req,
+              "size":  size,
+              "items": items}
     return result
 
 def utc_to_local(utc_dt: datetime) -> datetime:
