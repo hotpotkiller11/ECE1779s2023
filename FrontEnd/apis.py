@@ -234,13 +234,26 @@ def getRate():
     rate = request.args.get("rate")
     if rate == 'miss':
         value = clo_manager.monitor_miss_rate(interval = 1)
+        data = {
+            "success": "true",
+            "rate": rate,
+            "value": value
+        }
     elif rate == 'hit':
         value = clo_manager.monitor_hit_rate(interval = 1)
-    data = {
-        "success": "true",
-        "rate": rate,
-        "value":value
-    }
+        data = {
+            "success": "true",
+            "rate": rate,
+            "value": value
+        }
+    else:
+        data = {
+            "success": "False",
+            "error": {
+                        "code": "500",
+                        "message": "Pleas enter hit/miss"
+                }
+        }
     response = webapp.response_class(
         response=json.dumps(data),
         status=200,

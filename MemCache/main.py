@@ -8,18 +8,13 @@ from config import db_config
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 import json
-from MemCache.stater import Stater
-from toolAWS.cloudWatch import CloudWatchWrapper
-import boto3
+
 
 """Global variables"""
 global Config
 
 """statistical info"""
 global filesize # Size of the current figures in cache memory (unit: byte)
-stater = Stater()
-client = boto3.client('cloudwatch')
-statManager = CloudWatchWrapper(client)
 
 
 """mem cache structure"""
