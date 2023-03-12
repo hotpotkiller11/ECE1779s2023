@@ -32,13 +32,13 @@ def auto_scale():
     if Active:
         with webapp.app_context():
 
-            current_miss = statManager.monitor_miss_rate(interval = 60)
+            current_miss = statManager.monitor_miss_rate(interval = 1)
             # Get current setting
             res = requests.post(control + "/pool_size")
             current_active = res.json()["pool_size"] 
 
             if current_miss < T_max_miss and current_miss > T_min_miss:
-                print("---no need for scale---")
+                print("---no need for scale,current miss rate:---",current_miss)
             elif current_miss > T_max_miss:
                 print("---miss rate large, expanding---")
                 if math.ceil(current_active*expand) >= 8:

@@ -13,6 +13,7 @@ import requests
 cloudwatch = boto3.client('cloudwatch')
 clo_manager = CloudWatchWrapper(cloudwatch)
 
+
 @webapp.route('/api/delete_all', methods=['POST'])
 def delete_all():
     result = key_path.delete_all_key_path_term()
@@ -58,6 +59,7 @@ def delete_all():
             mimetype='application/json',
         )
         return response
+
 
 def deleteFile(filename:str)->bool:
     '''This function is used to delete all data in a specific document under static'''
@@ -251,7 +253,7 @@ def getRate():
             "success": "False",
             "error": {
                         "code": "500",
-                        "message": "Pleas enter hit/miss not" ,
+                        "message": "Pleas enter hit/miss" ,
                         "you entered": rate
                 }
         }
@@ -265,7 +267,6 @@ def getRate():
 @webapp.route('/api/configure_cache/',methods=['POST'])
 def configure_cache():
     # try:
-    #request.args.get("mode")!=None:
     mode = request.args.get("mode")
     print(type(mode))
     print(type(str(mode)))
