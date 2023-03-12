@@ -1,7 +1,4 @@
-import atexit
-import math
 
-from apscheduler.schedulers.background import BackgroundScheduler
 from flask import  request, Response
 from Controller import webapp, control
 import json
@@ -114,7 +111,7 @@ def pool_size():
         mimetype='application/json',
     )
     return response
-    
+
 
 @webapp.route('/pool',methods=['POST'])
 def pool_config():
@@ -126,6 +123,7 @@ def pool_config():
         mimetype='application/json',
     )
     return response
+
 
 @webapp.route('/pool_multi',methods=['POST'])
 def pool_multi():
