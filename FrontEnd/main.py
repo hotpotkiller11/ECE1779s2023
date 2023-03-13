@@ -18,7 +18,6 @@ config = Config(
 s3 = boto3.client('s3',config=config)
 @webapp.route('/')
 def home():
-    print("to home")
     return render_template("home.html")
 
 # msg pages
@@ -95,7 +94,6 @@ def process_figure(request, key):
     # get the figure file
     file = request.files['file']
     _, extension = os.path.splitext(file.filename)
-    # print(extension)
     # if the figure is one of the allowed extensions
     if extension.lower() in IMAGE_FORMAT:
         filename = key + extension
@@ -110,9 +108,6 @@ def process_figure(request, key):
                 return 'SUCCESS'
             else:
                 if key_path.delete_term_by_key(key):
-                    # if deleteFile(original):
-                    #     print("File replaced: %s" % original)
-                    # file.save(os.path.join(os.path.dirname(os.path.abspath(__file__)) + '/static/figure', filename))
                     s3.delete_object (Bucket= 'ece1779-ass2-bucket2', Key=original)
                     base64_image = base64.b64encode(file.read())
                     s3.put_object(Body=base64_image, Key=filename, Bucket='ece1779-ass2-bucket2', ContentType='image')
@@ -143,7 +138,7 @@ def show_figure():
             if filename is None:
                 return render_template('show_figure.html',exist = False, figure = 'No figure relate to this key!')
             else:
-                #base64_figure = convertToBase64(filename)
+
                 base64_figure = download_image(filename)
                 request_json = {'key':key, 'value':base64_figure}
                 res = requests.post(backend + '/put',json = request_json)

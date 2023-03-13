@@ -1,8 +1,6 @@
-import os
 from datetime import datetime, timedelta
 from botocore.args import logger
 from botocore.exceptions import ClientError
-import boto3
 import subprocess
 from config import memcache_id_list
 #list of matrix name
@@ -93,7 +91,6 @@ class CloudWatchWrapper:
             missrate: value to send
         """
         instance_id = self.current_id
-        # instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -115,7 +112,6 @@ class CloudWatchWrapper:
             missrate: value to send
         """
         instance_id = self.current_id
-        # instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -139,7 +135,6 @@ class CloudWatchWrapper:
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         instance_id = self.current_id
-        # instance_id = 'i-09c738fc558cb24a6'
         response = self.cloudwatch_resource.put_metric_data(
             MetricData=[{
                 'MetricName': 'numitem',
@@ -159,7 +154,6 @@ class CloudWatchWrapper:
             filesize: value to send
         """
         instance_id = self.current_id
-        # instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -181,7 +175,6 @@ class CloudWatchWrapper:
             filesize: value to send
         """
         instance_id = self.current_id
-        # instance_id = 'i-09c738fc558cb24a6'
         now = datetime.now()
         now = now.strftime('%Y-%m-%d %H:%M:%S')
         response = self.cloudwatch_resource.put_metric_data(
@@ -241,7 +234,6 @@ class CloudWatchWrapper:
         for node in result:
             for point in node:
                 miss += point["Sum"]
-        # print(miss)
         if miss == 0: return 0.0 # No miss or no access, return 0.0 as miss rate
         
         result = self.monitor_stat("hit", "Sum", interval, interval * 60)
@@ -250,7 +242,6 @@ class CloudWatchWrapper:
         for node in result:
             for point in node:
                 hit += point["Sum"]
-        # print(hit)
         return miss / (miss + hit) # at least one miss, no div_by_0 error
 
     def monitor_hit_rate(self, interval = 5) -> float:
@@ -268,7 +259,6 @@ class CloudWatchWrapper:
             for node in result:
                 for point in node:
                     miss += point["Sum"]
-            # print(miss)
             if miss == 0: return 0.0 # No miss or no access, return 0.0 as miss rate
             
             result = self.monitor_stat("hit", "Sum", interval, interval * 60)
@@ -277,14 +267,7 @@ class CloudWatchWrapper:
             for node in result:
                 for point in node:
                     hit += point["Sum"]
-            # print(hit)
             return hit / (miss + hit) # at least one miss, no div_by_0 error
                     
-        
 
-if __name__ == '__main__':
-
-    cloudwatch = boto3.client('cloudwatch')
-    statManager = CloudWatchWrapper(cloudwatch)
-    print(statManager.monitor_miss_rate())
 
