@@ -1,8 +1,7 @@
-from flask import render_template, request, json
+from flask import render_template, request
 from FrontEnd import webapp, key_path, db_connect, backend
 from FrontEnd.key_path import get_path_by_key
-from config import IMAGE_FORMAT 
-from FrontEnd.db_connect import get_db
+from config import IMAGE_FORMAT
 from botocore.config import Config
 import base64
 import os

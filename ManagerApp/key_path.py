@@ -1,6 +1,6 @@
 from ManagerApp import db_connect
 
-def get_all_keys():# -> list[str]:
+def get_all_keys():
     ''' Return all keys stored in the database
         If the table is currently empty, an empty list will be returned.
     '''

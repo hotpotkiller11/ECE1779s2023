@@ -1,11 +1,7 @@
 from flask import render_template, request, json
 from ManagerApp import webapp, key_path, db_connect, backend, autoscaler
-from ManagerApp.key_path import get_path_by_key
-from config import IMAGE_FORMAT 
 from ManagerApp.db_connect import get_db
 from botocore.config import Config
-import base64
-import os
 import requests
 import boto3
 
