@@ -157,6 +157,12 @@ def show_figure():
         return render_template('show_figure.html')
 
 def download_image(key):
+    """
+    download image according to key
+    :param key: key entered
+    :return: image content
+    """
+
     try: 
         with open('Temp.txt', 'wb') as file:
             s3.download_fileobj('ece1779-ass2-bucket2', key, file)

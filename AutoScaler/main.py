@@ -107,6 +107,10 @@ def auto_scale(active: bool):
 
 @webapp.route("/auto", methods=['POST'])
 def auto_on_off():
+    """
+    swith auto mode on/ off
+    :return: response
+    """
     active = request.json["auto"]
     auto_scale(active)
     response = webapp.response_class(
@@ -119,6 +123,10 @@ def auto_on_off():
 
 @webapp.route("/auto_params", methods=['POST'])
 def auto_params():
+    """
+    get auto scale config parameters
+    :return: response
+    """
     max_miss = request.json["max_miss"] # original value if no key found
     min_miss = request.json["min_miss"]
     expand_ratio = request.json["expand"]
@@ -136,6 +144,11 @@ def auto_params():
 
 @webapp.route("/get_auto_params", methods=['GET', 'POST'])
 def get_params():
+    """
+    get auto config parameters
+    :return: response
+    """
+
     response = webapp.response_class(
         response=json.dumps({"auto": Active, "max_miss": T_max_miss, "min_miss": T_min_miss,
                              "expand": expand, "shrink": shrink}),

@@ -166,6 +166,10 @@ def mem_config_set():
     
 @webapp.route('/memory/pool', methods=['POST'])
 def mem_pool_set():
+    """
+    call back end to change the pool size
+    :return: template
+    """
     active = int(request.form.get('new_active'))
     res = requests.post(backend + '/pool', json = {"new_active": active})
     if (res.status_code == 200):
@@ -175,6 +179,10 @@ def mem_pool_set():
 
 @webapp.route('/memory/auto', methods=['POST'])
 def auto_on_off():
+    """
+    turn auto mode on or off from front end
+    :return: response
+    """
     active = request.form.get("auto")
     print(active)
     active = active.lower() == "true" # convert str to bool
@@ -203,6 +211,10 @@ def auto_on_off():
     
 @webapp.route("/memory/auto_params", methods=['POST'])
 def auto_params():
+    """
+    set auto parameters form front end
+    :return: template
+    """
     max_miss = request.form.get("max_miss", type=float) / 100 # percentage to decimal
     min_miss = request.form.get("min_miss", type=float) / 100 # percentage to decimal
     if(max_miss < min_miss):
